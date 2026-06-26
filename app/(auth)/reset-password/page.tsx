@@ -92,7 +92,7 @@ function ResetPasswordForm() {
                   <InputOTPSlot
                     key={i}
                     index={i}
-                    className="flex aspect-square w-full rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50"
+                    className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50"
                   />
                 ))}
               </InputOTPGroup>
