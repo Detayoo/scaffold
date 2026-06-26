@@ -16,7 +16,7 @@ import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { Separator } from "@/components/ui/separator";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { formatDate, formatMoney, naira, toastMessage, extractError } from "@/utils";
+import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import type { Transaction, TransactionDetails } from "@/types";
 
 export default function TransactionsPage() {
@@ -96,7 +96,6 @@ export default function TransactionsPage() {
       header: "Amount",
       cell: (tx) => (
         <span className="font-medium">
-          {naira}
           {formatMoney(tx.amount)}
         </span>
       ),
@@ -261,7 +260,7 @@ export default function TransactionsPage() {
 
       <ResponsiveSheet open={detailOpen} onOpenChange={setDetailOpen} title="Transaction Details">
         {detailLoading ? (
-          <LoadingState variant="skeleton" />
+          <LoadingState />
         ) : !transactionDetail?.data?.transaction ? (
           <ErrorState message="Could not load transaction details" onRetry={refetchDetail} />
         ) : (
@@ -281,7 +280,6 @@ export default function TransactionsPage() {
                   <div>
                     <p className="text-xs text-muted-foreground">Amount</p>
                     <p className="text-sm font-medium">
-                      {naira}
                       {formatMoney(tx.amount)}
                     </p>
                   </div>
@@ -289,7 +287,6 @@ export default function TransactionsPage() {
                     <div>
                       <p className="text-xs text-muted-foreground">Fee</p>
                       <p className="text-sm">
-                        {naira}
                         {formatMoney(tx.fee)}
                       </p>
                     </div>
@@ -298,7 +295,6 @@ export default function TransactionsPage() {
                     <div>
                       <p className="text-xs text-muted-foreground">Net Amount</p>
                       <p className="text-sm font-medium">
-                        {naira}
                         {formatMoney(tx.netAmount)}
                       </p>
                     </div>

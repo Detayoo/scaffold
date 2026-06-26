@@ -123,7 +123,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<LoadingState variant="spinner" />}>
+    <Suspense fallback={<LoadingState />}>
       <ResetPasswordForm />
     </Suspense>
   );

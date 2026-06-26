@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { Banknote, CreditCard, FileText, Receipt, RefreshCw, TrendingUp } from "lucide-react";
+import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Wallet } from "lucide-react";
 import Link from "next/link";
 
 import { useAuth } from "@/contexts/auth-context";
@@ -14,7 +14,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { LoadingState } from "@/components/LoadingState";
-import { formatDate, formatMoney, naira } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 
 const container = {
   hidden: { opacity: 0 },
@@ -54,11 +54,10 @@ export default function HomePage() {
       value: totalTransactions.toLocaleString(),
     },
     {
-      icon: Banknote,
+      icon: Wallet,
       label: "Volume",
       value: (
         <>
-          {naira}
           {formatMoney(transactions.reduce((sum, t) => sum + (t?.amount ?? 0), 0))}
         </>
       ),
@@ -138,7 +137,7 @@ export default function HomePage() {
           <CardContent className="p-0">
             {txLoading && transactions.length === 0 ? (
               <div className="p-4">
-                <LoadingState variant="skeleton" />
+                <LoadingState />
               </div>
             ) : txError && transactions.length === 0 ? (
               <div className="p-4">
@@ -170,7 +169,6 @@ export default function HomePage() {
                       <tr key={tx.id} className="border-b last:border-0">
                         <td className="px-4 py-3 font-mono text-xs">{tx.reference}</td>
                         <td className="px-4 py-3">
-                          {naira}
                           {formatMoney(tx.amount)}
                         </td>
                         <td className="px-4 py-3">

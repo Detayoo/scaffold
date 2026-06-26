@@ -15,7 +15,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Separator } from "@/components/ui/separator";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { formatDate, formatMoney, naira, toastMessage, extractError } from "@/utils";
+import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import type { Refund, RefundDetails } from "@/types";
 
 export default function RefundsPage() {
@@ -107,7 +107,6 @@ export default function RefundsPage() {
       header: "Amount",
       cell: (r) => (
         <span className="font-medium">
-          {naira}
           {formatMoney(r.amount)}
         </span>
       ),
@@ -175,7 +174,7 @@ export default function RefundsPage() {
 
       <ResponsiveSheet open={detailOpen} onOpenChange={setDetailOpen} title="Refund Details">
         {detailLoading ? (
-          <LoadingState variant="skeleton" />
+          <LoadingState />
         ) : !refundDetail?.data?.refund ? (
           <ErrorState message="Could not load refund details" onRetry={refetchDetail} />
         ) : (
@@ -198,7 +197,6 @@ export default function RefundsPage() {
                   <div>
                     <p className="text-xs text-muted-foreground">Amount</p>
                     <p className="text-sm font-medium">
-                      {naira}
                       {formatMoney(r.amount)}
                     </p>
                   </div>

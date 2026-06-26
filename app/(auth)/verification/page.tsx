@@ -159,7 +159,7 @@ function VerificationForm() {
 
 export default function VerificationPage() {
   return (
-    <Suspense fallback={<LoadingState variant="spinner" />}>
+    <Suspense fallback={<LoadingState />}>
       <VerificationForm />
     </Suspense>
   );

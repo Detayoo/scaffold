@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Copy, Key, Plus, Trash2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Copy,
+  Key,
+  Plus,
+  Trash2,
+  User,
+  Lock,
+  Globe,
+  Percent,
+  Webhook,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/FormField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -37,201 +42,143 @@ import { changePasswordSchema, createTaxSchema } from "@/utils/validators";
 import type { Column } from "@/components/DataTable";
 import type { Tax } from "@/types";
 
+const tabs = [
+  { id: "profile", label: "Profile", icon: User },
+  { id: "security", label: "Security", icon: Lock },
+  { id: "keys", label: "API Keys", icon: Key },
+  { id: "webhook", label: "Webhook", icon: Webhook },
+  { id: "taxes", label: "Taxes", icon: Percent },
+];
+
 export default function SettingsPage() {
   const [tab, setTab] = useState("profile");
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg font-medium text-foreground">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your account settings, API keys, and preferences
+        <h1 className="text-xl font-semibold">Settings</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage your account, security, and preferences
         </p>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList variant="line">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="password">Change Password</TabsTrigger>
-          <TabsTrigger value="api-keys">API Keys</TabsTrigger>
-          <TabsTrigger value="webhook">Webhook</TabsTrigger>
-          <TabsTrigger value="taxes">Taxes</TabsTrigger>
-        </TabsList>
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+        {/* Sidebar nav */}
+        <nav className="flex shrink-0 flex-col gap-1 lg:w-48">
+          {tabs.map((t) => {
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-left ${
+                  active
+                    ? "bg-foreground/5 font-medium text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                }`}
+              >
+                <t.icon className="size-4 shrink-0" />
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
 
-        <TabsContent value="profile">
-          <ProfileTab />
-        </TabsContent>
-        <TabsContent value="password">
-          <PasswordTab />
-        </TabsContent>
-        <TabsContent value="api-keys">
-          <ApiKeysTab />
-        </TabsContent>
-        <TabsContent value="webhook">
-          <WebhookTab />
-        </TabsContent>
-        <TabsContent value="taxes">
-          <TaxesTab />
-        </TabsContent>
-      </Tabs>
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {tab === "profile" && <ProfileSection />}
+          {tab === "security" && <SecuritySection />}
+          {tab === "keys" && <APIKeysSection />}
+          {tab === "webhook" && <WebhookSection />}
+          {tab === "taxes" && <TaxesSection />}
+        </div>
+      </div>
     </div>
   );
 }
 
-function ProfileTab() {
-  const { data, isFetching, isError } = useMerchant();
+function ProfileSection() {
+  const { data, isFetching, isError, refetch, error } = useMerchant();
+  const errorCode = (error as any)?.status;
 
-  if (isFetching) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <LoadingState />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <ErrorState message="Failed to load merchant profile" />
-        </CardContent>
-      </Card>
-    );
-  }
+  if (isFetching) return <LoadingState message="Loading profile..." />;
+  if (isError) return <ErrorState message="Failed to load profile" onRetry={refetch} errorCode={errorCode} />;
 
   const merchant = data?.data?.merchant;
   const owner = data?.data?.owner;
 
-  if (!merchant || !owner) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <ErrorState message="Merchant profile not found" />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="space-y-5">
       <Card>
         <CardHeader>
-          <CardTitle>Merchant Information</CardTitle>
-          <CardDescription>Details about your business account</CardDescription>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <User className="size-4 text-muted-foreground" />
+            Merchant Information
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Business Name</p>
-              <p className="text-sm font-medium text-foreground">
-                {merchant.name}
-              </p>
+        <CardContent className="grid gap-5 sm:grid-cols-2">
+          {[
+            { label: "Business Name", value: merchant?.name },
+            { label: "Email", value: merchant?.email },
+            { label: "Account Number", value: merchant?.accountNumber ?? "—" },
+            { label: "Address", value: merchant?.address },
+            {
+              label: "Status",
+              value: <StatusBadge status={merchant?.status ?? ""} size="sm" />,
+            },
+            { label: "Slug", value: merchant?.slug },
+          ].map((f) => (
+            <div key={f.label}>
+              <p className="text-xs text-muted-foreground mb-0.5">{f.label}</p>
+              <p className="text-sm font-medium">{f.value ?? "—"}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Account Number</p>
-              <p className="text-sm font-medium text-foreground">
-                {merchant.accountNumber}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Email</p>
-              <p className="text-sm font-medium text-foreground">
-                {merchant.email}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Status</p>
-              <StatusBadge status={merchant.status} size="sm" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Address</p>
-              <p className="text-sm font-medium text-foreground">
-                {merchant.address ?? "N/A"}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Slug</p>
-              <p className="text-sm font-medium text-foreground">
-                {merchant.slug}
-              </p>
-            </div>
-          </div>
+          ))}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Owner Information</CardTitle>
-          <CardDescription>
-            Details about the primary account owner
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <User className="size-4 text-muted-foreground" />
+            Owner Information
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Name</p>
-              <p className="text-sm font-medium text-foreground">
-                {owner.firstName} {owner.lastName}
-              </p>
+        <CardContent className="grid gap-5 sm:grid-cols-2">
+          {[
+            { label: "First Name", value: owner?.firstName },
+            { label: "Last Name", value: owner?.lastName },
+            { label: "Email", value: owner?.email },
+            { label: "Role", value: owner?.role },
+            {
+              label: "Verified",
+              value: owner?.isVerified ? "Yes" : "No",
+            },
+          ].map((f) => (
+            <div key={f.label}>
+              <p className="text-xs text-muted-foreground mb-0.5">{f.label}</p>
+              <p className="text-sm font-medium">{f.value ?? "—"}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Email</p>
-              <p className="text-sm font-medium text-foreground">
-                {owner.email}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Role</p>
-              <p className="text-sm font-medium text-foreground">
-                {owner.role}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Verified</p>
-              <StatusBadge
-                status={owner.isVerified ? "active" : "inactive"}
-                size="sm"
-              />
-            </div>
-          </div>
+          ))}
         </CardContent>
       </Card>
     </div>
   );
 }
 
-function PasswordTab() {
-
-  const form = useForm<{
-    oldPassword: string;
-    newPassword: string;
-    password: string;
-  }>({
+function SecuritySection() {
+  const form = useForm({
     resolver: zodResolver(changePasswordSchema),
-    defaultValues: {
-      oldPassword: "",
-      newPassword: "",
-      password: "",
-    },
   });
+  const queryClient = useQueryClient();
 
   const { mutateAsync: changePassword, isPending } = useMutation({
-    mutationFn: (data: { oldPassword: string; password: string }) =>
-      changePasswordFn(data),
+    mutationFn: changePasswordFn,
   });
 
-  const onSubmit = async (data: {
-    oldPassword: string;
-    newPassword: string;
-    password: string;
-  }) => {
+  const onSubmit = async (data: any) => {
     try {
-      await changePassword({
-        oldPassword: data.oldPassword,
-        password: data.newPassword,
-      });
+      await changePassword({ oldPassword: data.oldPassword, password: data.password });
       toastMessage("success", "Password changed successfully");
       form.reset();
     } catch (error) {
@@ -242,49 +189,24 @@ function PasswordTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Change Password</CardTitle>
-        <CardDescription>
-          Update your account password. Choose a strong password you haven&apos;t
-          used before.
-        </CardDescription>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Lock className="size-4 text-muted-foreground" />
+          Change Password
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            label="Current Password"
-            error={form.formState.errors.oldPassword?.message}
-            isRequired
-          >
-            <Input
-              type="password"
-              {...form.register("oldPassword")}
-              placeholder="Enter current password"
-            />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm space-y-4">
+          <FormField label="Current Password" error={form.formState.errors.oldPassword?.message as string} isRequired>
+            <Input type="password" {...form.register("oldPassword")} placeholder="Enter current password" />
           </FormField>
-          <FormField
-            label="New Password"
-            error={form.formState.errors.newPassword?.message}
-            isRequired
-          >
-            <Input
-              type="password"
-              {...form.register("newPassword")}
-              placeholder="Enter new password"
-            />
+          <FormField label="New Password" error={form.formState.errors.newPassword?.message as string} isRequired>
+            <Input type="password" {...form.register("newPassword")} placeholder="Enter new password" />
           </FormField>
-          <FormField
-            label="Confirm New Password"
-            error={form.formState.errors.password?.message}
-            isRequired
-          >
-            <Input
-              type="password"
-              {...form.register("password")}
-              placeholder="Confirm new password"
-            />
+          <FormField label="Confirm Password" error={form.formState.errors.password?.message as string} isRequired>
+            <Input type="password" {...form.register("password")} placeholder="Confirm new password" />
           </FormField>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Changing..." : "Change Password"}
+          <Button type="submit" disabled={isPending || !form.formState.isValid}>
+            {isPending ? "Saving..." : "Update Password"}
           </Button>
         </form>
       </CardContent>
@@ -292,150 +214,73 @@ function PasswordTab() {
   );
 }
 
-function ApiKeysTab() {
-  const copy = useCopyToClipboard();
-  const [showSecret, setShowSecret] = useState(false);
-  const [showPublic, setShowPublic] = useState(false);
-
-  const { data, isFetching, isError, refetch } = useQuery({
-    queryKey: ["api-keys"],
+function APIKeysSection() {
+  const { data, isFetching, isError, refetch, error } = useQuery({
+    queryKey: ["merchant-keys"],
     queryFn: getKeysFn,
   });
+  const errorCode = (error as any)?.status;
+  const copy = useCopyToClipboard();
+  const [showPK, setShowPK] = useState(false);
+  const [showSK, setShowSK] = useState(false);
 
-  const { mutateAsync: generateKeys, isPending: isGenerating } = useMutation({
+  const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: generateMerchantKeyFn,
+    onSuccess: () => { toastMessage("success", "New keys generated"); refetch(); },
+    onError: (err) => toastMessage("error", extractError(err)),
   });
-
-  const handleGenerate = async () => {
-    try {
-      await generateKeys();
-      toastMessage("success", "New API keys generated successfully");
-      refetch();
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    }
-  };
 
   const handleCopy = async (text: string, label: string) => {
     const ok = await copy(text);
-    if (ok) {
-      toastMessage("success", `${label} copied to clipboard`);
-    }
+    toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
   };
 
-  if (isFetching) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <LoadingState />
-        </CardContent>
-      </Card>
-    );
-  }
+  if (isFetching) return <LoadingState message="Loading keys..." />;
+  if (isError) return <ErrorState message="Failed to load API keys" onRetry={refetch} errorCode={errorCode} />;
 
-  if (isError) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <ErrorState message="Failed to load API keys" onRetry={refetch} />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const publicKey = data?.data?.public ?? "";
-  const secretKey = data?.data?.secret ?? "";
+  const { public: pub, secret } = data?.data ?? {};
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <Card>
         <CardHeader>
-          <CardTitle>API Keys</CardTitle>
-          <CardDescription>
-            Your API keys are used to authenticate requests to the API. Keep
-            your secret key secure.
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Key className="size-4 text-muted-foreground" />
+            API Keys
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <FormField label="Public Key">
+          {[
+            { label: "Public Key", value: pub, show: showPK, toggle: () => setShowPK(!showPK) },
+            { label: "Secret Key", value: secret, show: showSK, toggle: () => setShowSK(!showSK) },
+          ].map((k, i) => (
+            <div key={i} className="space-y-1.5">
+              <p className="text-xs text-muted-foreground">{k.label}</p>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                   <Input
-                    value={publicKey}
-                    type={showPublic ? "text" : "password"}
+                    type={k.show ? "text" : "password"}
+                    value={k.value ?? ""}
                     readOnly
-                    className="pr-9 font-mono text-xs"
+                    className="pr-16 font-mono text-xs"
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    className="absolute right-1 top-1/2 -translate-y-1/2"
-                    onClick={() => setShowPublic(!showPublic)}
-                  >
-                    {showPublic ? (
-                      <EyeOff className="size-3.5" />
-                    ) : (
-                      <Eye className="size-3.5" />
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                    <button type="button" onClick={k.toggle} className="flex size-7 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                      {k.show ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+                    </button>
+                    {k.value && (
+                      <button type="button" onClick={() => handleCopy(k.value!, k.label)} className="flex size-7 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                        <Copy className="size-3.5" />
+                      </button>
                     )}
-                  </Button>
+                  </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => handleCopy(publicKey, "Public key")}
-                >
-                  <Copy className="size-3.5" />
-                </Button>
               </div>
-            </FormField>
-          </div>
-
-          <div className="space-y-2">
-            <FormField label="Secret Key">
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    value={secretKey}
-                    type={showSecret ? "text" : "password"}
-                    readOnly
-                    className="pr-9 font-mono text-xs"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    className="absolute right-1 top-1/2 -translate-y-1/2"
-                    onClick={() => setShowSecret(!showSecret)}
-                  >
-                    {showSecret ? (
-                      <EyeOff className="size-3.5" />
-                    ) : (
-                      <Eye className="size-3.5" />
-                    )}
-                  </Button>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => handleCopy(secretKey, "Secret key")}
-                >
-                  <Copy className="size-3.5" />
-                </Button>
-              </div>
-            </FormField>
-          </div>
-
-          <Button
-            variant="outline"
-            onClick={handleGenerate}
-            disabled={isGenerating}
-          >
+            </div>
+          ))}
+          <Button variant="outline" size="sm" onClick={() => generateKeys()} disabled={generating}>
             <Key className="size-3.5" />
-            {isGenerating ? "Generating..." : "Generate New Keys"}
+            {generating ? "Generating..." : "Generate New Keys"}
           </Button>
         </CardContent>
       </Card>
@@ -443,75 +288,45 @@ function ApiKeysTab() {
   );
 }
 
-function WebhookTab() {
-  const { data, isFetching, isError, refetch } = useMerchant();
+function WebhookSection() {
+  const merchantQuery = useMerchant();
+  const form = useForm({ defaultValues: { url: "" } });
+  const errorCode = (merchantQuery.error as any)?.status;
 
-  const form = useForm({
-    defaultValues: {
-      url: data?.data?.merchant?.webhookURL ?? "",
-    },
-    values: {
-      url: data?.data?.merchant?.webhookURL ?? "",
-    },
-  });
-
-  const { mutateAsync: setupWebhook, isPending } = useMutation({
-    mutationFn: (url: string) => setupWebhookFn(url),
-  });
-
-  const onSubmit = async (formData: { url: string }) => {
-    try {
-      await setupWebhook(formData.url);
-      toastMessage("success", "Webhook URL updated successfully");
-      refetch();
-    } catch (error) {
-      toastMessage("error", extractError(error));
+  useEffect(() => {
+    if (merchantQuery.data?.data?.merchant?.webhookURL) {
+      form.reset({ url: merchantQuery.data.data.merchant.webhookURL });
     }
+  }, [merchantQuery.data]);
+
+  const { mutateAsync: updateWebhook, isPending } = useMutation({
+    mutationFn: setupWebhookFn,
+    onSuccess: (data) => { toastMessage("success", data?.message ?? "Webhook updated"); merchantQuery.refetch(); },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const onSubmit = async (values: { url: string }) => {
+    try { await updateWebhook(values.url); } catch {}
   };
 
-  if (isFetching) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <LoadingState />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <ErrorState message="Failed to load webhook settings" />
-        </CardContent>
-      </Card>
-    );
-  }
+  if (merchantQuery.isFetching) return <LoadingState message="Loading webhook..." />;
+  if (merchantQuery.isError) return <ErrorState message="Error loading webhook" onRetry={merchantQuery.refetch} errorCode={errorCode} />;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Webhook</CardTitle>
-        <CardDescription>
-          Configure a webhook URL to receive real-time event notifications from
-          your account.
-        </CardDescription>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Webhook className="size-4 text-muted-foreground" />
+          Webhook URL
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            label="Webhook URL"
-            error={form.formState.errors.url?.message}
-            isOptional
-          >
-            <Input
-              {...form.register("url")}
-              placeholder="https://example.com/webhook"
-            />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm space-y-3">
+          <FormField label="URL" error={form.formState.errors.url?.message}>
+            <Input {...form.register("url")} placeholder="https://example.com/webhook" />
           </FormField>
           <Button type="submit" disabled={isPending}>
-            {isPending ? "Saving..." : "Save Webhook URL"}
+            {isPending ? "Saving..." : "Update Webhook"}
           </Button>
         </form>
       </CardContent>
@@ -519,204 +334,106 @@ function WebhookTab() {
   );
 }
 
-function TaxesTab() {
+function TaxesSection() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<Tax | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const { data, isFetching, isError, refetch } = useQuery({
     queryKey: ["taxes", page + 1, size],
     queryFn: () => getTaxesFn({ page: page + 1, size }),
   });
 
-  const { mutateAsync: createTax, isPending: isCreating } = useMutation({
-    mutationFn: (payload: { name: string; rate: number }) => createTaxFn(payload),
+  const form = useForm({ resolver: zodResolver(createTaxSchema) });
+
+  const { mutateAsync: createTax, isPending: creating } = useMutation({
+    mutationFn: createTaxFn,
+    onSuccess: () => { toastMessage("success", "Tax created"); setModalOpen(false); form.reset(); queryClient.invalidateQueries({ queryKey: ["taxes"] }); },
+    onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const { mutateAsync: removeTax, isPending: isDeleting } = useMutation({
+  const { mutateAsync: removeTax, isPending: deleting } = useMutation({
     mutationFn: (id: string) => deleteTaxFn(id),
+    onSuccess: () => { toastMessage("success", "Tax deleted"); setDeleteTarget(null); queryClient.invalidateQueries({ queryKey: ["taxes"] }); },
+    onError: (err) => toastMessage("error", extractError(err)),
   });
-
-  const taxForm = useForm<{
-    name: string;
-    rate: string;
-  }>({
-    resolver: zodResolver(createTaxSchema),
-    defaultValues: { name: "", rate: "" },
-  });
-
-  const handleCreateTax = async (formData: {
-    name: string;
-    rate: string;
-  }) => {
-    try {
-      await createTax({ name: formData.name, rate: Number(formData.rate) });
-      toastMessage("success", "Tax created successfully");
-      setModalOpen(false);
-      taxForm.reset();
-      queryClient.invalidateQueries({ queryKey: ["taxes"] });
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    }
-  };
-
-  const handleDeleteTax = async () => {
-    if (!deleteTarget) return;
-    try {
-      await removeTax(deleteTarget.id);
-      toastMessage("success", "Tax deleted successfully");
-      setDeleteTarget(null);
-      queryClient.invalidateQueries({ queryKey: ["taxes"] });
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    }
-  };
-
-  const taxes = data?.data?.taxes;
-  const totalRecords = data?.data?.totalRecords ?? 0;
-  const totalPages = data?.data?.totalPages ?? 0;
 
   const columns: Column<Tax>[] = [
+    { key: "name", header: "Name", cell: (t) => <span className="font-medium">{t.name}</span> },
+    { key: "rate", header: "Rate", cell: (t) => <span>{t.rate}%</span> },
+    { key: "date", header: "Created", cell: (t) => <span className="text-muted-foreground text-xs">{new Date(t.createdAt).toLocaleDateString()}</span> },
     {
-      key: "name",
-      header: "Name",
-      cell: (tax: Tax) => (
-        <span className="font-medium text-foreground">{tax.name}</span>
-      ),
-    },
-    {
-      key: "rate",
-      header: "Rate",
-      cell: (tax: Tax) => <span>{tax.rate}%</span>,
-    },
-    {
-      key: "createdAt",
-      header: "Date Created",
-      cell: (tax: Tax) => (
-        <span className="text-muted-foreground">
-          {new Date(tax.createdAt).toLocaleDateString()}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "",
-      className: "w-12",
-      cell: (tax: Tax) => (
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteTarget(tax);
-          }}
-        >
-          <Trash2 className="size-3.5 text-destructive" />
-        </Button>
+      key: "actions", header: "", className: "w-10",
+      cell: (t) => (
+        <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(t.id); }} className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer">
+          <Trash2 className="size-3.5" />
+        </button>
       ),
     },
   ];
 
+  const taxes = data?.data?.taxes;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-medium text-foreground">Tax Rates</h2>
-          <p className="text-xs text-muted-foreground">
-            Manage tax rates applied to your invoices
-          </p>
-        </div>
+        <p className="text-sm text-muted-foreground">Manage tax rates applied to invoices</p>
         <Button size="sm" onClick={() => setModalOpen(true)}>
           <Plus className="size-3.5" />
           Add Tax
         </Button>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={taxes}
-        isPending={isFetching}
-        isError={isError}
-        onRetry={refetch}
-        emptyTitle="No taxes yet"
-        emptyDescription="Add a tax rate to apply to your invoices"
-        emptyAction={{ label: "Add Tax", onClick: () => setModalOpen(true) }}
-        errorMessage="Failed to load taxes"
-        pageCount={totalPages}
-        currentPage={page}
-        perPage={size}
-        totalRecords={totalRecords}
-        itemOffset={page * size}
-        onPageChange={(selected) => setPage(selected)}
-        onPerPageChange={(newSize) => {
-          setSize(newSize);
-          setPage(0);
-        }}
-      />
+      <Card>
+        <CardContent className="p-0">
+          <DataTable
+            columns={columns}
+            data={taxes}
+            isPending={isFetching}
+            isError={isError}
+            onRetry={refetch}
+            errorMessage="Failed to load taxes"
+            emptyTitle="No taxes configured"
+            emptyDescription="Add a tax rate to apply to your invoices"
+            emptyAction={{ label: "Add Tax", onClick: () => setModalOpen(true) }}
+            pageCount={data?.data?.totalPages}
+            currentPage={page}
+            perPage={size}
+            totalRecords={data?.data?.totalRecords}
+            itemOffset={page * size}
+            onPageChange={(s) => setPage(s)}
+            onPerPageChange={(s) => { setSize(s); setPage(0); }}
+            isFetching={isFetching}
+          />
+        </CardContent>
+      </Card>
 
-      <ResponsiveModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        title="Add Tax"
-        description="Create a new tax rate for your invoices"
-      >
-        <form
-          onSubmit={taxForm.handleSubmit(handleCreateTax)}
-          className="space-y-4 pt-2"
-        >
-          <FormField
-            label="Tax Name"
-            error={taxForm.formState.errors.name?.message}
-            isRequired
-          >
-            <Input
-              {...taxForm.register("name")}
-              placeholder="e.g. VAT"
-            />
+      <ResponsiveModal open={modalOpen} onOpenChange={setModalOpen} title="Add Tax" description="Create a new tax rate">
+        <form onSubmit={form.handleSubmit((v) => createTax({ name: v.name, rate: parseFloat(v.rate) }))} className="space-y-4 pt-2">
+          <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
+            <Input {...form.register("name")} placeholder="e.g. VAT" />
           </FormField>
-          <FormField
-            label="Rate (%)"
-            error={taxForm.formState.errors.rate?.message}
-            isRequired
-          >
-            <Input
-              {...taxForm.register("rate")}
-              placeholder="e.g. 7.5"
-              type="number"
-              step="0.01"
-            />
+          <FormField label="Rate (%)" error={form.formState.errors.rate?.message} isRequired>
+            <Input {...form.register("rate")} placeholder="e.g. 7.5" type="number" step="0.1" />
           </FormField>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setModalOpen(false);
-                taxForm.reset();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isCreating}>
-              {isCreating ? "Creating..." : "Create Tax"}
-            </Button>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => { setModalOpen(false); form.reset(); }}>Cancel</Button>
+            <Button type="submit" disabled={creating}>{creating ? "Creating..." : "Create Tax"}</Button>
           </div>
         </form>
       </ResponsiveModal>
 
       <ConfirmDialog
         open={!!deleteTarget}
-        onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
-        }}
+        onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}
         title="Delete Tax"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        description="Are you sure? This action cannot be undone."
         confirmLabel="Delete"
         variant="destructive"
-        onConfirm={handleDeleteTax}
-        loading={isDeleting}
+        onConfirm={() => deleteTarget && removeTax(deleteTarget)}
+        loading={deleting}
       />
     </div>
   );

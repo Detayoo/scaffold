@@ -37,7 +37,6 @@ interface DataTableProps<T> {
   errorCode?: number;
   className?: string;
   containerClassName?: string;
-  // Pagination
   pageCount?: number;
   currentPage?: number;
   perPage?: number;
@@ -47,10 +46,7 @@ interface DataTableProps<T> {
   onPerPageChange?: (size: number) => void;
   isFetching?: boolean;
   selectOptions?: number[];
-  // Row click
   onRowClick?: (item: T) => void;
-  // Fixed height container (no flicker)
-  minHeight?: string;
 }
 
 export function DataTable<T>({
@@ -76,115 +72,97 @@ export function DataTable<T>({
   isFetching,
   selectOptions,
   onRowClick,
-  minHeight = "min-h-[400px]",
 }: DataTableProps<T>) {
   const hasEverLoaded = data !== undefined;
   const isEmpty = hasEverLoaded && (!data || data.length === 0);
   const showPagination = totalRecords && totalRecords > 0;
 
-  const renderContent = () => {
-    // Phase 1: No data ever received — show loading skeleton
-    if (!hasEverLoaded && isPending) {
-      return (
-        <div className="flex items-center justify-center p-6" style={{ minHeight: "inherit" }}>
-            <LoadingState />
-        </div>
-      );
+  const renderBodyContent = () => {
+    if (data && data.length > 0) {
+      return data.map((item, idx) => (
+        <TableRow
+          key={idx}
+          onClick={() => onRowClick?.(item)}
+          className={cn(onRowClick && "cursor-pointer")}
+        >
+          {columns.map((col) => (
+            <TableCell key={col.key} className={col.className}>
+              {col.cell(item)}
+            </TableCell>
+          ))}
+        </TableRow>
+      ));
     }
 
-    // Phase 2: No data ever received and error — show error
-    if (!hasEverLoaded && isError) {
-      return (
-        <div className="flex items-center justify-center p-6" style={{ minHeight: "inherit" }}>
-          <ErrorState
-            message={errorMessage}
-            onRetry={onRetry}
-            errorCode={errorCode}
-          />
-        </div>
-      );
-    }
-
-    // Phase 3: Data confirmed empty — show empty (but ONLY if not loading)
-    if (isEmpty && !isPending) {
-      return (
-        <div className="flex items-center justify-center p-6" style={{ minHeight: "inherit" }}>
-          <EmptyState
-            title={emptyTitle ?? "No data"}
-            description={emptyDescription}
-            action={emptyAction}
-          />
-        </div>
-      );
-    }
-
-    // Phase 4: Data exists (or had existed) — ALWAYS render, overlay loading
     return (
-      <>
-        {/* Subtle loading indicator during refetch */}
-        {isFetching && hasEverLoaded && (
-          <div className="absolute inset-0 z-10 flex items-start justify-center rounded-lg bg-background/50 pt-8">
-            <div className="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
+      <TableRow>
+        <TableCell colSpan={columns.length} className="h-80 p-0">
+          <div className="flex items-center justify-center h-full">
+            {!hasEverLoaded && isPending ? (
+              <LoadingState />
+            ) : !hasEverLoaded && isError ? (
+              <ErrorState message={errorMessage} onRetry={onRetry} errorCode={errorCode} />
+            ) : isEmpty && !isPending ? (
+              <EmptyState title={emptyTitle ?? "No data"} description={emptyDescription} action={emptyAction} />
+            ) : !hasEverLoaded ? (
+              <LoadingState />
+            ) : null}
           </div>
-        )}
-        {/* Error banner when data exists but refetch failed */}
-        {isError && hasEverLoaded && (
-          <div className="flex items-center gap-2 border-b bg-destructive/5 px-4 py-2 text-xs text-destructive">
-            <span>{errorMessage ?? "Failed to load. Showing cached data."}</span>
-            {onRetry && (
-              <button onClick={onRetry} className="ml-auto font-medium underline underline-offset-2 hover:no-underline cursor-pointer">
-                Retry
-              </button>
-            )}
-          </div>
-        )}
-        {!isEmpty ? (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {columns.map((col) => (
-                    <TableHead
-                      key={col.key}
-                      className={cn("text-xs font-medium uppercase text-muted-foreground", col.className)}
-                    >
-                      {col.header}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data!.map((item, idx) => (
-                  <TableRow
-                    key={idx}
-                    onClick={() => onRowClick?.(item)}
-                    className={cn(onRowClick && "cursor-pointer")}
-                  >
-                    {columns.map((col) => (
-                      <TableCell key={col.key} className={col.className}>
-                        {col.cell(item)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : null}
-      </>
+        </TableCell>
+      </TableRow>
     );
   };
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div
-        className={cn(
-          "relative rounded-lg border bg-background",
-          minHeight,
-          containerClassName
-        )}
-      >
-        {renderContent()}
+      <div className={cn("relative rounded-lg border bg-background", containerClassName)}>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableHead
+                    key={col.key}
+                    className={cn("text-xs font-medium uppercase text-muted-foreground", col.className)}
+                  >
+                    {col.header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {/* Refetching overlay */}
+              {isFetching && hasEverLoaded && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="relative p-0">
+                    <div className="absolute inset-x-0 top-0 z-10 flex justify-center bg-background/50 py-3">
+                      <div className="size-5 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {/* Error banner on refetch */}
+              {isError && hasEverLoaded && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="bg-destructive/5 px-4 py-2">
+                    <div className="flex items-center gap-2 text-xs text-destructive">
+                      <span>{errorMessage ?? "Failed to load"}</span>
+                      {onRetry && (
+                        <button onClick={onRetry} className="ml-auto font-medium underline underline-offset-2 hover:no-underline cursor-pointer">
+                          Retry
+                        </button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {/* Rows or state */}
+              {renderBodyContent()}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {showPagination && onPageChange && (
@@ -195,14 +173,8 @@ export function DataTable<T>({
           totalRecords={totalRecords ?? 0}
           itemOffset={itemOffset ?? 0}
           currentItems={data ?? []}
-          handlePageClick={({ selected }: { selected: number }) =>
-            onPageChange(selected)
-          }
-          handlePerPage={
-            onPerPageChange
-              ? (e: any) => onPerPageChange(Number(e.target.value))
-              : undefined
-          }
+          handlePageClick={({ selected }: { selected: number }) => onPageChange(selected)}
+          handlePerPage={onPerPageChange ? (e: any) => onPerPageChange(Number(e.target.value)) : undefined}
           isFetching={isFetching ?? false}
           selectOptions={selectOptions}
         />

@@ -89,7 +89,7 @@ export default function AcceptInvitePage({
   if (isFetching) {
     return (
       <AuthLayout>
-        <LoadingState variant="spinner" message="Loading invite..." />
+        <LoadingState message="Loading invite..." />
       </AuthLayout>
     );
   }

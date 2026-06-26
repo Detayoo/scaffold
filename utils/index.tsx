@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import type { Duration } from "@/types";
 
-export const naira = <>&#8358;</>;
+
 
 export const formatNumber = (text: any): string => {
   const dotted = text?.toString()?.includes(".");
