@@ -87,7 +87,7 @@ function ResetPasswordForm() {
               onChange={(val) => setValue("code", val, { shouldValidate: true })}
               className="w-full"
             >
-              <InputOTPGroup className="flex w-full gap-2">
+              <InputOTPGroup className="flex w-full items-center justify-between gap-0">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <InputOTPSlot
                     key={i}
