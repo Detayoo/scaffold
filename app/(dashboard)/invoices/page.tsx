@@ -197,11 +197,11 @@ export default function InvoicesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)}>
+          <Button variant="outline" onClick={() => setUploadOpen(true)}>
             <Upload />
             Upload CSV
           </Button>
-          <Button size="sm" onClick={() => router.push("/invoices/create-invoice")}>
+          <Button onClick={() => router.push("/invoices/create-invoice")}>
             <Plus />
             Create Invoice
           </Button>
