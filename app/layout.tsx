@@ -29,6 +29,7 @@ export default function RootLayout({
         />
       </head>
       <body
+        suppressHydrationWarning
         className={cn(
           "min-h-svh bg-background font-sans antialiased",
           fontMono.variable
