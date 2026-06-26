@@ -219,7 +219,7 @@ function InvoicesContent() {
             className="pl-8"
           />
         </div>
-        <Button variant="outline" size="icon" onClick={() => setFilterOpen(true)}>
+        <Button variant="outline" className="size-10" onClick={() => setFilterOpen(true)}>
           <Filter className="size-4" />
         </Button>
       </div>
