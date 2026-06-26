@@ -1,6 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import { Logo } from "@/components/Logo";
 
 interface AuthLayoutProps {
@@ -9,8 +11,17 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, className }: AuthLayoutProps) {
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className="flex min-h-svh w-full">
+      <button
+        type="button"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="fixed right-4 top-4 z-50 flex size-9 items-center justify-center rounded-lg border bg-background text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      </button>
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="mb-8 flex flex-col items-center text-center">
