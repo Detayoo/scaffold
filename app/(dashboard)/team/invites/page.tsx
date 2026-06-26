@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useQueryState, parseAsInteger } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,10 +24,10 @@ import type { Invite } from "@/types";
 
 type InviteForm = z.infer<typeof inviteSchema>;
 
-export default function InvitesPage() {
+function InvitesContent() {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [size, setSize] = useQueryState("size", parseAsInteger.withDefault(10));
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Invite | null>(null);
 
@@ -230,5 +231,13 @@ export default function InvitesPage() {
         loading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function InvitesPage() {
+  return (
+    <Suspense fallback={null}>
+      <InvitesContent />
+    </Suspense>
   );
 }

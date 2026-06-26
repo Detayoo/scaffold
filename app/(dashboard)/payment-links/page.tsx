@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -41,15 +42,15 @@ const STATUS_OPTIONS = [
   { label: "Inactive", value: "INACTIVE" },
 ];
 
-export default function PaymentLinksPage() {
+function PaymentLinksContent() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [isActiveFilter, setIsActiveFilter] = useState<string>("");
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [size, setSize] = useQueryState("size", parseAsInteger.withDefault(10));
+  const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+  const [isActiveFilter, setIsActiveFilter] = useQueryState("isActive", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [createdLink, setCreatedLink] = useState<{ url: string; reference: string } | null>(null);
@@ -395,5 +396,13 @@ export default function PaymentLinksPage() {
         loading={manageMutation.isPending}
       />
     </motion.div>
+  );
+}
+
+export default function PaymentLinksPage() {
+  return (
+    <Suspense fallback={null}>
+      <PaymentLinksContent />
+    </Suspense>
   );
 }

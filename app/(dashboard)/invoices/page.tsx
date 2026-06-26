@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
@@ -45,16 +46,16 @@ const STATUS_OPTIONS = [
   { label: "Cancelled", value: "CANCELLED" },
 ];
 
-export default function InvoicesPage() {
+function InvoicesContent() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [size, setSize] = useQueryState("size", parseAsInteger.withDefault(10));
+  const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+  const [startDate, setStartDate] = useQueryState("startDate", parseAsString.withDefault(""));
+  const [endDate, setEndDate] = useQueryState("endDate", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -316,5 +317,13 @@ export default function InvoicesPage() {
         loading={deleteMutation.isPending}
       />
     </motion.div>
+  );
+}
+
+export default function InvoicesPage() {
+  return (
+    <Suspense fallback={null}>
+      <InvoicesContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, Suspense } from "react";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Trash2 } from "lucide-react";
 
@@ -18,24 +19,23 @@ import { ErrorState } from "@/components/ErrorState";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import type { Refund, RefundDetails } from "@/types";
 
-export default function RefundsPage() {
+function RefundsContent() {
   const { merchant } = useAuth();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [searchInput, setSearchInput] = useState("");
-  const [reference, setReference] = useState("");
+  const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [perPage, setPerPage] = useQueryState("size", parseAsInteger.withDefault(10));
+  const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [approveId, setApproveId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data, isPending, isError, error, refetch, isFetching } = useQuery({
-    queryKey: ["refunds", currentPage, perPage, reference, merchant?.id],
+    queryKey: ["refunds", currentPage, perPage, searchInput, merchant?.id],
     queryFn: () =>
       getRefundsFn({
         page: currentPage,
         size: perPage,
-        reference: reference || undefined,
+        reference: searchInput || undefined,
         merchantId: merchant?.id,
       }),
     enabled: !!merchant?.id,
@@ -81,13 +81,11 @@ export default function RefundsPage() {
   const refundDetail = detailData as RefundDetails | undefined;
 
   const handleSearch = useCallback(() => {
-    setReference(searchInput);
     setCurrentPage(1);
-  }, [searchInput]);
+  }, []);
 
   const handleClearSearch = useCallback(() => {
     setSearchInput("");
-    setReference("");
     setCurrentPage(1);
   }, []);
 
@@ -148,7 +146,7 @@ export default function RefundsPage() {
         onChange={setSearchInput}
         onSearch={handleSearch}
         onClear={handleClearSearch}
-        showClear={!!reference}
+        showClear={!!searchInput}
         placeholder="Search by reference..."
       />
 
@@ -169,7 +167,7 @@ export default function RefundsPage() {
         isFetching={isFetching}
         onRowClick={handleRowClick}
         emptyTitle="No refunds found"
-        emptyDescription={reference ? "Try a different search term" : undefined}
+        emptyDescription={searchInput ? "Try a different search term" : undefined}
       />
 
       <ResponsiveSheet open={detailOpen} onOpenChange={setDetailOpen} title="Refund Details">
@@ -286,5 +284,13 @@ export default function RefundsPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function RefundsPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <RefundsContent />
+    </Suspense>
   );
 }

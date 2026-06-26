@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useQueryState, parseAsInteger } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -388,8 +389,8 @@ function WebhookSection() {
 
 function TaxesSection() {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const [page, setPage] = useQueryState("taxPage", parseAsInteger.withDefault(0));
+  const [size, setSize] = useQueryState("taxSize", parseAsInteger.withDefault(10));
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
