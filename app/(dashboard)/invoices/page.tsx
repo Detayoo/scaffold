@@ -188,7 +188,7 @@ export default function InvoicesPage() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-medium">Invoices</h1>
           <p className="text-sm text-muted-foreground">
@@ -196,11 +196,11 @@ export default function InvoicesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setUploadOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)}>
             <Upload />
             Upload CSV
           </Button>
-          <Button onClick={() => router.push("/invoices/create-invoice")}>
+          <Button size="sm" onClick={() => router.push("/invoices/create-invoice")}>
             <Plus />
             Create Invoice
           </Button>
