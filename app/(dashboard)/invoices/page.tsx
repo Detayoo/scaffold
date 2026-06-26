@@ -57,6 +57,9 @@ function InvoicesContent() {
   const [startDate, setStartDate] = useQueryState("startDate", parseAsString.withDefault(""));
   const [endDate, setEndDate] = useQueryState("endDate", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
+  const [localStatus, setLocalStatus] = useState("");
+  const [localStartDate, setLocalStartDate] = useState("");
+  const [localEndDate, setLocalEndDate] = useState("");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [files, setFiles] = useState<FileUploadsType>([]);
@@ -246,13 +249,20 @@ function InvoicesContent() {
 
       <ResponsiveModal
         open={filterOpen}
-        onOpenChange={setFilterOpen}
+        onOpenChange={(open) => {
+          setFilterOpen(open);
+          if (open) {
+            setLocalStatus(statusFilter);
+            setLocalStartDate(startDate);
+            setLocalEndDate(endDate);
+          }
+        }}
         title="Filters"
         description="Filter invoices by date range and status"
       >
         <div className="space-y-4">
           <FormField label="Status">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={localStatus} onValueChange={setLocalStatus}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
@@ -265,20 +275,37 @@ function InvoicesContent() {
               </SelectContent>
             </Select>
           </FormField>
-          <DatePicker value={startDate ? new Date(startDate) : undefined} onChange={(d) => setStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
-          <DatePicker value={endDate ? new Date(endDate) : undefined} onChange={(d) => setEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              setStatusFilter("");
-              setStartDate("");
-              setEndDate("");
-              setSearch("");
-            }}
-          >
-            Clear Filters
-          </Button>
+          <DatePicker value={localStartDate ? new Date(localStartDate) : undefined} onChange={(d) => setLocalStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
+          <DatePicker value={localEndDate ? new Date(localEndDate) : undefined} onChange={(d) => setLocalEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              className="flex-1"
+              onClick={() => {
+                setStatusFilter(localStatus);
+                setStartDate(localStartDate);
+                setEndDate(localEndDate);
+                setFilterOpen(false);
+              }}
+            >
+              Apply Filters
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setLocalStatus("");
+                setLocalStartDate("");
+                setLocalEndDate("");
+                setStatusFilter("");
+                setStartDate("");
+                setEndDate("");
+                setFilterOpen(false);
+              }}
+            >
+              Clear
+            </Button>
+          </div>
         </div>
       </ResponsiveModal>
 

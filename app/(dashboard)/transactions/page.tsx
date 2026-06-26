@@ -26,6 +26,7 @@ function TransactionsContent() {
   const [reference, setReference] = useQueryState("ref", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
+  const [localStatusFilter, setLocalStatusFilter] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
   const [exportStartDate, setExportStartDate] = useQueryState("from", parseAsString.withDefault(""));
   const [exportEndDate, setExportEndDate] = useQueryState("to", parseAsString.withDefault(""));
@@ -186,13 +187,20 @@ function TransactionsContent() {
         emptyDescription={reference ? "Try a different search term" : undefined}
       />
 
-      <ResponsiveModal open={filterOpen} onOpenChange={setFilterOpen} title="Filter Transactions">
+      <ResponsiveModal
+        open={filterOpen}
+        onOpenChange={(open) => {
+          setFilterOpen(open);
+          if (open) setLocalStatusFilter(statusFilter);
+        }}
+        title="Filter Transactions"
+      >
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Status</label>
             <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              value={localStatusFilter}
+              onChange={(e) => setLocalStatusFilter(e.target.value)}
               className="flex h-9 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
             >
               {statusOptions.map((opt) => (
@@ -207,6 +215,7 @@ function TransactionsContent() {
               variant="default"
               size="sm"
               onClick={() => {
+                setStatusFilter(localStatusFilter);
                 setCurrentPage(1);
                 setFilterOpen(false);
               }}
@@ -217,6 +226,7 @@ function TransactionsContent() {
               variant="outline"
               size="sm"
               onClick={() => {
+                setLocalStatusFilter("");
                 setStatusFilter("");
                 setCurrentPage(1);
                 setFilterOpen(false);
