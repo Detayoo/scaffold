@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion/dom";
+import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
@@ -79,22 +79,28 @@ function ResetPasswordForm() {
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField label="Reset code" error={errors.code?.message} isRequired>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Reset code</p>
             <InputOTP
               maxLength={6}
               value={code}
               onChange={(val) => setValue("code", val, { shouldValidate: true })}
+              className="w-full"
             >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
+              <InputOTPGroup className="flex w-full gap-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <InputOTPSlot
+                    key={i}
+                    index={i}
+                    className="flex-1 aspect-square rounded-lg border border-input bg-background text-lg font-semibold text-foreground shadow-sm transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50"
+                  />
+                ))}
               </InputOTPGroup>
             </InputOTP>
-          </FormField>
+            {errors.code?.message && (
+              <p className="text-xs text-destructive">{errors.code.message}</p>
+            )}
+          </div>
           <FormField label="New password" error={errors.password?.message} isRequired>
             <PasswordField
               placeholder="At least 6 characters"
