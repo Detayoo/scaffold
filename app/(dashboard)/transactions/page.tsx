@@ -146,11 +146,11 @@ export default function TransactionsPage() {
           <p className="text-sm text-muted-foreground">View and manage all your transactions</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setFilterOpen(true)}>
+          <Button variant="outline" onClick={() => setFilterOpen(true)}>
             <Filter className="size-4" />
             Filter
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+          <Button variant="outline" onClick={() => setExportOpen(true)}>
             <Download className="size-4" />
             Export
           </Button>
