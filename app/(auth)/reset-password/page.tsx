@@ -88,13 +88,13 @@ function ResetPasswordForm() {
               className="w-full"
             >
               <InputOTPGroup className="flex w-full items-center justify-between gap-0">
-                <InputOTPSlot index={0} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
-                <InputOTPSlot index={1} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
-                <InputOTPSlot index={2} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
-                <span className="text-lg text-muted-foreground/40 font-semibold select-none">—</span>
-                <InputOTPSlot index={3} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
-                <InputOTPSlot index={4} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
-                <InputOTPSlot index={5} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
+                {[0, 1, 2].map((i) => (
+                  <InputOTPSlot key={i} index={i} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
+                ))}
+                <span key="sep" className="text-lg text-muted-foreground/40 font-semibold select-none">—</span>
+                {[3, 4, 5].map((i) => (
+                  <InputOTPSlot key={i} index={i} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
+                ))}
               </InputOTPGroup>
             </InputOTP>
             {errors.code?.message && (
