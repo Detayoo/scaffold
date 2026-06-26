@@ -2,6 +2,37 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@font-face {
+    font-family: "PP Mori";
+    font-style: normal;
+    font-weight: 200 300;
+    src: url("/fonts/ppmori-extralight.otf") format("opentype");
+}
+@font-face {
+    font-family: "PP Mori";
+    font-style: normal;
+    font-weight: 400 500;
+    src: url("/fonts/ppmori-regular.otf") format("opentype");
+}
+@font-face {
+    font-family: "PP Mori";
+    font-style: italic;
+    font-weight: 400 500;
+    src: url("/fonts/ppmori-regularitalic.otf") format("opentype");
+}
+@font-face {
+    font-family: "PP Mori";
+    font-style: normal;
+    font-weight: 600 800;
+    src: url("/fonts/ppmori-semibold.otf") format("opentype");
+}
+@font-face {
+    font-family: "PP Mori";
+    font-style: italic;
+    font-weight: 600 800;
+    src: url("/fonts/ppmori-semibolditalic.otf") format("opentype");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -88,7 +119,7 @@
 }
 
 @theme inline {
-    --font-sans: var(--font-sans);
+    --font-sans: "PP Mori", sans-serif;
     --font-mono: var(--font-mono);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
