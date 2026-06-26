@@ -24,7 +24,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/auth-context";
@@ -98,14 +97,12 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarSeparator className="group-data-[collapsible=icon]:hidden" />
-
       {/* Main */}
-      <SidebarContent className="px-2">
+      <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Main</SidebarGroupLabel>
-          <SidebarGroupContent className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
-            <SidebarMenu>
+          <SidebarGroupContent>
+            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {mainNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}
@@ -113,13 +110,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-1 group-data-[collapsible=icon]:hidden" />
-
         {/* Business */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Business</SidebarGroupLabel>
-          <SidebarGroupContent className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
-            <SidebarMenu>
+        <SidebarGroup className="border-t border-sidebar-border group-data-[collapsible=icon]:border-t-0">
+          <SidebarGroupLabel className="px-3 pt-3 group-data-[collapsible=icon]:hidden">Business</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {businessNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}
@@ -127,13 +122,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-1 group-data-[collapsible=icon]:hidden" />
-
         {/* Workspace */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Workspace</SidebarGroupLabel>
-          <SidebarGroupContent className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
-            <SidebarMenu>
+        <SidebarGroup className="border-t border-sidebar-border group-data-[collapsible=icon]:border-t-0">
+          <SidebarGroupLabel className="px-3 pt-3 group-data-[collapsible=icon]:hidden">Workspace</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {workspaceNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}
