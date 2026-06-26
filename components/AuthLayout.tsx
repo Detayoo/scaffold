@@ -13,14 +13,10 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
     <div className="flex min-h-svh w-full">
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
-          <div className="mb-8 flex items-center gap-3">
-            <Logo size={40} />
-            <div>
-              <h1 className="text-lg font-semibold">x-noname</h1>
-              <p className="text-sm text-muted-foreground">
-                Merchant Portal
-              </p>
-            </div>
+          <div className="mb-8 flex flex-col items-center text-center">
+            <Logo size={48} />
+            <h1 className="mt-3 text-lg font-semibold">x-noname</h1>
+            <p className="text-sm text-muted-foreground">Merchant Portal</p>
           </div>
           <div className={className}>{children}</div>
         </div>
