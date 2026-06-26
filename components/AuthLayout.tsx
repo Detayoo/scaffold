@@ -29,8 +29,17 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
       </div>
       <div className="relative hidden w-1/2 lg:block">
         <div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-foreground/10" />
-        <div className="flex h-full items-center justify-center">
-          <Logo size={120} />
+        <div className="flex h-full items-center justify-center p-12">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <Logo size={96} />
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Manage your payments in one place
+            </h2>
+            <p className="max-w-sm text-muted-foreground">
+              Monitor transactions, create payment links, send invoices, and
+              manage your team — all from a single dashboard.
+            </p>
+          </div>
         </div>
       </div>
     </div>
