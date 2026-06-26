@@ -143,7 +143,7 @@ export function DataTable<T>({
               )}
 
               {/* Error banner on refetch */}
-              {isError && hasEverLoaded && (
+              {false && isError && hasEverLoaded && (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="bg-destructive/5 px-4 py-2">
                     <div className="flex items-center gap-2 text-xs text-destructive">
