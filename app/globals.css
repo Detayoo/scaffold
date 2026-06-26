@@ -7,30 +7,35 @@
     font-style: normal;
     font-weight: 200 300;
     src: url("/fonts/ppmori-extralight.otf") format("opentype");
+    font-display: swap;
 }
 @font-face {
     font-family: "PP Mori";
     font-style: normal;
     font-weight: 400 500;
     src: url("/fonts/ppmori-regular.otf") format("opentype");
+    font-display: swap;
 }
 @font-face {
     font-family: "PP Mori";
     font-style: italic;
     font-weight: 400 500;
     src: url("/fonts/ppmori-regularitalic.otf") format("opentype");
+    font-display: swap;
 }
 @font-face {
     font-family: "PP Mori";
     font-style: normal;
     font-weight: 600 800;
     src: url("/fonts/ppmori-semibold.otf") format("opentype");
+    font-display: swap;
 }
 @font-face {
     font-family: "PP Mori";
     font-style: italic;
     font-weight: 600 800;
     src: url("/fonts/ppmori-semibolditalic.otf") format("opentype");
+    font-display: swap;
 }
 
 @custom-variant dark (&:is(.dark *));
