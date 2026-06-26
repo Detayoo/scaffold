@@ -49,7 +49,7 @@ export default function TransactionsPage() {
     enabled: !!selectedId,
   });
 
-  const transactions = data?.data?.transactions ?? [];
+  const transactions = data?.data?.transactions;
   const transactionDetail = detailData as TransactionDetails | undefined;
 
   const handleSearch = useCallback(() => {

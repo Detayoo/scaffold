@@ -34,7 +34,7 @@ export default function PaymentLinkDetailPage({
   });
 
   const paylink = data?.data?.paylink;
-  const transactions = data?.data?.transactions ?? [];
+  const transactions = data?.data?.transactions;
   const pagination = data?.data;
 
   const handleCopy = async (text: string) => {

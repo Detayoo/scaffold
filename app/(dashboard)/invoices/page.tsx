@@ -114,7 +114,7 @@ export default function InvoicesPage() {
     await uploadMutation.mutateAsync(formData);
   };
 
-  const invoices = data?.data?.invoices ?? [];
+  const invoices = data?.data?.invoices;
   const pagination = data?.data;
 
   const columns = [

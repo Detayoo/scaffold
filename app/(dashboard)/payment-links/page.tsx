@@ -142,7 +142,7 @@ export default function PaymentLinksPage() {
     setCopied(false);
   };
 
-  const paylinks = data?.data?.paylinks ?? [];
+  const paylinks = data?.data?.paylinks;
   const pagination = data?.data;
 
   const columns = [

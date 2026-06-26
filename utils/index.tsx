@@ -24,17 +24,20 @@ export const formatMoney = (text: any): string => {
   }).format(Number(text));
 };
 
-export const formatMoneyWithCurrency = (
-  amount: number,
-  currency: string
-) => {
-  const symbol = currency === "USD" ? "$" : "₦";
-  return `${symbol}${formatMoney(amount ?? 0)}`;
-};
-
 export const formatDate = (date: string) => {
   if (!date) return "N/A";
-  return format(new Date(date), "dd MMM yyyy | p");
+  const d = new Date(date);
+  const day = d.getDate();
+  const suffix = ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10] || "th";
+  const dateStr = format(d, `d'${suffix}' MMMM yyyy`);
+  const timeStr = format(d, "p");
+  return (
+    <>
+      {dateStr}
+      <br />
+      <span className="text-xs">{timeStr}</span>
+    </>
+  );
 };
 
 export const toastMessage = (

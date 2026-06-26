@@ -77,7 +77,7 @@ export default function RefundsPage() {
     },
   });
 
-  const refunds = data?.data?.refunds ?? [];
+  const refunds = data?.data?.refunds;
   const refundDetail = detailData as RefundDetails | undefined;
 
   const handleSearch = useCallback(() => {
