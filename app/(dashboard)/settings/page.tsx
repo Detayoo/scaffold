@@ -170,16 +170,20 @@ function SecuritySection() {
   const form = useForm({
     resolver: zodResolver(changePasswordSchema),
   });
-  const queryClient = useQueryClient();
 
   const { mutateAsync: changePassword, isPending } = useMutation({
     mutationFn: changePasswordFn,
   });
 
+  const newPassword = form.watch("newPassword") ?? "";
+  const strength = newPassword.length < 6 ? 0 : newPassword.length < 10 ? 1 : 2;
+  const strengthLabel = ["Weak", "Medium", "Strong"][strength];
+  const strengthColor = ["bg-destructive", "bg-warning", "bg-success"][strength];
+
   const onSubmit = async (data: any) => {
     try {
       await changePassword({ oldPassword: data.oldPassword, password: data.password });
-      toastMessage("success", "Password changed successfully");
+      toastMessage("success", "Password changed");
       form.reset();
     } catch (error) {
       toastMessage("error", extractError(error));
@@ -187,30 +191,56 @@ function SecuritySection() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Lock className="size-4 text-muted-foreground" />
-          Change Password
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm space-y-4">
+    <div className="space-y-5">
+      <div className="flex items-start gap-4">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-foreground/5">
+          <Lock className="size-5 text-foreground/70" />
+        </div>
+        <div>
+          <h2 className="text-base font-semibold">Change Password</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Update your password to keep your account secure
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border bg-card p-5">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm space-y-5">
           <FormField label="Current Password" error={form.formState.errors.oldPassword?.message as string} isRequired>
-            <Input type="password" {...form.register("oldPassword")} placeholder="Enter current password" />
+            <div className="relative">
+              <Input type="password" {...form.register("oldPassword")} placeholder="Enter current password" className="pr-9" />
+              <Lock className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
           </FormField>
-          <FormField label="New Password" error={form.formState.errors.newPassword?.message as string} isRequired>
-            <Input type="password" {...form.register("newPassword")} placeholder="Enter new password" />
-          </FormField>
-          <FormField label="Confirm Password" error={form.formState.errors.password?.message as string} isRequired>
-            <Input type="password" {...form.register("password")} placeholder="Confirm new password" />
-          </FormField>
-          <Button type="submit" disabled={isPending || !form.formState.isValid}>
-            {isPending ? "Saving..." : "Update Password"}
+
+          <div className="border-t border-border/50 pt-4">
+            <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">New Password</p>
+            <div className="space-y-4">
+              <FormField label="New Password" error={form.formState.errors.newPassword?.message as string} isRequired>
+                <Input type="password" {...form.register("newPassword")} placeholder="At least 6 characters" />
+              </FormField>
+              {newPassword.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= strength ? strengthColor : "bg-muted"}`} />
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Password strength: <span className="font-medium text-foreground">{strengthLabel}</span></p>
+                </div>
+              )}
+              <FormField label="Confirm Password" error={form.formState.errors.password?.message as string} isRequired>
+                <Input type="password" {...form.register("password")} placeholder="Re-enter new password" />
+              </FormField>
+            </div>
+          </div>
+
+          <Button type="submit" disabled={isPending || !form.formState.isValid} className="w-full sm:w-auto">
+            {isPending ? "Updating..." : "Update Password"}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
