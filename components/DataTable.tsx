@@ -87,7 +87,7 @@ export function DataTable<T>({
     if (!hasEverLoaded && isPending) {
       return (
         <div className="flex items-center justify-center p-6" style={{ minHeight: "inherit" }}>
-          <LoadingState variant="skeleton" />
+            <LoadingState />
         </div>
       );
     }
