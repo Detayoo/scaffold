@@ -1,10 +1,8 @@
 "use client";
 
-import { useTheme } from "@/components/theme-provider";
 import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
-import { Sun, Moon, Settings, LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 
 export function AppHeader() {
-  const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
 
   const initials = user
@@ -29,17 +27,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-20 flex h-12 items-center gap-4 border-b bg-background px-4">
       <SidebarTrigger className="size-8" />
       <div className="flex-1" />
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      >
-        {theme === "dark" ? (
-          <Sun className="size-4" />
-        ) : (
-          <Moon className="size-4" />
-        )}
-      </Button>
+      <ThemeToggle />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon-sm" className="rounded-full">
