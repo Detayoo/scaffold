@@ -386,29 +386,25 @@ function TaxesSection() {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <DataTable
-            columns={columns}
-            data={taxes}
-            isPending={isFetching}
-            isError={isError}
-            onRetry={refetch}
-            errorMessage="Failed to load taxes"
-            emptyTitle="No taxes configured"
-            emptyDescription="Add a tax rate to apply to your invoices"
-            emptyAction={{ label: "Add Tax", onClick: () => setModalOpen(true) }}
-            pageCount={data?.data?.totalPages}
-            currentPage={page}
-            perPage={size}
-            totalRecords={data?.data?.totalRecords}
-            itemOffset={page * size}
-            onPageChange={(s) => setPage(s)}
-            onPerPageChange={(s) => { setSize(s); setPage(0); }}
-            isFetching={isFetching}
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={columns}
+        data={taxes}
+        isPending={isFetching}
+        isError={isError}
+        onRetry={refetch}
+        errorMessage="Failed to load taxes"
+        emptyTitle="No taxes configured"
+        emptyDescription="Add a tax rate to apply to your invoices"
+        emptyAction={{ label: "Add Tax", onClick: () => setModalOpen(true) }}
+        pageCount={data?.data?.totalPages}
+        currentPage={page}
+        perPage={size}
+        totalRecords={data?.data?.totalRecords}
+        itemOffset={page * size}
+        onPageChange={(s) => setPage(s)}
+        onPerPageChange={(s) => { setSize(s); setPage(0); }}
+        isFetching={isFetching}
+      />
 
       <ResponsiveModal open={modalOpen} onOpenChange={setModalOpen} title="Add Tax" description="Create a new tax rate">
         <form onSubmit={form.handleSubmit((v) => createTax({ name: v.name, rate: parseFloat(v.rate) }))} className="space-y-4 pt-2">
