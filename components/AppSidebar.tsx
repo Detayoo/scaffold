@@ -98,7 +98,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarSeparator />
+      <SidebarSeparator className="group-data-[collapsible=icon]:hidden" />
 
       {/* Main */}
       <SidebarContent className="px-2">
@@ -113,7 +113,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-1" />
+        <SidebarSeparator className="my-1 group-data-[collapsible=icon]:hidden" />
 
         {/* Business */}
         <SidebarGroup>
@@ -127,7 +127,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-1" />
+        <SidebarSeparator className="my-1 group-data-[collapsible=icon]:hidden" />
 
         {/* Workspace */}
         <SidebarGroup>

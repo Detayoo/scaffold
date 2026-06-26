@@ -51,6 +51,9 @@ export function DatePicker({
           mode="single"
           selected={value}
           onSelect={onChange}
+          captionLayout="dropdown"
+          fromYear={new Date().getFullYear() - 100}
+          toYear={new Date().getFullYear() + 10}
         />
       </PopoverContent>
     </Popover>
