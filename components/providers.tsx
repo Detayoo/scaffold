@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { AuthProvider } from "@/contexts/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -20,6 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
+          <NuqsAdapter>
           <TooltipProvider>
             {children}
             <Toaster
@@ -27,6 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               richColors
             />
           </TooltipProvider>
+          </NuqsAdapter>
         </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>

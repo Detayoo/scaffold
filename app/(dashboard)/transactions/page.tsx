@@ -2,34 +2,33 @@
 
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Filter, Search, X } from "lucide-react";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { Download, Filter } from "lucide-react";
 
 import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
-import { DatePicker } from "@/components/DatePicker";
-import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { Separator } from "@/components/ui/separator";
+import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
+import { DatePicker } from "@/components/DatePicker";
+import { SearchInput } from "@/components/SearchInput";
 import type { Transaction, TransactionDetails } from "@/types";
 
 export default function TransactionsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [searchInput, setSearchInput] = useState("");
-  const [reference, setReference] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [perPage, setPerPage] = useQueryState("size", parseAsInteger.withDefault(10));
+  const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
+  const [reference, setReference] = useQueryState("ref", parseAsString.withDefault(""));
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
-  const [exportStartDate, setExportStartDate] = useState("");
-  const [exportEndDate, setExportEndDate] = useState("");
-  const [exportStatus, setExportStatus] = useState("");
+  const [exportStartDate, setExportStartDate] = useQueryState("from", parseAsString.withDefault(""));
+  const [exportEndDate, setExportEndDate] = useQueryState("to", parseAsString.withDefault(""));
+  const [exportStatus, setExportStatus] = useQueryState("estatus", parseAsString.withDefault(""));
   const [exporting, setExporting] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
