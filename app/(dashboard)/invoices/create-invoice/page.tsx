@@ -214,7 +214,7 @@ export default function CreateInvoicePage() {
                   </Button>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField
                   label="Name"
                   error={form.formState.errors.items?.[index]?.name?.message}
@@ -255,7 +255,7 @@ export default function CreateInvoicePage() {
 
         <div className="rounded-lg border bg-card p-4 space-y-4">
           <h2 className="text-sm font-medium">Details</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Currency" error={form.formState.errors.currency?.message}>
               <Select
                 value={form.watch("currency")}
@@ -279,7 +279,7 @@ export default function CreateInvoicePage() {
               <Input {...form.register("discount")} placeholder="0" type="number" min={0} max={100} />
             </FormField>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <DatePicker
               value={(form.watch("invoiceDate") || "") ? new Date(form.watch("invoiceDate") || "") : undefined}
               onChange={(d) => form.setValue("invoiceDate", d ? d.toISOString().split("T")[0] : "")}

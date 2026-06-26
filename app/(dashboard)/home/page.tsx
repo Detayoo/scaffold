@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { motion } from "motion/react";
 import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Wallet } from "lucide-react";
+import { CountUp } from "@/components/CountUp";
 import Link from "next/link";
 
 import { useAuth } from "@/contexts/auth-context";
@@ -51,7 +52,7 @@ export default function HomePage() {
     {
       icon: Receipt,
       label: "Total Transactions",
-      value: totalTransactions.toLocaleString(),
+      value: totalTransactions,
     },
     {
       icon: Wallet,
@@ -102,7 +103,11 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <p className={stat.mono ? "text-2xl font-semibold font-mono" : "text-2xl font-semibold"}>
-                {stat.value}
+                {typeof stat.value === "number" ? (
+                  <CountUp end={stat.value} />
+                ) : (
+                  stat.value
+                )}
               </p>
             </CardContent>
           </Card>
