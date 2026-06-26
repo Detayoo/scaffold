@@ -25,7 +25,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FileUpload } from "@/components/FileUpload";
-import { DateInput } from "@/components/DateInput";
+import { DatePicker } from "@/components/DatePicker";
 import { FormField } from "@/components/FormField";
 import {
   getInvoicesFn,
@@ -264,8 +264,8 @@ export default function InvoicesPage() {
               </SelectContent>
             </Select>
           </FormField>
-          <DateInput value={startDate} onChange={(v) => setStartDate(v)} label="Start Date" />
-          <DateInput value={endDate} onChange={(v) => setEndDate(v)} label="End Date" />
+          <DatePicker value={startDate ? new Date(startDate) : undefined} onChange={(d) => setStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
+          <DatePicker value={endDate ? new Date(endDate) : undefined} onChange={(d) => setEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
           <Button
             variant="outline"
             className="w-full"

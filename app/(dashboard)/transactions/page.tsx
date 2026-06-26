@@ -6,7 +6,7 @@ import { Download, Filter, Search, X } from "lucide-react";
 
 import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
-import { DateInput } from "@/components/DateInput";
+import { DatePicker } from "@/components/DatePicker";
 import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -245,12 +245,8 @@ export default function TransactionsPage() {
             </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <DateInput value={exportStartDate} onChange={(v) => setExportStartDate(v)} label="Start Date" />
-            </div>
-            <div className="space-y-1.5">
-              <DateInput value={exportEndDate} onChange={(v) => setExportEndDate(v)} label="End Date" />
-            </div>
+            <DatePicker value={exportStartDate ? new Date(exportStartDate) : undefined} onChange={(d) => setExportStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
+            <DatePicker value={exportEndDate ? new Date(exportEndDate) : undefined} onChange={(d) => setExportEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
           </div>
           <Button variant="default" size="sm" className="w-full" onClick={handleExport} disabled={exporting}>
             {exporting ? "Exporting..." : "Export"}

@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Plus, Trash2, ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { DateInput } from "@/components/DateInput";
+import { DatePicker } from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -280,15 +280,15 @@ export default function CreateInvoicePage() {
             </FormField>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <DateInput
-              value={form.watch("invoiceDate") ?? ""}
-              onChange={(v) => form.setValue("invoiceDate", v)}
+            <DatePicker
+              value={(form.watch("invoiceDate") || "") ? new Date(form.watch("invoiceDate") || "") : undefined}
+              onChange={(d) => form.setValue("invoiceDate", d ? d.toISOString().split("T")[0] : "")}
               label="Invoice Date"
               isOptional
             />
-            <DateInput
-              value={form.watch("dueDate") ?? ""}
-              onChange={(v) => form.setValue("dueDate", v)}
+            <DatePicker
+              value={(form.watch("dueDate") || "") ? new Date(form.watch("dueDate") || "") : undefined}
+              onChange={(d) => form.setValue("dueDate", d ? d.toISOString().split("T")[0] : "")}
               label="Due Date"
               error={form.formState.errors.dueDate?.message}
             />

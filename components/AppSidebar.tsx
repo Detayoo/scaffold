@@ -51,13 +51,11 @@ function NavItem({
   url,
   icon: Icon,
   pathname,
-  isLast,
 }: {
   name: string;
   url: string;
   icon: any;
   pathname: string | null;
-  isLast?: boolean;
 }) {
   const isActive = pathname?.startsWith(url);
 
@@ -68,18 +66,12 @@ function NavItem({
         isActive={isActive}
         tooltip={name}
         className={cn(
-          "relative",
           isActive && "font-medium"
         )}
       >
-        <Link href={url} className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center">
-            {isActive && (
-              <span className="absolute -left-3 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-foreground" />
-            )}
-            <Icon className={cn("size-4", isActive ? "text-foreground" : "text-muted-foreground")} />
-          </div>
-          <span>{name}</span>
+        <Link href={url}>
+          <Icon className={cn("size-4 shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
+          <span className="group-data-[collapsible=icon]:hidden">{name}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
