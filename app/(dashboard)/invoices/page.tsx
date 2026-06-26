@@ -25,6 +25,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FileUpload } from "@/components/FileUpload";
+import { DateInput } from "@/components/DateInput";
 import { FormField } from "@/components/FormField";
 import {
   getInvoicesFn,
@@ -263,11 +264,8 @@ export default function InvoicesPage() {
               </SelectContent>
             </Select>
           </FormField>
-          <FormField label="Start Date">
-            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </FormField>
-          <FormField label="End Date">
-            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <DateInput value={startDate} onChange={(v) => setStartDate(v)} label="Start Date" />
+          <DateInput value={endDate} onChange={(v) => setEndDate(v)} label="End Date" />
           </FormField>
           <Button
             variant="outline"

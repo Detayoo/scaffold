@@ -1,9 +1,17 @@
-import { Geist_Mono } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  Geist_Mono,
+} from "next/font/google";
 import Script from "next/script";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
+
+const fontSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -30,6 +38,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-svh bg-background font-sans antialiased",
+          fontSans.variable,
           fontMono.variable
         )}
       >
