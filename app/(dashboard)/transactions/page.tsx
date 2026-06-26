@@ -9,6 +9,7 @@ import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from
 import { DataTable, type Column } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Separator } from "@/components/ui/separator";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
