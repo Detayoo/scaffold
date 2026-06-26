@@ -11,6 +11,7 @@ import {
   Users,
   Settings,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import {
   Sidebar,
@@ -18,88 +19,162 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/auth-context";
+import { cn } from "@/lib/utils";
 
-const navItems = [
+const mainNav = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
-  { name: "Payment Links", url: "/payment-links", icon: Receipt },
   { name: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { name: "Refunds", url: "/refunds", icon: Undo2 },
+];
+
+const businessNav = [
+  { name: "Payment Links", url: "/payment-links", icon: CreditCard },
   { name: "Invoices", url: "/invoices", icon: FileText },
+];
+
+const workspaceNav = [
   { name: "Team", url: "/team/members", icon: Users },
   { name: "Settings", url: "/settings", icon: Settings },
 ];
 
+function NavItem({
+  name,
+  url,
+  icon: Icon,
+  pathname,
+  isLast,
+}: {
+  name: string;
+  url: string;
+  icon: any;
+  pathname: string | null;
+  isLast?: boolean;
+}) {
+  const isActive = pathname?.startsWith(url);
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive}
+        tooltip={name}
+        className={cn(
+          "relative",
+          isActive && "font-medium"
+        )}
+      >
+        <Link href={url} className="flex items-center gap-3">
+          <div className="relative flex items-center justify-center">
+            {isActive && (
+              <span className="absolute -left-3 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-foreground" />
+            )}
+            <Icon className={cn("size-4", isActive ? "text-foreground" : "text-muted-foreground")} />
+          </div>
+          <span>{name}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
 export function AppSidebar() {
   const pathname = usePathname();
-  const { merchant, logout } = useAuth();
+  const { merchant, user, logout } = useAuth();
+
+  const initials = user
+    ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`
+    : "?";
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
-          <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <Logo size={32} />
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold truncate">
-              {merchant?.name ?? "x-noname"}
-            </span>
-            <span className="text-xs text-muted-foreground truncate">
-              {merchant?.slug ?? ""}
-            </span>
-          </div>
-        </div>
+      {/* Logo area */}
+      <SidebarHeader className="px-5 py-4">
+        <Link href="/home" className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <Logo size={28} />
+          <span className="text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+            x-noname
+          </span>
+        </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarSeparator />
+
+      {/* Main */}
+      <SidebarContent className="px-2">
         <SidebarGroup>
+          <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => {
-                const isActive = pathname?.startsWith(item.url);
-                return (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.name}
-                    >
-                      <Link href={item.url}>
-                        <item.icon className="size-4" />
-                        <span>{item.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {mainNav.map((item) => (
+                <NavItem key={item.url} {...item} pathname={pathname} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-1" />
+
+        {/* Business */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Business</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {businessNav.map((item) => (
+                <NavItem key={item.url} {...item} pathname={pathname} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-1" />
+
+        {/* Workspace */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Workspace</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {workspaceNav.map((item) => (
+                <NavItem key={item.url} {...item} pathname={pathname} />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              tooltip="Log out"
-              onClick={() => {
-                logout();
-                window.location.href = "/";
-              }}
-            >
-              <button type="button">
-                <LogOut className="size-4" />
-                <span>Log out</span>
-              </button>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      {/* Footer — merchant + logout */}
+      <SidebarFooter className="border-t p-3">
+        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+            {initials}
+          </div>
+          <div className="flex flex-1 flex-col truncate group-data-[collapsible=icon]:hidden">
+            <span className="truncate text-xs font-medium">
+              {merchant?.name ?? "x-noname"}
+            </span>
+            <span className="truncate text-[11px] text-muted-foreground">
+              {merchant?.slug ?? user?.email ?? ""}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              window.location.href = "/";
+            }}
+            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden"
+          >
+            <LogOut className="size-3.5" />
+          </button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
