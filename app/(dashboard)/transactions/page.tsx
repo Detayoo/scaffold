@@ -7,6 +7,7 @@ import { Download, Filter, Search, X } from "lucide-react";
 import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
 import { DateInput } from "@/components/DateInput";
+import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -157,27 +158,14 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by reference..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="pl-8"
-          />
-        </div>
-        <Button variant="default" size="sm" onClick={handleSearch}>
-          Search
-        </Button>
-        {reference && (
-          <Button variant="ghost" size="sm" onClick={handleClearSearch}>
-            <X className="size-4" />
-            Clear
-          </Button>
-        )}
-      </div>
+      <SearchInput
+        value={searchInput}
+        onChange={setSearchInput}
+        onSearch={handleSearch}
+        onClear={handleClearSearch}
+        showClear={!!reference}
+        placeholder="Search by reference..."
+      />
 
       <DataTable
         columns={columns}

@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Plus, Trash2, ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -141,7 +142,7 @@ export default function CreateInvoicePage() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6 max-w-2xl"
+      className="space-y-6 max-w-2xl mx-auto"
     >
       <Link
         href="/invoices"
@@ -279,12 +280,18 @@ export default function CreateInvoicePage() {
             </FormField>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Invoice Date" isOptional>
-              <Input {...form.register("invoiceDate")} type="date" />
-            </FormField>
-            <FormField label="Due Date" error={form.formState.errors.dueDate?.message}>
-              <Input {...form.register("dueDate")} type="date" />
-            </FormField>
+            <DateInput
+              value={form.watch("invoiceDate") ?? ""}
+              onChange={(v) => form.setValue("invoiceDate", v)}
+              label="Invoice Date"
+              isOptional
+            />
+            <DateInput
+              value={form.watch("dueDate") ?? ""}
+              onChange={(v) => form.setValue("dueDate", v)}
+              label="Due Date"
+              error={form.formState.errors.dueDate?.message}
+            />
           </div>
           <FormField label="Invoice Number" isOptional>
             <Input {...form.register("invoiceNumber")} placeholder="Auto-generated if left empty" />

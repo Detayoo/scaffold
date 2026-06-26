@@ -2,13 +2,13 @@
 
 import { useCallback, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Search, X, CheckCircle2, Trash2 } from "lucide-react";
+import { CheckCircle2, Trash2 } from "lucide-react";
 
 import { useAuth } from "@/contexts/auth-context";
 import { approveRefundFn, deleteRefundRequestFn, getRefundDetailsFn, getRefundsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
+import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -144,27 +144,14 @@ export default function RefundsPage() {
         <p className="text-sm text-muted-foreground">Manage refund requests from your customers</p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by reference..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="pl-8"
-          />
-        </div>
-        <Button variant="default" size="sm" onClick={handleSearch}>
-          Search
-        </Button>
-        {reference && (
-          <Button variant="ghost" size="sm" onClick={handleClearSearch}>
-            <X className="size-4" />
-            Clear
-          </Button>
-        )}
-      </div>
+      <SearchInput
+        value={searchInput}
+        onChange={setSearchInput}
+        onSearch={handleSearch}
+        onClear={handleClearSearch}
+        showClear={!!reference}
+        placeholder="Search by reference..."
+      />
 
       <DataTable
         columns={columns}

@@ -7,7 +7,7 @@ import { FormField } from "@/components/FormField";
 
 interface DateInputProps {
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement> | string) => void;
+  onChange?: (value: string) => void;
   onBlur?: () => void;
   name?: string;
   label?: string;
@@ -44,7 +44,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
           type="date"
           name={name}
           value={value}
-          onChange={(e) => onChange?.(e)}
+          onChange={(e) => onChange?.(e.target.value)}
           onBlur={onBlur}
           min={min}
           max={max}

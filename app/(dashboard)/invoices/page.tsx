@@ -266,7 +266,6 @@ export default function InvoicesPage() {
           </FormField>
           <DateInput value={startDate} onChange={(v) => setStartDate(v)} label="Start Date" />
           <DateInput value={endDate} onChange={(v) => setEndDate(v)} label="End Date" />
-          </FormField>
           <Button
             variant="outline"
             className="w-full"
