@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Download, Filter } from "lucide-react";
@@ -19,7 +19,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { SearchInput } from "@/components/SearchInput";
 import type { Transaction, TransactionDetails } from "@/types";
 
-export default function TransactionsPage() {
+function TransactionsContent() {
   const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [perPage, setPerPage] = useQueryState("size", parseAsInteger.withDefault(10));
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
@@ -333,5 +333,13 @@ export default function TransactionsPage() {
         )}
       </ResponsiveSheet>
     </div>
+  );
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <TransactionsContent />
+    </Suspense>
   );
 }
