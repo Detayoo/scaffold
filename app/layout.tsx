@@ -1,32 +1,34 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { Geist_Mono } from "next/font/google";
+import Script from "next/script";
+import "./globals.css";
+import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
-
-const geistHeading = Geist({subsets:['latin'],variable:'--font-heading'});
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-})
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, geistHeading.variable)}
-    >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem("theme")||"system",d=t==="dark"||(t==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark")}catch(e){}})()`}
+        </Script>
+      </head>
+      <body
+        className={cn(
+          "min-h-svh bg-background font-sans antialiased",
+          fontMono.variable
+        )}
+      >
+        <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
