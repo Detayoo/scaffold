@@ -23,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/auth-context";
 
 const navItems = [
@@ -42,10 +43,8 @@ export function AppSidebar() {
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
-        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <div className="flex size-8 items-center justify-center rounded-md bg-foreground text-background text-xs font-bold">
-            X
-          </div>
+          <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <Logo size={32} />
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold truncate">
               {merchant?.name ?? "x-noname"}

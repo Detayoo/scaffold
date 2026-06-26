@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -13,9 +14,7 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="mb-8 flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-foreground text-background text-lg font-bold">
-              X
-            </div>
+            <Logo size={40} />
             <div>
               <h1 className="text-lg font-semibold">x-noname</h1>
               <p className="text-sm text-muted-foreground">
@@ -30,8 +29,8 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-foreground/10" />
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="max-w-md space-y-6 text-center">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-foreground text-background">
-              <span className="text-3xl font-bold">X</span>
+            <div className="mx-auto">
+              <Logo size={72} />
             </div>
             <h2 className="text-2xl font-semibold tracking-tight">
               Manage your payments in one place
