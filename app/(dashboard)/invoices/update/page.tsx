@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion/dom";
 import { Plus, Trash2, ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { DatePicker } from "@/components/DatePicker";

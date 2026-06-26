@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion/dom";
 import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Wallet } from "lucide-react";
 import Link from "next/link";
 
