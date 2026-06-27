@@ -213,7 +213,6 @@ function TransactionsContent() {
           <div className="flex items-center gap-4 pt-2">
             <Button
               variant="default"
-              size="sm"
               onClick={() => {
                 setStatusFilter(localStatusFilter);
                 setCurrentPage(1);
@@ -224,7 +223,6 @@ function TransactionsContent() {
             </Button>
             <Button
               variant="outline"
-              size="sm"
               onClick={() => {
                 setLocalStatusFilter("");
                 setStatusFilter("");
@@ -258,7 +256,7 @@ function TransactionsContent() {
             <DatePicker value={exportStartDate ? new Date(exportStartDate) : undefined} onChange={(d) => setExportStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
             <DatePicker value={exportEndDate ? new Date(exportEndDate) : undefined} onChange={(d) => setExportEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
           </div>
-          <Button variant="default" size="sm" className="w-full" onClick={handleExport} disabled={exporting}>
+          <Button variant="default" className="w-full" onClick={handleExport} disabled={exporting}>
             {exporting ? "Exporting..." : "Export"}
           </Button>
         </div>
@@ -332,7 +330,7 @@ function TransactionsContent() {
                 </div>
                 <Separator />
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button variant="outline" className="flex-1">
                     <Download className="size-4" />
                     Download Receipt
                   </Button>
