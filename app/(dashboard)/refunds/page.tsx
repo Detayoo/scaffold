@@ -116,7 +116,7 @@ function RefundsContent() {
     },
     {
       key: "type",
-      header: "Type",
+      header: "TYPE",
       className: "capitalize",
       cell: (r) => r.type,
     },
