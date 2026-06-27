@@ -126,7 +126,7 @@ function ProfileSection() {
             { label: "Address", value: merchant?.address },
             {
               label: "Status",
-              value: <StatusBadge status={merchant?.status ?? ""} size="sm" />,
+              value: <StatusBadge status={merchant?.status ?? ""} />,
             },
             { label: "Slug", value: merchant?.slug },
           ].map((f) => (
@@ -331,7 +331,7 @@ function APIKeysSection() {
               </div>
             </div>
           ))}
-          <Button variant="outline" size="sm" onClick={() => generateKeys()} disabled={generating}>
+          <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
             <Key className="size-3.5" />
             {generating ? "Generating..." : "Generate New Keys"}
           </Button>
@@ -433,7 +433,7 @@ function TaxesSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">Manage tax rates applied to invoices</p>
-        <Button size="sm" onClick={() => setModalOpen(true)}>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus className="size-3.5" />
           Add Tax
         </Button>

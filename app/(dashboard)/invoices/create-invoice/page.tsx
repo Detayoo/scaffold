@@ -190,7 +190,7 @@ export default function CreateInvoicePage() {
             <Button
               type="button"
               variant="outline"
-              size="sm"
+             
               onClick={() => append({ name: "", description: "", quantity: 1, unitPrice: 0 })}
             >
               <Plus />

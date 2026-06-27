@@ -190,7 +190,7 @@ function RefundsContent() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Status</p>
-                    <StatusBadge status={r.status} size="sm" />
+                    <StatusBadge status={r.status} />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Amount</p>
@@ -224,7 +224,7 @@ function RefundsContent() {
                         <>
                           <Button
                             variant="default"
-                            size="sm"
+                           
                             className="flex-1 gap-2"
                             onClick={() => setApproveId(r.id)}
                             disabled={isApproving}
@@ -234,7 +234,7 @@ function RefundsContent() {
                           </Button>
                           <Button
                             variant="destructive"
-                            size="sm"
+                           
                             className="flex-1 gap-2"
                             onClick={() => setDeleteId(r.id)}
                             disabled={isDeleting}

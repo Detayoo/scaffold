@@ -97,7 +97,7 @@ function InvitesContent() {
     {
       key: "status",
       header: "Status",
-      cell: (invite: Invite) => <StatusBadge status={invite.status} size="sm" />,
+      cell: (invite: Invite) => <StatusBadge status={invite.status} />,
     },
     {
       key: "createdAt",
@@ -138,7 +138,7 @@ function InvitesContent() {
             Invite new members to join your team and manage pending invitations
           </p>
         </div>
-        <Button size="sm" onClick={() => setModalOpen(true)}>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus className="size-3.5" />
           Invite Member
         </Button>

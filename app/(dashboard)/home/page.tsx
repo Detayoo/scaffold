@@ -123,7 +123,7 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-3">
               {quickActions.map((action) => (
                 <Link key={action.href} href={action.href}>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" className="gap-2">
                     <action.icon className="size-4" />
                     {action.label}
                   </Button>
@@ -177,7 +177,7 @@ export default function HomePage() {
                           {formatMoney(tx.amount)}
                         </td>
                         <td className="px-4 py-3">
-                          <StatusBadge status={tx.status} size="sm" />
+                          <StatusBadge status={tx.status} />
                         </td>
                         <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                           {tx.customerName ?? tx.customerEmail ?? "—"}

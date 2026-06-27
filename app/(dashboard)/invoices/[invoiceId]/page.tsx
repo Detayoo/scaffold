@@ -103,13 +103,13 @@ export default function InvoiceDetailPage({
           Back to Invoices
         </Link>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownload}>
+          <Button variant="outline" onClick={handleDownload}>
             <Download />
             Download PDF
           </Button>
           <Button
             variant="outline"
-            size="sm"
+           
             onClick={() => router.push(`/invoices/update?id=${invoice.id}`)}
           >
             <Edit />
@@ -117,7 +117,7 @@ export default function InvoiceDetailPage({
           </Button>
           <Button
             variant="destructive"
-            size="sm"
+           
             onClick={() => setDeleteOpen(true)}
           >
             <Trash2 />

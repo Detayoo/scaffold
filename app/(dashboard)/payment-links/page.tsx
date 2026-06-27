@@ -164,7 +164,7 @@ function PaymentLinksContent() {
     {
       key: "status",
       header: "Status",
-      cell: (item: PaymentLink) => <StatusBadge status={item.status} size="sm" />,
+      cell: (item: PaymentLink) => <StatusBadge status={item.status} />,
     },
     {
       key: "reason",
@@ -186,7 +186,7 @@ function PaymentLinksContent() {
       cell: (item: PaymentLink) => (
         <Button
           variant={item.isActive ? "outline" : "default"}
-          size="sm"
+         
           onClick={(e) => {
             e.stopPropagation();
             handleManage(item.id, item.isActive ? "DEACTIVATE" : "ACTIVATE");
