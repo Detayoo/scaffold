@@ -74,8 +74,8 @@ function InvitesContent() {
   };
 
   const invites = data?.data?.invites;
-  const totalRecords = data?.data?.totalRecords ?? 0;
-  const totalPages = data?.data?.totalPages ?? 0;
+  const totalRecords = data?.data?.totalRecords;
+  const totalPages = data?.data?.totalPages;
 
   const columns: Column<Invite>[] = [
     {
