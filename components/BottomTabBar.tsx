@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Receipt,
   ArrowLeftRight,
-  FileText,
+  Undo2,
+  Users,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 
 const tabs: { name: string; url: string; icon: LucideIcon }[] = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
-  { name: "Payments", url: "/payment-links", icon: Receipt },
   { name: "Transactions", url: "/transactions", icon: ArrowLeftRight },
-  { name: "Invoices", url: "/invoices", icon: FileText },
+  { name: "Refunds", url: "/refunds", icon: Undo2 },
+  { name: "Team", url: "/team/members", icon: Users },
   { name: "Settings", url: "/settings", icon: Settings },
 ];
 

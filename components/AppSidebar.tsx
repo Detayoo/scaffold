@@ -27,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -62,6 +63,7 @@ function NavItem({
   pathname: string | null;
 }) {
   const isActive = pathname?.startsWith(url);
+  const { setOpenMobile } = useSidebar();
 
   return (
     <SidebarMenuItem>
@@ -73,7 +75,7 @@ function NavItem({
           isActive && "font-medium"
         )}
       >
-        <Link href={url}>
+        <Link href={url} onClick={() => setOpenMobile(false)}>
           <Icon className={cn("size-4 shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
           <span className="group-data-[collapsible=icon]:hidden">{name}</span>
         </Link>
