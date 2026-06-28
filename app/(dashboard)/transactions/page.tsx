@@ -209,17 +209,18 @@ function TransactionsContent() {
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Status</label>
-            <select
-              value={exportStatus}
-              onChange={(e) => setExportStatus(e.target.value)}
-              className="flex h-9 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            <Select value={exportStatus} onValueChange={setExportStatus}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <DatePicker value={exportStartDate ? new Date(exportStartDate) : undefined} onChange={(d) => setExportStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />

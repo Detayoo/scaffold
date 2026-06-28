@@ -18,6 +18,8 @@ interface DatePickerProps {
   isOptional?: boolean;
   className?: string;
   placeholder?: string;
+  maxDate?: Date;
+  minDate?: Date;
 }
 
 export function DatePicker({
@@ -29,8 +31,16 @@ export function DatePicker({
   isOptional,
   className,
   placeholder = "Pick a date",
+  maxDate,
+  minDate,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
+
+  const disabledMatcher = [
+    { after: new Date() },
+    ...(maxDate ? [{ after: maxDate }] : []),
+    ...(minDate ? [{ before: minDate }] : []),
+  ];
 
   const trigger = (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,6 +68,7 @@ export function DatePicker({
             setOpen(false);
           }}
           captionLayout="dropdown"
+          disabled={disabledMatcher}
         />
       </PopoverContent>
     </Popover>
