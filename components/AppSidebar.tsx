@@ -108,11 +108,10 @@ export function AppSidebar() {
     <Sidebar variant="sidebar" collapsible="icon">
       {/* Logo area */}
       <SidebarHeader className="px-5 py-4">
-        <div className="flex items-center justify-between group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2">
+        <div className="flex items-center justify-center">
           <Link href="/home" className="flex items-center">
             <Logo size={28} />
           </Link>
-          <SidebarTrigger className="group-data-[collapsible=icon]:rotate-180" />
         </div>
       </SidebarHeader>
 
