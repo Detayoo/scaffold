@@ -138,8 +138,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer — theme, docs, user, logout */}
-      <SidebarFooter className="border-t p-3">
+      {/* Footer */}
+      <SidebarFooter className="border-t p-3 space-y-2">
+        {/* Theme + docs row */}
+        <div className="flex items-center gap-2 px-1 group-data-[collapsible=icon]:hidden">
+          <ThemeToggle />
+          {CONFIG.DOCUMENTATION_URL && (
+            <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
+              <ExternalLink className="size-3.5" />
+            </Link>
+          )}
+        </div>
+        {/* User + logout */}
         <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
             <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
@@ -150,21 +160,13 @@ export function AppSidebar() {
               <span className="truncate text-[11px] text-muted-foreground">{merchant?.slug ?? user?.email ?? ""}</span>
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-            {CONFIG.DOCUMENTATION_URL && (
-              <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors">
-                <ExternalLink className="size-3.5" />
-              </Link>
-            )}
-            <button
-              type="button"
-              onClick={() => { logout(); window.location.href = "/"; }}
-              className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-destructive transition-colors group-data-[collapsible=icon]:hidden"
-            >
-              <LogOut className="size-3.5" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => { logout(); window.location.href = "/"; }}
+            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-destructive transition-colors group-data-[collapsible=icon]:hidden"
+          >
+            <LogOut className="size-3.5" />
+          </button>
         </div>
       </SidebarFooter>
     </Sidebar>
