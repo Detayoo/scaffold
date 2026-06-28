@@ -14,6 +14,8 @@ import {
   CreditCard,
   ExternalLink,
   Bell,
+  Sun,
+  Moon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { CONFIG } from "@/config";
@@ -95,6 +98,7 @@ function NavItem({
 export function AppSidebar() {
   const pathname = usePathname();
   const { merchant, user, logout } = useAuth();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   const initials = user
     ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`
@@ -164,8 +168,18 @@ export function AppSidebar() {
             </Link>
           )}
         </div>
-        {/* Compact mode: icon-only theme toggle + logout */}
+        {/* Compact mode: icon-only items */}
         <div className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
+          <button
+            type="button"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <button type="button" className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Notifications">
+            <Bell className="size-4" />
+          </button>
           <button
             type="button"
             onClick={() => { logout(); window.location.href = "/"; }}

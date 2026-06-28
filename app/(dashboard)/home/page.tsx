@@ -88,7 +88,7 @@ export default function HomePage() {
         <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
       </div>
 
-      <div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardHeader>
