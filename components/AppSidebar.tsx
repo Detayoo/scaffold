@@ -186,7 +186,7 @@ export function AppSidebar() {
           </button>
         </div>
         {/* User + logout — expanded */}
-        <div className="flex items-center justify-between border-t border-sidebar-border pt-2 group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:border-t-0">
+        <div className="-mx-3 flex items-center justify-between border-t border-sidebar-border px-3 pt-2 group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:border-t-0">
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
               {initials}
