@@ -191,8 +191,9 @@ After every feature is built, run a full assessment checking:
 Every settings tab (merchant + admin) must follow:
 - Page header: `text-xl font-medium text-foreground`
 - Tab section heading: `text-base font-semibold` with `text-sm text-muted-foreground` description
-- Currently broken: Profile/API Keys/Webhook/Taxes tabs are missing consistent section headers. Security tab is correct. Fix all to match.
-- Tab section headers must render **outside** any loading/error/data gating — they appear immediately when the tab mounts, not after data fetches resolve
+- All tabs now use `SectionHeader` component with title + description + optional action slot
+- Section headers render outside loading/error/data gating
+- `SectionHeader` is reusable — used in settings and will be used in admin pages too
 
 ### Font consistency — STRICT
 Every text element must use exactly one of these. No exceptions.

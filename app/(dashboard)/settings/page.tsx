@@ -26,6 +26,7 @@ import { FormField } from "@/components/FormField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { SectionHeader } from "@/components/SectionHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ErrorState } from "@/components/ErrorState";
 import { LoadingState } from "@/components/LoadingState";
@@ -102,15 +103,13 @@ export default function SettingsPage() {
 function ProfileSection() {
   const { data, isFetching, isError, refetch, error } = useMerchant();
   const errorCode = (error as any)?.status;
-
-  if (isFetching) return <LoadingState message="Loading profile..." />;
-  if (isError) return <ErrorState message="Failed to load profile" onRetry={refetch} errorCode={errorCode} />;
-
   const merchant = data?.data?.merchant;
   const owner = data?.data?.owner;
 
   return (
     <div className="space-y-5">
+      <SectionHeader title="Profile" description="Your business and owner information" />
+      {isFetching ? <LoadingState message="Loading profile..." /> : isError ? <ErrorState message="Failed to load profile" onRetry={refetch} errorCode={errorCode} /> : <>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -163,6 +162,7 @@ function ProfileSection() {
           ))}
         </CardContent>
       </Card>
+      </>}
     </div>
   );
 }
@@ -192,12 +192,7 @@ function SecuritySection() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-base font-semibold">Security</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Manage your password and account security
-        </p>
-      </div>
+      <SectionHeader title="Security" description="Manage your password and account security" />
 
       <div className="rounded-xl border bg-card">
         <div className="border-b border-border/50 px-5 py-4">
@@ -288,13 +283,12 @@ function APIKeysSection() {
     toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
   };
 
-  if (isFetching) return <LoadingState message="Loading keys..." />;
-  if (isError) return <ErrorState message="Failed to load API keys" onRetry={refetch} errorCode={errorCode} />;
-
   const { public: pub, secret } = data?.data ?? {};
 
   return (
     <div className="space-y-5">
+      <SectionHeader title="API Keys" description="Manage your public and secret API keys" />
+      {isFetching ? <LoadingState message="Loading keys..." /> : isError ? <ErrorState message="Failed to load API keys" onRetry={refetch} errorCode={errorCode} /> : <>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -337,6 +331,7 @@ function APIKeysSection() {
           </Button>
         </CardContent>
       </Card>
+      </>}
     </div>
   );
 }
@@ -362,10 +357,13 @@ function WebhookSection() {
     try { await updateWebhook(values.url); } catch {}
   };
 
-  if (merchantQuery.isFetching) return <LoadingState message="Loading webhook..." />;
-  if (merchantQuery.isError) return <ErrorState message="Error loading webhook" onRetry={merchantQuery.refetch} errorCode={errorCode} />;
+  const isFetching = merchantQuery.isFetching;
+  const isError = merchantQuery.isError;
 
   return (
+    <div className="space-y-5">
+      <SectionHeader title="Webhook" description="Configure your webhook endpoint URL" />
+      {isFetching ? <LoadingState message="Loading webhook..." /> : isError ? <ErrorState message="Error loading webhook" onRetry={merchantQuery.refetch} errorCode={errorCode} /> : <>
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
@@ -384,6 +382,8 @@ function WebhookSection() {
         </form>
       </CardContent>
     </Card>
+      </>}
+    </div>
   );
 }
 
@@ -431,13 +431,16 @@ function TaxesSection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Manage tax rates applied to invoices</p>
-        <Button onClick={() => setModalOpen(true)}>
-          <Plus className="size-3.5" />
-          Add Tax
-        </Button>
-      </div>
+      <SectionHeader
+        title="Taxes"
+        description="Manage tax rates applied to invoices"
+        action={
+          <Button onClick={() => setModalOpen(true)}>
+            <Plus className="size-3.5" />
+            Add Tax
+          </Button>
+        }
+      />
 
       <DataTable
         columns={columns}
