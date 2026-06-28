@@ -7,12 +7,14 @@ import { AuthenticatedRoute } from "@/components/AuthenticatedRoute";
 
 export function DashboardShell({
   children,
+  initialSidebarOpen = true,
 }: {
   children: React.ReactNode;
+  initialSidebarOpen?: boolean;
 }) {
   return (
     <AuthenticatedRoute>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={initialSidebarOpen}>
         <AppSidebar />
         <SidebarInset>
           <div className="relative flex-1 overflow-auto transition-[margin,width] duration-200 ease-in-out">
