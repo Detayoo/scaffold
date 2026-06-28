@@ -27,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
@@ -103,12 +104,15 @@ export function AppSidebar() {
     <Sidebar variant="sidebar" collapsible="icon">
       {/* Logo area */}
       <SidebarHeader className="px-5 py-4">
-        <Link href="/home" className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <Logo size={28} />
-          <span className="text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-            x-noname
-          </span>
-        </Link>
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2">
+          <Link href="/home" className="flex items-center gap-3">
+            <Logo size={28} />
+            <span className="text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+              x-noname
+            </span>
+          </Link>
+          <SidebarTrigger className="group-data-[collapsible=icon]:rotate-180" />
+        </div>
       </SidebarHeader>
 
       {/* Main */}
