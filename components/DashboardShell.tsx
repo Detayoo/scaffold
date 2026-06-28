@@ -40,8 +40,8 @@ export function DashboardShell({
         <AppSidebar />
         <SidebarInset>
           <div className="relative flex-1 overflow-auto">
-            <DesktopSidebarToggle />
-            <MobileSidebarToggle />
+            {/* <DesktopSidebarToggle /> */}
+            {/* <MobileSidebarToggle /> */}
             <main className="p-6 md:p-8 pb-20 md:pb-8 pt-14 md:pt-14">
               {children}
             </main>
