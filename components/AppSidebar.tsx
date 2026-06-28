@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   CreditCard,
+  ExternalLink,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,8 +27,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
+import { CONFIG } from "@/config";
 
 const mainNav = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
@@ -135,30 +138,33 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer — merchant + logout */}
+      {/* Footer — theme, docs, user, logout */}
       <SidebarFooter className="border-t p-3">
-        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
-            {initials}
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+              {initials}
+            </div>
+            <div className="flex flex-col truncate">
+              <span className="truncate text-xs font-medium">{merchant?.name ?? "x-noname"}</span>
+              <span className="truncate text-[11px] text-muted-foreground">{merchant?.slug ?? user?.email ?? ""}</span>
+            </div>
           </div>
-          <div className="flex flex-1 flex-col truncate group-data-[collapsible=icon]:hidden">
-            <span className="truncate text-xs font-medium">
-              {merchant?.name ?? "x-noname"}
-            </span>
-            <span className="truncate text-[11px] text-muted-foreground">
-              {merchant?.slug ?? user?.email ?? ""}
-            </span>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            {CONFIG.DOCUMENTATION_URL && (
+              <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors">
+                <ExternalLink className="size-3.5" />
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => { logout(); window.location.href = "/"; }}
+              className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-destructive transition-colors group-data-[collapsible=icon]:hidden"
+            >
+              <LogOut className="size-3.5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              window.location.href = "/";
-            }}
-            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden"
-          >
-            <LogOut className="size-3.5" />
-          </button>
         </div>
       </SidebarFooter>
     </Sidebar>

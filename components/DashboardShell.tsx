@@ -1,8 +1,9 @@
 "use client";
 
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { PanelLeft } from "lucide-react";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/AppSidebar";
-import { AppHeader } from "@/components/AppHeader";
 import { BottomTabBar } from "@/components/BottomTabBar";
 import { AuthenticatedRoute } from "@/components/AuthenticatedRoute";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -19,10 +20,18 @@ export function DashboardShell({
       <SidebarProvider defaultOpen={!isMobile}>
         <AppSidebar />
         <SidebarInset>
-          <AppHeader />
-          <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">
-            {children}
-          </main>
+          <div className="relative flex-1 overflow-auto">
+            {isMobile && (
+              <SidebarTrigger asChild>
+                <Button variant="ghost" size="icon" className="fixed left-3 top-2 z-30 size-8 md:hidden">
+                  <PanelLeft className="size-4" />
+                </Button>
+              </SidebarTrigger>
+            )}
+            <main className="p-6 md:p-8 pb-20 md:pb-8 pt-10 md:pt-8">
+              {children}
+            </main>
+          </div>
           <BottomTabBar />
         </SidebarInset>
       </SidebarProvider>
