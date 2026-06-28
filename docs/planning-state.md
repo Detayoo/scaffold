@@ -187,6 +187,13 @@ After every feature is built, run a full assessment checking:
 - Console errors, hydration mismatches, type errors
 - All states covered: loading → empty → error → success, with no flicker between transitions
 
+### Settings page — consistent tab headers
+Every settings tab (merchant + admin) must follow:
+- Page header: `text-xl font-medium text-foreground`
+- Tab section heading: `text-base font-semibold` with `text-sm text-muted-foreground` description
+- Currently broken: Profile/API Keys/Webhook/Taxes tabs are missing consistent section headers. Security tab is correct. Fix all to match.
+- Tab section headers must render **outside** any loading/error/data gating — they appear immediately when the tab mounts, not after data fetches resolve
+
 ### Font consistency — STRICT
 Every text element must use exactly one of these. No exceptions.
 
@@ -199,15 +206,35 @@ Every text element must use exactly one of these. No exceptions.
 | Label | `text-sm` | `font-medium` | `text-foreground` | Form labels, field names |
 | Table header | `text-xs` | `font-medium` | `text-foreground` | Column headers |
 | Table cell | `text-sm` | `font-normal` | `text-foreground` | Data cells |
-| Mono / code | `text-xs` | `font-normal` | `text-foreground` | References, IDs, hashes |
+| Mono / code | `text-xs` | `font-normal` | `text-foreground` | Only raw code output — JSON blobs, API responses, code snippets. NOT references, IDs, hashes, account numbers, transaction refs — those are normal text. |
 | Error | `text-xs` | `font-normal` | `text-destructive` | Validation messages |
 | Button | `text-sm` | `font-medium` | — | Inherited from variant |
 | Meta | `text-xs` | `font-normal` | `text-muted-foreground` | Secondary info, timestamps (outside tables) |
+
+### Bank account display format
+When displaying bank account details in tables or lists:
+- **Line 1:** Account number `text-sm` + `text-foreground` styled dot separator (`•`) + bank name `text-sm`
+- **Line 2:** Account name `text-sm text-foreground`
+- No `text-muted-foreground` — all three pieces are primary info for the user
+- Only use `text-muted-foreground` when text is genuinely secondary to a main item (e.g., timestamps next to a primary title)
+- Example:
+  ```
+  0123456789 • Providus Bank
+  MALIMBE / ACME STORES
+  ```
+
+### Table text truncation rules
+- **Truncate:** long strings that cause overflow — references, transaction IDs, long descriptions. Use `truncate` + appropriate `max-w-[px]` per column
+- **Do NOT truncate:** names, email addresses, statuses, amounts, dates, account numbers — let them take natural width
+- **Do NOT truncate:** names, email addresses, statuses, amounts, dates — let them take natural width
+- **Exception:** on mobile, any column can be truncated or hidden if it causes overflow
+- **Always set a width on columns that can be truncated** — otherwise the browser won't know when to truncate
 
 Rules:
 - Never deviate. No exceptions.
 - No `opacity-*` on text — use the correct color token
 - Only StatusBadge may use different colors inside tables
+- `text-muted-foreground` is for secondary/auxiliary text only — timestamps, helper descriptions, meta info. Never use it on primary content like account numbers, names, amounts, references
 - No mixing sizes/weights for the same semantic level within a view
 - Geist Mono (`font-mono`) for all monospace — nothing else
 
