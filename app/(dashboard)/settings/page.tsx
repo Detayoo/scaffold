@@ -55,7 +55,7 @@ const tabs = [
 ];
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState("profile");
+  const [tab, setTab] = useQueryState("tab", { defaultValue: "profile" });
 
   return (
     <div className="space-y-6">
