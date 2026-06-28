@@ -151,13 +151,13 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="border-t px-3 py-2 space-y-2">
+      <SidebarFooter className="border-t px-3 py-4 space-y-2">
         {/* Theme + docs row */}
         <div className="flex items-center gap-1 px-1 group-data-[collapsible=icon]:hidden">
           <button
             type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
             title={theme === "dark" ? "Light mode" : "Dark mode"}
           >
             {resolvedTheme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
