@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use } from "react";
@@ -78,12 +77,8 @@ export default function AcceptInvitePage({
   return (
     <AuthLayout>
       <AsyncContent isPending={isPending} isError={isError} errorMessage="This invite link is invalid or has expired.">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
           className="space-y-6"
-        >
+  <div>
           <PageHeader title="Accept invite" description={invite?.merchantName ? `You've been invited to join ${invite.merchantName}.` : "You've been invited to join a merchant account."} />
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <FormField label="Email" error={errors.email?.message} isRequired>
@@ -124,7 +119,7 @@ export default function AcceptInvitePage({
               Create account
             </Button>
           </form>
-        </motion.div>
+        </div>
       </AsyncContent>
     </AuthLayout>
   );

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "motion/react";
 import { Plus, Upload, Filter, Search, MoreHorizontal, Download, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,9 +147,7 @@ function InvoicesContent() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="space-y-4"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -298,7 +295,7 @@ function InvoicesContent() {
         onConfirm={() => deleteId && deleteMutation.mutateAsync(deleteId)}
         loading={deleteMutation.isPending}
       />
-    </motion.div>
+    </div>
   );
 }
 

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
 import { Plus, Search, Copy, Check, Filter, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -174,9 +173,7 @@ function PaymentLinksContent() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="space-y-4"
     >
       <div className="flex items-center justify-between gap-4">
@@ -365,7 +362,7 @@ function PaymentLinksContent() {
         onConfirm={confirmManage}
         loading={manageMutation.isPending}
       />
-    </motion.div>
+    </div>
   );
 }
 

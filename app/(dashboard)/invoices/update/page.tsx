@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
 import { Plus, Trash2, ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { DatePicker } from "@/components/DatePicker";
@@ -155,11 +154,8 @@ function UpdateInvoiceContent() {
 
   return (
     <AsyncContent isPending={invoiceLoading} isError={invoiceError} onRetry={refetch} errorMessage="Failed to load invoice.">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
         className="space-y-6 max-w-2xl mx-auto"
-      >
+  <div>
         <Link
           href="/invoices"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -346,7 +342,7 @@ function UpdateInvoiceContent() {
           onOpenChange={setCustomerModalOpen}
           onSuccess={() => { refetchCustomers(); }}
         />
-      </motion.div>
+      </div>
     </AsyncContent>
   );
 }

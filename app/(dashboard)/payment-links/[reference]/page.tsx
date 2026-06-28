@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
 import { Copy, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -74,11 +73,8 @@ export default function PaymentLinkDetailPage({
 
   return (
     <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load payment link.">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
-      >
+  <div>
         <Link
           href="/payment-links"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -141,7 +137,7 @@ export default function PaymentLinkDetailPage({
             emptyDescription="Transactions from this payment link will appear here."
           />
         </div>
-      </motion.div>
+      </div>
     </AsyncContent>
   );
 }

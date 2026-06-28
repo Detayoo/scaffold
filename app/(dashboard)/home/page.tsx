@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { motion } from "motion/react";
 import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Wallet } from "lucide-react";
 import { CountUp } from "@/components/CountUp";
 import Link from "next/link";
@@ -84,12 +83,12 @@ export default function HomePage() {
   ];
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-      <motion.div variants={fadeUp}>
+    <div>
+      <div>
         <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
-      </motion.div>
+      </div>
 
-      <motion.div variants={fadeUp} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardHeader>
@@ -109,9 +108,9 @@ export default function HomePage() {
             </CardContent>
           </Card>
         ))}
-      </motion.div>
+      </div>
 
-      <motion.div variants={fadeUp}>
+      <div>
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
@@ -129,9 +128,9 @@ export default function HomePage() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
-      <motion.div variants={fadeUp}>
+      <div>
         <Card>
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
@@ -184,7 +183,7 @@ export default function HomePage() {
             </AsyncContent>
           </CardContent>
         </Card>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

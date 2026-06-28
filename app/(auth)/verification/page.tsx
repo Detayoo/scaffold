@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Countdown from "react-countdown";
@@ -78,12 +77,8 @@ function VerificationForm() {
 
   return (
     <AuthLayout>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
         className="space-y-6"
-      >
+  <div>
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold">Check your email</h1>
           <p className="text-sm text-muted-foreground">
@@ -152,7 +147,7 @@ function VerificationForm() {
             </Button>
           )}
         </div>
-      </motion.div>
+      </div>
     </AuthLayout>
   );
 }

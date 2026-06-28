@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "motion/react";
 import { ArrowLeft, Download, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -79,11 +78,7 @@ export default function InvoiceDetailPage({
   return (
     <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load invoice. Please try again.">
       {invoice ? (
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Link
             href="/invoices"
@@ -217,7 +212,7 @@ export default function InvoiceDetailPage({
           onConfirm={() => deleteMutation.mutateAsync(invoiceId!)}
           loading={deleteMutation.isPending}
         />
-      </motion.div>
+      </div>
       ) : null}
     </AsyncContent>
   );

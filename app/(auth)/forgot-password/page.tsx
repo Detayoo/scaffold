@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,12 +39,8 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
         className="space-y-6"
-      >
+  <div>
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold">Forgot password</h1>
           <p className="text-sm text-muted-foreground">
@@ -74,7 +69,7 @@ export default function ForgotPasswordPage() {
             Log in
           </Link>
         </p>
-      </motion.div>
+      </div>
     </AuthLayout>
   );
 }
