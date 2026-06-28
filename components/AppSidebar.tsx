@@ -27,7 +27,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -113,8 +112,6 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarSeparator />
-
       {/* Main */}
       <SidebarContent>
         <SidebarGroup>
@@ -188,9 +185,8 @@ export function AppSidebar() {
             <LogOut className="size-4" />
           </button>
         </div>
-        <SidebarSeparator />
         {/* User + logout — expanded */}
-        <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
+        <div className="flex items-center justify-between border-t border-sidebar-border pt-2 group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:border-t-0">
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
               {initials}
