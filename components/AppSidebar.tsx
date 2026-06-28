@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Receipt,
@@ -64,6 +64,13 @@ function NavItem({
 }) {
   const isActive = pathname?.startsWith(url);
   const { setOpenMobile } = useSidebar();
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpenMobile(false);
+    setTimeout(() => router.push(url), 80);
+  };
 
   return (
     <SidebarMenuItem>
@@ -75,7 +82,7 @@ function NavItem({
           isActive && "font-medium"
         )}
       >
-        <Link href={url} onClick={() => setOpenMobile(false)}>
+        <Link href={url} onClick={handleClick}>
           <Icon className={cn("size-4 shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
           <span className="group-data-[collapsible=icon]:hidden">{name}</span>
         </Link>
