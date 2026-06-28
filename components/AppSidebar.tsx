@@ -13,7 +13,6 @@ import {
   LogOut,
   CreditCard,
   ExternalLink,
-  Bell,
   Sun,
   Moon,
 } from "lucide-react";
@@ -33,7 +32,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
@@ -115,6 +113,8 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
+      <SidebarSeparator />
+
       {/* Main */}
       <SidebarContent>
         <SidebarGroup>
@@ -155,11 +155,15 @@ export function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter className="border-t p-3 space-y-2">
-        {/* Theme + docs + notifications row — only when expanded */}
+        {/* Theme + docs row */}
         <div className="flex items-center gap-1 px-1 group-data-[collapsible=icon]:hidden">
-          <ThemeToggle />
-          <button type="button" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Notifications">
-            <Bell className="size-3.5" />
+          <button
+            type="button"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
+            title={theme === "dark" ? "Light mode" : "Dark mode"}
+          >
+            {resolvedTheme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
           </button>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
@@ -167,7 +171,7 @@ export function AppSidebar() {
             </Link>
           )}
         </div>
-        {/* Compact mode: icon-only items */}
+        {/* Collapsed: theme + logout */}
         <div className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
           <button
             type="button"
@@ -175,9 +179,6 @@ export function AppSidebar() {
             className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
           >
             {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-          </button>
-          <button type="button" className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Notifications">
-            <Bell className="size-4" />
           </button>
           <button
             type="button"
@@ -188,7 +189,7 @@ export function AppSidebar() {
           </button>
         </div>
         <SidebarSeparator />
-        {/* User + logout — only when expanded */}
+        {/* User + logout — expanded */}
         <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
