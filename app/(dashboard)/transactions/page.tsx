@@ -10,8 +10,16 @@ import { DataTable, type Column } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Separator } from "@/components/ui/separator";
-import { ResponsiveSheet } from "@/components/ResponsiveSheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { FilterModal } from "@/components/FilterModal";
+import { DetailSheet } from "@/components/DetailSheet";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
@@ -184,54 +192,40 @@ function TransactionsContent() {
         emptyDescription={reference ? "Try a different search term" : undefined}
       />
 
-      <ResponsiveModal
+      <FilterModal
         open={filterOpen}
         onOpenChange={(open) => {
           setFilterOpen(open);
           if (open) setLocalStatusFilter(statusFilter);
         }}
-        title="Filter Transactions"
+        onApply={() => {
+          setStatusFilter(localStatusFilter);
+          setCurrentPage(1);
+          setFilterOpen(false);
+        }}
+        onClear={() => {
+          setLocalStatusFilter("");
+          setStatusFilter("");
+          setCurrentPage(1);
+          setFilterOpen(false);
+        }}
       >
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Status</label>
-            <select
-              value={localStatusFilter}
-              onChange={(e) => setLocalStatusFilter(e.target.value)}
-              className="flex h-9 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-foreground">Status</label>
+          <Select value={localStatusFilter} onValueChange={setLocalStatusFilter}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
               {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-4 pt-2">
-            <Button
-              variant="default"
-              onClick={() => {
-                setStatusFilter(localStatusFilter);
-                setCurrentPage(1);
-                setFilterOpen(false);
-              }}
-            >
-              Apply Filters
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setLocalStatusFilter("");
-                setStatusFilter("");
-                setCurrentPage(1);
-                setFilterOpen(false);
-              }}
-            >
-              Reset
-            </Button>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
-      </ResponsiveModal>
+      </FilterModal>
 
       <ResponsiveModal open={exportOpen} onOpenChange={setExportOpen} title="Export Transactions">
         <div className="space-y-4">
@@ -259,14 +253,17 @@ function TransactionsContent() {
         </div>
       </ResponsiveModal>
 
-      <ResponsiveSheet open={detailOpen} onOpenChange={setDetailOpen} title="Transaction Details">
-        {detailLoading ? (
-          <LoadingState />
-        ) : !transactionDetail?.data?.transaction ? (
-          <ErrorState message="Could not load transaction details" onRetry={refetchDetail} />
-        ) : (
-          (() => {
-            const tx = transactionDetail.data.transaction;
+      <DetailSheet
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        title="Transaction Details"
+        isLoading={detailLoading}
+        isError={!transactionDetail?.data?.transaction}
+        onRetry={refetchDetail}
+        errorMessage="Could not load transaction details"
+      >
+          {(() => {
+            const tx = transactionDetail!.data.transaction;
             return (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -334,9 +331,8 @@ function TransactionsContent() {
                 </div>
               </div>
             );
-          })()
-        )}
-      </ResponsiveSheet>
+          })()}
+      </DetailSheet>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
-import { ResponsiveSheet } from "@/components/ResponsiveSheet";
+import { DetailSheet } from "@/components/DetailSheet";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Separator } from "@/components/ui/separator";
 import { LoadingState } from "@/components/LoadingState";
@@ -167,14 +167,17 @@ function RefundsContent() {
         emptyDescription={searchInput ? "Try a different search term" : undefined}
       />
 
-      <ResponsiveSheet open={detailOpen} onOpenChange={setDetailOpen} title="Refund Details">
-        {detailLoading ? (
-          <LoadingState />
-        ) : !refundDetail?.data?.refund ? (
-          <ErrorState message="Could not load refund details" onRetry={refetchDetail} />
-        ) : (
-          (() => {
-            const r = refundDetail.data.refund;
+      <DetailSheet
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        title="Refund Details"
+        isLoading={detailLoading}
+        isError={!refundDetail?.data?.refund}
+        onRetry={refetchDetail}
+        errorMessage="Could not load refund details"
+      >
+          {(() => {
+            const r = refundDetail!.data.refund;
             const isPendingStatus = r.status?.toLowerCase() === "pending" || r.status?.toLowerCase() === "refund-pending";
             const isApproved = r.status?.toLowerCase() === "approved";
 
@@ -251,9 +254,8 @@ function RefundsContent() {
                 )}
               </div>
             );
-          })()
-        )}
-      </ResponsiveSheet>
+          })()}
+      </DetailSheet>
 
       <ConfirmDialog
         open={!!approveId}
