@@ -13,6 +13,7 @@ import {
   LogOut,
   CreditCard,
   ExternalLink,
+  Bell,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +26,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -140,15 +142,19 @@ export function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter className="border-t p-3 space-y-2">
-        {/* Theme + docs row */}
-        <div className="flex items-center gap-2 px-1 group-data-[collapsible=icon]:hidden">
+        {/* Theme + docs + notifications row */}
+        <div className="flex items-center gap-1 px-1 group-data-[collapsible=icon]:hidden">
           <ThemeToggle />
+          <button type="button" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Notifications">
+            <Bell className="size-3.5" />
+          </button>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
               <ExternalLink className="size-3.5" />
             </Link>
           )}
         </div>
+        <SidebarSeparator className="group-data-[collapsible=icon]:hidden" />
         {/* User + logout */}
         <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
           <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">

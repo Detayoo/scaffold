@@ -22,11 +22,7 @@ export function DashboardShell({
         <SidebarInset>
           <div className="relative flex-1 overflow-auto">
             {isMobile && (
-              <SidebarTrigger asChild>
-                <Button variant="ghost" size="icon" className="fixed left-3 top-2 z-30 size-8 md:hidden">
-                  <PanelLeft className="size-4" />
-                </Button>
-              </SidebarTrigger>
+              <SidebarTrigger className="fixed left-3 top-2 z-30 md:hidden" />
             )}
             <main className="p-6 md:p-8 pb-20 md:pb-8 pt-10 md:pt-8">
               {children}
