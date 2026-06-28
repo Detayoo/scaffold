@@ -21,15 +21,14 @@ import {
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
 import { SearchSelect } from "@/components/SearchSelect";
-import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { createInvoiceSchema, createCustomerSchema } from "@/utils/validators";
-import { getCustomersFn, createCustomerFn, createInvoiceFn } from "@/services/queries/invoices";
+import { CreateCustomerModal } from "@/components/CreateCustomerModal";
+import { createInvoiceSchema } from "@/utils/validators";
+import { getCustomersFn, createInvoiceFn } from "@/services/queries/invoices";
 import { getTaxesFn } from "@/services/queries/taxes";
 import { toastMessage, extractError } from "@/utils";
 import type { z } from "zod";
 
 type InvoiceFormData = z.infer<typeof createInvoiceSchema>;
-type CustomerFormData = z.infer<typeof createCustomerSchema>;
 
 const CURRENCIES = ["NGN", "USD", "GBP", "EUR"];
 
@@ -39,7 +38,7 @@ export default function CreateInvoicePage() {
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
-  const { data: customersData } = useQuery({
+  const { data: customersData, refetch: refetchCustomers } = useQuery({
     queryKey: ["customers"],
     queryFn: getCustomersFn,
   });
@@ -68,24 +67,6 @@ export default function CreateInvoicePage() {
     name: "items",
   });
 
-  const customerForm = useForm<CustomerFormData>({
-    resolver: zodResolver(createCustomerSchema),
-    defaultValues: { name: "", email: "", phone: "", address: "" },
-  });
-
-  const createCustomerMutation = useMutation({
-    mutationFn: createCustomerFn,
-    onSuccess: () => {
-      toastMessage("success", "Customer created successfully");
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setCustomerModalOpen(false);
-      customerForm.reset();
-    },
-    onError: (err) => {
-      toastMessage("error", extractError(err));
-    },
-  });
-
   const createInvoiceMutation = useMutation({
     mutationFn: createInvoiceFn,
     onSuccess: (res: any) => {
@@ -105,10 +86,6 @@ export default function CreateInvoicePage() {
     label: c.name,
     metadata: c.email,
   }));
-
-  const handleCreateCustomer = async (values: CustomerFormData) => {
-    await createCustomerMutation.mutateAsync(values);
-  };
 
   const onSubmit = async (values: InvoiceFormData) => {
     if (!selectedCustomerId) {
@@ -190,7 +167,7 @@ export default function CreateInvoicePage() {
             <Button
               type="button"
               variant="outline"
-             
+              
               onClick={() => append({ name: "", description: "", quantity: 1, unitPrice: 0 })}
             >
               <Plus />
@@ -348,37 +325,11 @@ export default function CreateInvoicePage() {
         </div>
       </form>
 
-      <ResponsiveModal
+      <CreateCustomerModal
         open={customerModalOpen}
         onOpenChange={setCustomerModalOpen}
-        title="Create Customer"
-        description="Add a new customer to your list"
-      >
-        <form
-          onSubmit={customerForm.handleSubmit(handleCreateCustomer)}
-          className="space-y-4"
-        >
-          <FormField label="Name" error={customerForm.formState.errors.name?.message} isRequired>
-            <Input {...customerForm.register("name")} placeholder="Customer name" />
-          </FormField>
-          <FormField label="Email" error={customerForm.formState.errors.email?.message} isRequired>
-            <Input {...customerForm.register("email")} type="email" placeholder="customer@example.com" />
-          </FormField>
-          <FormField label="Phone" error={customerForm.formState.errors.phone?.message} isRequired>
-            <Input {...customerForm.register("phone")} placeholder="08012345678" />
-          </FormField>
-          <FormField label="Address" error={customerForm.formState.errors.address?.message} isRequired>
-            <Input {...customerForm.register("address")} placeholder="Customer address" />
-          </FormField>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={createCustomerMutation.isPending}
-          >
-            {createCustomerMutation.isPending ? "Creating..." : "Create Customer"}
-          </Button>
-        </form>
-      </ResponsiveModal>
+        onSuccess={() => { refetchCustomers(); }}
+      />
     </motion.div>
   );
 }

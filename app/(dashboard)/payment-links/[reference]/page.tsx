@@ -6,10 +6,12 @@ import { motion } from "motion/react";
 import { Copy, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { referenceColumn, amountColumn, statusColumn, dateColumn } from "@/components/ColumnHelpers";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getSinglePaymentLinkFn } from "@/services/queries/payment-links";
+import { AsyncContent } from "@/components/AsyncContent";
 import { toastMessage, formatDate, formatMoney } from "@/utils";
 import type { PaymentLinkTransaction } from "@/types";
 
@@ -49,25 +51,9 @@ export default function PaymentLinkDetailPage({
   };
 
   const columns = [
-    {
-      key: "reference",
-      header: "Reference",
-      cell: (item: PaymentLinkTransaction) => (
-        <span className="font-mono text-xs">{item.reference}</span>
-      ),
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      cell: (item: PaymentLinkTransaction) => (
-        <span className="font-medium">{item.currency} {formatMoney(item.amount)}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (item: PaymentLinkTransaction) => <StatusBadge status={item.status} size="sm" />,
-    },
+    referenceColumn((item: PaymentLinkTransaction) => item.reference),
+    amountColumn((item: PaymentLinkTransaction) => item.amount, (item: PaymentLinkTransaction) => item.currency),
+    statusColumn((item: PaymentLinkTransaction) => item.status),
     {
       key: "customerEmail",
       header: "Customer",
@@ -75,13 +61,7 @@ export default function PaymentLinkDetailPage({
         <span className="text-muted-foreground">{item.customerEmail || "—"}</span>
       ),
     },
-    {
-      key: "createdAt",
-      header: "Date",
-      cell: (item: PaymentLinkTransaction) => (
-        <span className="text-muted-foreground">{formatDate(item.createdAt)}</span>
-      ),
-    },
+    dateColumn((item: PaymentLinkTransaction) => item.createdAt),
   ];
 
   if (!reference) {
@@ -93,73 +73,75 @@ export default function PaymentLinkDetailPage({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
-      <Link
-        href="/payment-links"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+    <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load payment link.">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
       >
-        <ArrowLeft className="size-4" />
-        Back to Payment Links
-      </Link>
+        <Link
+          href="/payment-links"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="size-4" />
+          Back to Payment Links
+        </Link>
 
-      <div className="rounded-lg border bg-card p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-mono">{paylink?.reference}</p>
-            <PageHeader title={`${paylink?.currency} ${formatMoney(paylink?.amount ?? 0)}`} />
-            <div className="flex items-center gap-2">
-              <StatusBadge status={paylink?.status ?? ""} size="sm" />
-              {paylink?.isReusable && (
-                <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
-                  Reusable
-                </span>
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground font-mono">{paylink?.reference}</p>
+              <PageHeader title={`${paylink?.currency} ${formatMoney(paylink?.amount ?? 0)}`} />
+              <div className="flex items-center gap-2">
+                <StatusBadge status={paylink?.status ?? ""} size="sm" />
+                {paylink?.isReusable && (
+                  <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+                    Reusable
+                  </span>
+                )}
+              </div>
+              {paylink?.reason && (
+                <p className="text-sm text-muted-foreground">{paylink.reason}</p>
               )}
             </div>
-            {paylink?.reason && (
-              <p className="text-sm text-muted-foreground">{paylink.reason}</p>
+            {paylink?.url && (
+              <div className="flex items-center gap-2">
+                <code className="hidden sm:block max-w-[280px] truncate rounded bg-muted px-2 py-1 text-xs font-mono">
+                  {paylink.url}
+                </code>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={() => handleCopy(paylink.url)}
+                >
+                  {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                </Button>
+              </div>
             )}
           </div>
-          {paylink?.url && (
-            <div className="flex items-center gap-2">
-              <code className="hidden sm:block max-w-[280px] truncate rounded bg-muted px-2 py-1 text-xs font-mono">
-                {paylink.url}
-              </code>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                onClick={() => handleCopy(paylink.url)}
-              >
-                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-              </Button>
-            </div>
-          )}
         </div>
-      </div>
 
-      <div>
-        <h2 className="text-sm font-medium mb-3">Transactions</h2>
-        <DataTable
-          columns={columns}
-          data={transactions}
-          isPending={isPending}
-          isError={isError}
-          onRetry={refetch}
-          isFetching={isFetching}
-          pageCount={pagination?.totalPages}
-          currentPage={page}
-          perPage={size}
-          totalRecords={pagination?.totalRecords}
-          itemOffset={page * size}
-          onPageChange={(p) => setPage(p)}
-          onPerPageChange={(s) => { setSize(s); setPage(0); }}
-          emptyTitle="No transactions yet"
-          emptyDescription="Transactions from this payment link will appear here."
-        />
-      </div>
-    </motion.div>
+        <div>
+          <h2 className="text-sm font-medium mb-3">Transactions</h2>
+          <DataTable
+            columns={columns}
+            data={transactions}
+            isPending={isPending}
+            isError={isError}
+            onRetry={refetch}
+            isFetching={isFetching}
+            pageCount={pagination?.totalPages}
+            currentPage={page}
+            perPage={size}
+            totalRecords={pagination?.totalRecords}
+            itemOffset={page * size}
+            onPageChange={(p) => setPage(p)}
+            onPerPageChange={(s) => { setSize(s); setPage(0); }}
+            emptyTitle="No transactions yet"
+            emptyDescription="Transactions from this payment link will appear here."
+          />
+        </div>
+      </motion.div>
+    </AsyncContent>
   );
 }

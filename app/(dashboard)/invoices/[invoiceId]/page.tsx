@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { LoadingState } from "@/components/LoadingState";
-import { ErrorState } from "@/components/ErrorState";
+import { AsyncContent } from "@/components/AsyncContent";
 import {
   getSingleInvoiceFn,
   deleteInvoiceFn,
@@ -70,164 +69,156 @@ export default function InvoiceDetailPage({
     );
   }
 
-  if (isPending) {
-    return <LoadingState />;
-  }
-
-  if (isError) {
-    return <ErrorState onRetry={refetch} message="Failed to load invoice. Please try again." />;
-  }
-
   const invoice = data?.data?.invoice;
-  if (!invoice) {
-    return <ErrorState message="Invoice not found." />;
-  }
-
-  const items = invoice.items ?? [];
-  const taxes = invoice.taxes ?? [];
-  const subTotal = invoice.subTotal ?? 0;
-  const discount = invoice.discount ?? 0;
-  const total = invoice.totalAmount ?? 0;
+  const items = invoice?.items ?? [];
+  const taxes = invoice?.taxes ?? [];
+  const subTotal = invoice?.subTotal ?? 0;
+  const discount = invoice?.discount ?? 0;
+  const total = invoice?.totalAmount ?? 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
-      <div className="flex items-center justify-between">
-        <Link
-          href="/invoices"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-4" />
-          Back to Invoices
-        </Link>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleDownload}>
-            <Download />
-            Download PDF
-          </Button>
-          <Button
-            variant="outline"
-           
-            onClick={() => router.push(`/invoices/update?id=${invoice.id}`)}
+    <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load invoice. Please try again.">
+      {invoice ? (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="flex items-center justify-between">
+          <Link
+            href="/invoices"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Edit />
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-           
-            onClick={() => setDeleteOpen(true)}
-          >
-            <Trash2 />
-            Delete
-          </Button>
-        </div>
-      </div>
-
-      <div className="rounded-lg border bg-card p-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-mono">{invoice.invoiceNumber}</p>
-            <PageHeader title={`${invoice.currency} ${formatMoney(total)}`} />
-            <StatusBadge status={invoice.status} />
-          </div>
-          <div className="space-y-1 text-sm text-muted-foreground text-left sm:text-right">
-            <p>
-              <span className="font-medium text-foreground">Customer:</span>{" "}
-              {invoice.customer?.name ?? "—"}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">Email:</span>{" "}
-              {invoice.customer?.email ?? "—"}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">Invoice Date:</span>{" "}
-              {invoice.createdAt ? formatDate(invoice.createdAt) : "—"}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">Due Date:</span>{" "}
-              {formatDate(invoice.dueDate)}
-            </p>
+            <ArrowLeft className="size-4" />
+            Back to Invoices
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleDownload}>
+              <Download />
+              Download PDF
+            </Button>
+            <Button
+              variant="outline"
+             
+              onClick={() => router.push(`/invoices/update?id=${invoice!.id}`)}
+            >
+              <Edit />
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+             
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2 />
+              Delete
+            </Button>
           </div>
         </div>
-      </div>
 
-      <div className="rounded-lg border">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Item</th>
-                <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Description</th>
-                <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Qty</th>
-                <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Unit Price</th>
-                <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item: IInvoiceItem) => (
-                <tr key={item.id} className="border-b last:border-b-0">
-                  <td className="px-4 py-2.5 font-medium">{item.name}</td>
-                  <td className="px-4 py-2.5 text-muted-foreground">{item.description}</td>
-                  <td className="px-4 py-2.5 text-right">{item.quantity}</td>
-                  <td className="px-4 py-2.5 text-right">
-                    {invoice.currency} {formatMoney(item.unitPrice)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-medium">
-                    {invoice.currency} {formatMoney(item.total)}
-                  </td>
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground font-mono">{invoice.invoiceNumber}</p>
+              <PageHeader title={`${invoice.currency} ${formatMoney(total)}`} />
+              <StatusBadge status={invoice.status} />
+            </div>
+            <div className="space-y-1 text-sm text-muted-foreground text-left sm:text-right">
+              <p>
+                <span className="font-medium text-foreground">Customer:</span>{" "}
+                {invoice.customer?.name ?? "—"}
+              </p>
+              <p>
+                <span className="font-medium text-foreground">Email:</span>{" "}
+                {invoice.customer?.email ?? "—"}
+              </p>
+              <p>
+                <span className="font-medium text-foreground">Invoice Date:</span>{" "}
+                {invoice.createdAt ? formatDate(invoice.createdAt) : "—"}
+              </p>
+              <p>
+                <span className="font-medium text-foreground">Due Date:</span>{" "}
+                {formatDate(invoice.dueDate)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Item</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Description</th>
+                  <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Qty</th>
+                  <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Unit Price</th>
+                  <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="flex justify-end">
-        <div className="w-full max-w-xs space-y-1.5 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Subtotal</span>
-            <span>{invoice.currency} {formatMoney(subTotal)}</span>
+              </thead>
+              <tbody>
+                {items.map((item: IInvoiceItem) => (
+                  <tr key={item.id} className="border-b last:border-b-0">
+                    <td className="px-4 py-2.5 font-medium">{item.name}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">{item.description}</td>
+                    <td className="px-4 py-2.5 text-right">{item.quantity}</td>
+                    <td className="px-4 py-2.5 text-right">
+                      {invoice.currency} {formatMoney(item.unitPrice)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-medium">
+                      {invoice.currency} {formatMoney(item.total)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          {taxes.map((tax: TaxInvoiceRepr) => (
-            <div key={tax.id} className="flex justify-between">
-              <span className="text-muted-foreground">{tax.name} ({tax.rate}%)</span>
-              <span>{invoice.currency} {formatMoney(tax.amount)}</span>
-            </div>
-          ))}
-          {discount > 0 && (
+        </div>
+
+        <div className="flex justify-end">
+          <div className="w-full max-w-xs space-y-1.5 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Discount</span>
-              <span>-{invoice.currency} {formatMoney(discount)}</span>
+              <span className="text-muted-foreground">Subtotal</span>
+              <span>{invoice.currency} {formatMoney(subTotal)}</span>
             </div>
-          )}
-          <div className="flex justify-between border-t pt-1.5 font-medium">
-            <span>Total</span>
-            <span>{invoice.currency} {formatMoney(total)}</span>
+            {taxes.map((tax: TaxInvoiceRepr) => (
+              <div key={tax.id} className="flex justify-between">
+                <span className="text-muted-foreground">{tax.name} ({tax.rate}%)</span>
+                <span>{invoice.currency} {formatMoney(tax.amount)}</span>
+              </div>
+            ))}
+            {discount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Discount</span>
+                <span>-{invoice.currency} {formatMoney(discount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between border-t pt-1.5 font-medium">
+              <span>Total</span>
+              <span>{invoice.currency} {formatMoney(total)}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {invoice.notes && (
-        <div className="rounded-lg border bg-card p-4">
-          <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
-          <p className="text-sm">{invoice.notes}</p>
-        </div>
-      )}
+        {invoice.notes && (
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
+            <p className="text-sm">{invoice.notes}</p>
+          </div>
+        )}
 
-      <ConfirmDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title="Delete Invoice"
-        description="Are you sure you want to delete this invoice? This action cannot be undone."
-        confirmLabel="Delete"
-        variant="destructive"
-        onConfirm={() => deleteMutation.mutateAsync(invoiceId!)}
-        loading={deleteMutation.isPending}
-      />
-    </motion.div>
+        <ConfirmDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete Invoice"
+          description="Are you sure you want to delete this invoice? This action cannot be undone."
+          confirmLabel="Delete"
+          variant="destructive"
+          onConfirm={() => deleteMutation.mutateAsync(invoiceId!)}
+          loading={deleteMutation.isPending}
+        />
+      </motion.div>
+      ) : null}
+    </AsyncContent>
   );
 }

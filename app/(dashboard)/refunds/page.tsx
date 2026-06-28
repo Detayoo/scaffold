@@ -8,10 +8,12 @@ import { CheckCircle2, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { approveRefundFn, deleteRefundRequestFn, getRefundDetailsFn, getRefundsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
+import { referenceColumn, amountColumn, statusColumn, dateColumn } from "@/components/ColumnHelpers";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
+import { DetailRow } from "@/components/DetailRow";
 import { DetailSheet } from "@/components/DetailSheet";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Separator } from "@/components/ui/separator";
@@ -95,41 +97,16 @@ function RefundsContent() {
   }, []);
 
   const columns: Column<Refund>[] = [
-    {
-      key: "reference",
-      header: "Reference",
-      cell: (r) => <span className="font-mono text-xs">{r.reference}</span>,
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      cell: (r) => (
-        <span className="font-medium">
-          {formatMoney(r.amount)}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (r) => <StatusBadge status={r.status} />,
-    },
+    referenceColumn((r) => r.reference),
+    amountColumn((r) => r.amount),
+    statusColumn((r) => r.status),
     {
       key: "type",
       header: "TYPE",
       className: "capitalize",
       cell: (r) => r.type,
     },
-    {
-      key: "date",
-      header: "Date",
-      className: "text-right",
-      cell: (r) => (
-        <span className="text-xs text-muted-foreground">
-          {formatDate(r.createdAt)}
-        </span>
-      ),
-    },
+    dateColumn((r) => r.createdAt),
   ];
 
   const itemOffset = (currentPage - 1) * perPage;
@@ -184,36 +161,13 @@ function RefundsContent() {
             return (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Reference</p>
-                    <p className="font-mono text-sm font-medium">{r.reference}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Status</p>
-                    <StatusBadge status={r.status} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Amount</p>
-                    <p className="text-sm font-medium">
-                      {formatMoney(r.amount)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Type</p>
-                    <p className="text-sm capitalize">{r.type}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Transaction Reference</p>
-                    <p className="font-mono text-sm">{r.transactionReference}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Reason</p>
-                    <p className="text-sm">{r.reason ?? "—"}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Date</p>
-                    <p className="text-sm">{formatDate(r.createdAt)}</p>
-                  </div>
+                  <DetailRow label="Reference" value={r.reference} mono />
+                  <DetailRow label="Status" value={<StatusBadge status={r.status} />} />
+                  <DetailRow label="Amount" value={formatMoney(r.amount)} />
+                  <DetailRow label="Type" value={r.type} capitalize />
+                  <DetailRow label="Transaction Reference" value={r.transactionReference} mono className="col-span-2" />
+                  <DetailRow label="Reason" value={r.reason ?? "—"} className="col-span-2" />
+                  <DetailRow label="Date" value={formatDate(r.createdAt)} className="col-span-2" />
                 </div>
 
                 {(isPendingStatus || isApproved) && (

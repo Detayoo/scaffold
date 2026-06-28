@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ban, CheckCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { statusColumn, actionsColumn } from "@/components/ColumnHelpers";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageHeader } from "@/components/PageHeader";
@@ -75,32 +76,23 @@ function MembersContent() {
       header: "Role",
       cell: (member: Member) => <span>{member.role}</span>,
     },
-    {
-      key: "status",
-      header: "Status",
-      cell: (member: Member) => <StatusBadge status={member.status} size="sm" />,
-    },
-    {
-      key: "actions",
-      header: "",
-      className: "w-12",
-      cell: (member: Member) => (
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSuspendTarget(member);
-          }}
-        >
-          {member.status === "SUSPENDED" ? (
-            <CheckCircle className="size-3.5 text-success" />
-          ) : (
-            <Ban className="size-3.5 text-destructive" />
-          )}
-        </Button>
-      ),
-    },
+    statusColumn((member: Member) => member.status),
+    actionsColumn((member: Member) => (
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        onClick={(e) => {
+          e.stopPropagation();
+          setSuspendTarget(member);
+        }}
+      >
+        {member.status === "SUSPENDED" ? (
+          <CheckCircle className="size-3.5 text-success" />
+        ) : (
+          <Ban className="size-3.5 text-destructive" />
+        )}
+      </Button>
+    )),
   ];
 
   return (

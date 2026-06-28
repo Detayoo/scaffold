@@ -10,6 +10,7 @@ import { Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { statusColumn, dateColumn, actionsColumn } from "@/components/ColumnHelpers";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageHeader } from "@/components/PageHeader";
@@ -94,37 +95,20 @@ function InvitesContent() {
         </span>
       ),
     },
-    {
-      key: "status",
-      header: "Status",
-      cell: (invite: Invite) => <StatusBadge status={invite.status} />,
-    },
-    {
-      key: "createdAt",
-      header: "Date",
-      cell: (invite: Invite) => (
-        <span className="text-muted-foreground">
-          {formatDate(invite.createdAt)}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "",
-      className: "w-12",
-      cell: (invite: Invite) => (
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteTarget(invite);
-          }}
-        >
-          <X className="size-3.5 text-destructive" />
-        </Button>
-      ),
-    },
+    statusColumn((invite: Invite) => invite.status),
+    dateColumn((invite: Invite) => invite.createdAt),
+    actionsColumn((invite: Invite) => (
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        onClick={(e) => {
+          e.stopPropagation();
+          setDeleteTarget(invite);
+        }}
+      >
+        <X className="size-3.5 text-destructive" />
+      </Button>
+    )),
   ];
 
   return (

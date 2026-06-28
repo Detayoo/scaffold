@@ -22,6 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/DataTable";
+import { referenceColumn, amountColumn, statusColumn, dateColumn, actionsColumn } from "@/components/ColumnHelpers";
+import { TableActions } from "@/components/TableActions";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
@@ -122,13 +124,7 @@ function InvoicesContent() {
   const pagination = data?.data;
 
   const columns = [
-    {
-      key: "invoiceNumber",
-      header: "Invoice #",
-      cell: (item: Invoice) => (
-        <span className="font-mono text-xs">{item.invoiceNumber}</span>
-      ),
-    },
+    referenceColumn((item: Invoice) => item.invoiceNumber),
     {
       key: "customer",
       header: "Customer",
@@ -136,55 +132,18 @@ function InvoicesContent() {
         <span>{item.customer?.name ?? "—"}</span>
       ),
     },
-    {
-      key: "totalAmount",
-      header: "Amount",
-      cell: (item: Invoice) => (
-        <span className="font-medium">{item.currency} {formatMoney(item.totalAmount)}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (item: Invoice) => <StatusBadge status={item.status} size="sm" />,
-    },
-    {
-      key: "dueDate",
-      header: "Due Date",
-      cell: (item: Invoice) => (
-        <span className="text-muted-foreground">{formatDate(item.dueDate)}</span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      cell: (item: Invoice) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon-sm">
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/invoices/${item.id}`); }}>
-              <Eye className="size-4" />
-              View
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDownload(item.id); }}>
-              <Download className="size-4" />
-              Download
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }}
-            >
-              <Trash2 className="size-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
+    amountColumn((item: Invoice) => item.totalAmount, (item: Invoice) => item.currency),
+    statusColumn((item: Invoice) => item.status),
+    dateColumn((item: Invoice) => item.dueDate),
+    actionsColumn((item: Invoice) => (
+      <TableActions
+        actions={[
+          { label: "View", onClick: () => router.push(`/invoices/${item.id}`) },
+          { label: "Download", onClick: () => handleDownload(item.id) },
+          { label: "Delete", onClick: () => setDeleteId(item.id), destructive: true },
+        ]}
+      />
+    )),
   ];
 
   return (

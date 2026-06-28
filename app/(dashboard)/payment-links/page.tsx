@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { referenceColumn, amountColumn, statusColumn, dateColumn, actionsColumn } from "@/components/ColumnHelpers";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -147,25 +148,9 @@ function PaymentLinksContent() {
   const pagination = data?.data;
 
   const columns = [
-    {
-      key: "reference",
-      header: "Reference",
-      cell: (item: PaymentLink) => (
-        <span className="font-mono text-xs">{item.reference}</span>
-      ),
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      cell: (item: PaymentLink) => (
-        <span className="font-medium">{item.currency} {formatMoney(item.amount)}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (item: PaymentLink) => <StatusBadge status={item.status} />,
-    },
+    referenceColumn((item: PaymentLink) => item.reference),
+    amountColumn((item: PaymentLink) => item.amount, (item: PaymentLink) => item.currency),
+    statusColumn((item: PaymentLink) => item.status),
     {
       key: "reason",
       header: "Reason",
@@ -173,29 +158,18 @@ function PaymentLinksContent() {
         <span className="text-muted-foreground">{item.reason || "—"}</span>
       ),
     },
-    {
-      key: "createdAt",
-      header: "Date",
-      cell: (item: PaymentLink) => (
-        <span className="text-muted-foreground">{formatDate(item.createdAt)}</span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      cell: (item: PaymentLink) => (
-        <Button
-          variant={item.isActive ? "outline" : "default"}
-         
-          onClick={(e) => {
-            e.stopPropagation();
-            handleManage(item.id, item.isActive ? "DEACTIVATE" : "ACTIVATE");
-          }}
-        >
-          {item.isActive ? "Deactivate" : "Activate"}
-        </Button>
-      ),
-    },
+    dateColumn((item: PaymentLink) => item.createdAt),
+    actionsColumn((item: PaymentLink) => (
+      <Button
+        variant={item.isActive ? "outline" : "default"}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleManage(item.id, item.isActive ? "DEACTIVATE" : "ACTIVATE");
+        }}
+      >
+        {item.isActive ? "Deactivate" : "Activate"}
+      </Button>
+    )),
   ];
 
   return (

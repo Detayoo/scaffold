@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DetailRow } from "@/components/DetailRow";
 import { FormField } from "@/components/FormField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -112,22 +113,12 @@ function ProfileSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
-          {[
-            { label: "Business Name", value: merchant?.name },
-            { label: "Email", value: merchant?.email },
-            { label: "Account Number", value: merchant?.accountNumber ?? "—" },
-            { label: "Address", value: merchant?.address },
-            {
-              label: "Status",
-              value: <StatusBadge status={merchant?.status ?? ""} />,
-            },
-            { label: "Slug", value: merchant?.slug },
-          ].map((f) => (
-            <div key={f.label}>
-              <p className="text-xs text-muted-foreground mb-0.5">{f.label}</p>
-              <p className="text-sm font-medium">{f.value ?? "—"}</p>
-            </div>
-          ))}
+          <DetailRow label="Business Name" value={merchant?.name} />
+          <DetailRow label="Email" value={merchant?.email} />
+          <DetailRow label="Account Number" value={merchant?.accountNumber ?? "—"} mono />
+          <DetailRow label="Address" value={merchant?.address} />
+          <DetailRow label="Status" value={<StatusBadge status={merchant?.status ?? ""} />} />
+          <DetailRow label="Slug" value={merchant?.slug} mono />
         </CardContent>
       </Card>
 
@@ -139,21 +130,11 @@ function ProfileSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
-          {[
-            { label: "First Name", value: owner?.firstName },
-            { label: "Last Name", value: owner?.lastName },
-            { label: "Email", value: owner?.email },
-            { label: "Role", value: owner?.role },
-            {
-              label: "Verified",
-              value: owner?.isVerified ? "Yes" : "No",
-            },
-          ].map((f) => (
-            <div key={f.label}>
-              <p className="text-xs text-muted-foreground mb-0.5">{f.label}</p>
-              <p className="text-sm font-medium">{f.value ?? "—"}</p>
-            </div>
-          ))}
+          <DetailRow label="First Name" value={owner?.firstName} />
+          <DetailRow label="Last Name" value={owner?.lastName} />
+          <DetailRow label="Email" value={owner?.email} />
+          <DetailRow label="Role" value={owner?.role} capitalize />
+          <DetailRow label="Verified" value={owner?.isVerified ? "Yes" : "No"} />
         </CardContent>
       </Card>
       </AsyncContent>

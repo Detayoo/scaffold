@@ -7,8 +7,9 @@ import { Download, Filter } from "lucide-react";
 
 import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
-import { Button } from "@/components/ui/button";
+import { referenceColumn, amountColumn, statusColumn, dateColumn } from "@/components/ColumnHelpers";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { FilterModal } from "@/components/FilterModal";
+import { DetailRow } from "@/components/DetailRow";
 import { DetailSheet } from "@/components/DetailSheet";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import { LoadingState } from "@/components/LoadingState";
@@ -95,25 +97,9 @@ function TransactionsContent() {
   }, [exportStartDate, exportEndDate, exportStatus]);
 
   const columns: Column<Transaction>[] = [
-    {
-      key: "reference",
-      header: "Reference",
-      cell: (tx) => <span className="font-mono text-xs">{tx.reference}</span>,
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      cell: (tx) => (
-        <span className="font-medium">
-          {formatMoney(tx.amount)}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (tx) => <StatusBadge status={tx.status} />,
-    },
+    referenceColumn((tx) => tx.reference),
+    amountColumn((tx) => tx.amount),
+    statusColumn((tx) => tx.status),
     {
       key: "customer",
       header: "Customer",
@@ -124,16 +110,7 @@ function TransactionsContent() {
         </span>
       ),
     },
-    {
-      key: "date",
-      header: "Date",
-      className: "text-right",
-      cell: (tx) => (
-        <span className="text-xs text-muted-foreground">
-          {formatDate(tx.createdAt)}
-        </span>
-      ),
-    },
+    dateColumn((tx) => tx.createdAt),
   ];
 
   const itemOffset = (currentPage - 1) * perPage;
@@ -267,60 +244,24 @@ function TransactionsContent() {
             return (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Reference</p>
-                    <p className="font-mono text-sm font-medium">{tx.reference}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Status</p>
-                    <StatusBadge status={tx.status} size="sm" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Amount</p>
-                    <p className="text-sm font-medium">
-                      {formatMoney(tx.amount)}
-                    </p>
-                  </div>
+                  <DetailRow label="Reference" value={tx.reference} mono />
+                  <DetailRow label="Status" value={<StatusBadge status={tx.status} size="sm" />} />
+                  <DetailRow label="Amount" value={formatMoney(tx.amount)} />
                   {tx.fee !== undefined && (
-                    <div>
-                      <p className="text-xs text-muted-foreground">Fee</p>
-                      <p className="text-sm">
-                        {formatMoney(tx.fee)}
-                      </p>
-                    </div>
+                    <DetailRow label="Fee" value={formatMoney(tx.fee)} />
                   )}
                   {tx.netAmount !== undefined && (
-                    <div>
-                      <p className="text-xs text-muted-foreground">Net Amount</p>
-                      <p className="text-sm font-medium">
-                        {formatMoney(tx.netAmount)}
-                      </p>
-                    </div>
+                    <DetailRow label="Net Amount" value={formatMoney(tx.netAmount)} />
                   )}
-                  <div>
-                    <p className="text-xs text-muted-foreground">Currency</p>
-                    <p className="text-sm">{tx.currency}</p>
-                  </div>
+                  <DetailRow label="Currency" value={tx.currency} />
                   {tx.channel && (
-                    <div>
-                      <p className="text-xs text-muted-foreground">Channel</p>
-                      <p className="text-sm capitalize">{tx.channel}</p>
-                    </div>
+                    <DetailRow label="Channel" value={tx.channel} capitalize />
                   )}
                   {tx.cardScheme && (
-                    <div>
-                      <p className="text-xs text-muted-foreground">Card Scheme</p>
-                      <p className="text-sm">{tx.cardScheme}</p>
-                    </div>
+                    <DetailRow label="Card Scheme" value={tx.cardScheme} />
                   )}
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Customer</p>
-                    <p className="text-sm">{tx.customerName ?? tx.customerEmail ?? "—"}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Date</p>
-                    <p className="text-sm">{formatDate(tx.createdAt)}</p>
-                  </div>
+                  <DetailRow label="Customer" value={tx.customerName ?? tx.customerEmail ?? "—"} className="col-span-2" />
+                  <DetailRow label="Date" value={formatDate(tx.createdAt)} className="col-span-2" />
                 </div>
                 <Separator />
                 <div className="flex gap-2">
