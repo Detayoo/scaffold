@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/PageHeader";
 import { PasswordField } from "@/components/TextField";
 import { FormField } from "@/components/FormField";
 import { AuthLayout } from "@/components/AuthLayout";
@@ -118,14 +119,7 @@ export default function AcceptInvitePage({
         transition={{ duration: 0.4 }}
         className="space-y-6"
       >
-        <div className="space-y-1.5">
-          <h1 className="text-xl font-semibold">Accept invite</h1>
-          <p className="text-sm text-muted-foreground">
-            {invite?.merchantName
-              ? `You've been invited to join ${invite.merchantName}.`
-              : "You've been invited to join a merchant account."}
-          </p>
-        </div>
+        <PageHeader title="Accept invite" description={invite?.merchantName ? `You've been invited to join ${invite.merchantName}.` : "You've been invited to join a merchant account."} />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField label="Email" error={errors.email?.message} isRequired>
             <Input

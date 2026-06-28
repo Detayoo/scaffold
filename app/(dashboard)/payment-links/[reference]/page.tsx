@@ -7,6 +7,7 @@ import { Copy, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getSinglePaymentLinkFn } from "@/services/queries/payment-links";
 import { toastMessage, formatDate, formatMoney } from "@/utils";
@@ -109,9 +110,7 @@ export default function PaymentLinkDetailPage({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-mono">{paylink?.reference}</p>
-            <h1 className="text-2xl font-medium">
-              {paylink?.currency} {formatMoney(paylink?.amount ?? 0)}
-            </h1>
+            <PageHeader title={`${paylink?.currency} ${formatMoney(paylink?.amount ?? 0)}`} />
             <div className="flex items-center gap-2">
               <StatusBadge status={paylink?.status ?? ""} size="sm" />
               {paylink?.isReusable && (

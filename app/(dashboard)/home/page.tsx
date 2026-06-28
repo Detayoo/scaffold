@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { getTransactionsFn, getCollectionsFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
@@ -86,10 +87,7 @@ export default function HomePage() {
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <motion.div variants={fadeUp}>
-        <h1 className="text-2xl font-medium text-foreground">
-          Welcome back, {merchant?.name ?? "Merchant"}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{today}</p>
+        <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
       </motion.div>
 
       <motion.div variants={fadeUp} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

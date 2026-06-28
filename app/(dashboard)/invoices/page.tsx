@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -36,7 +37,6 @@ import {
 } from "@/services/queries/invoices";
 import { toastMessage, extractError, formatDate, formatMoney, triggerFileDownload } from "@/utils";
 import type { Invoice, FileType, FileUploadsType } from "@/types";
-
 const STATUS_OPTIONS = [
   { label: "All", value: "" },
   { label: "Draft", value: "DRAFT" },
@@ -194,12 +194,7 @@ function InvoicesContent() {
       className="space-y-4"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-lg font-medium">Invoices</h1>
-          <p className="text-sm text-muted-foreground">
-            Create and manage invoices for your customers
-          </p>
-        </div>
+        <PageHeader title="Invoices" description="Create and manage invoices for your customers" />
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setUploadOpen(true)}>
             <Upload />

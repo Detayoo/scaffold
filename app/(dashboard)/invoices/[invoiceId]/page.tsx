@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { ArrowLeft, Download, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { LoadingState } from "@/components/LoadingState";
@@ -130,9 +131,7 @@ export default function InvoiceDetailPage({
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-mono">{invoice.invoiceNumber}</p>
-            <h1 className="text-2xl font-medium">
-              {invoice.currency} {formatMoney(total)}
-            </h1>
+            <PageHeader title={`${invoice.currency} ${formatMoney(total)}`} />
             <StatusBadge status={invoice.status} />
           </div>
           <div className="space-y-1 text-sm text-muted-foreground text-left sm:text-right">

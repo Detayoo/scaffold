@@ -26,10 +26,10 @@ import { FormField } from "@/components/FormField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { PageHeader } from "@/components/PageHeader";
 import { SectionHeader } from "@/components/SectionHeader";
+import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
-import { ErrorState } from "@/components/ErrorState";
-import { LoadingState } from "@/components/LoadingState";
 import { useMerchant } from "@/hooks/use-merchant";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
@@ -57,12 +57,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-medium text-foreground">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your account, security, and preferences
-        </p>
-      </div>
+      <PageHeader title="Settings" description="Manage your account, security, and preferences" />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
         {/* Sidebar nav */}
@@ -101,15 +96,14 @@ export default function SettingsPage() {
 }
 
 function ProfileSection() {
-  const { data, isFetching, isError, refetch, error } = useMerchant();
-  const errorCode = (error as any)?.status;
+  const { data, isPending, isError, refetch, error } = useMerchant();
   const merchant = data?.data?.merchant;
   const owner = data?.data?.owner;
 
   return (
     <div className="space-y-5">
       <SectionHeader title="Profile" description="Your business and owner information" />
-      {isFetching ? <LoadingState message="Loading profile..." /> : isError ? <ErrorState message="Failed to load profile" onRetry={refetch} errorCode={errorCode} /> : <>
+      <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load profile">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -162,7 +156,7 @@ function ProfileSection() {
           ))}
         </CardContent>
       </Card>
-      </>}
+      </AsyncContent>
     </div>
   );
 }
@@ -288,7 +282,7 @@ function APIKeysSection() {
   return (
     <div className="space-y-5">
       <SectionHeader title="API Keys" description="Manage your public and secret API keys" />
-      {isFetching ? <LoadingState message="Loading keys..." /> : isError ? <ErrorState message="Failed to load API keys" onRetry={refetch} errorCode={errorCode} /> : <>
+      <AsyncContent isPending={isFetching} isError={isError} onRetry={refetch} errorMessage="Failed to load API keys">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -331,7 +325,7 @@ function APIKeysSection() {
           </Button>
         </CardContent>
       </Card>
-      </>}
+      </AsyncContent>
     </div>
   );
 }
@@ -357,13 +351,10 @@ function WebhookSection() {
     try { await updateWebhook(values.url); } catch {}
   };
 
-  const isFetching = merchantQuery.isFetching;
-  const isError = merchantQuery.isError;
-
   return (
     <div className="space-y-5">
       <SectionHeader title="Webhook" description="Configure your webhook endpoint URL" />
-      {isFetching ? <LoadingState message="Loading webhook..." /> : isError ? <ErrorState message="Error loading webhook" onRetry={merchantQuery.refetch} errorCode={errorCode} /> : <>
+      <AsyncContent isPending={merchantQuery.isPending} isError={merchantQuery.isError} onRetry={merchantQuery.refetch} errorMessage="Failed to load webhook">
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
@@ -382,7 +373,7 @@ function WebhookSection() {
         </form>
       </CardContent>
     </Card>
-      </>}
+      </AsyncContent>
     </div>
   );
 }

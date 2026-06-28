@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -31,7 +32,6 @@ import { createPaymentLinkSchema } from "@/utils/validators";
 import { toastMessage, extractError, formatDate, formatMoney } from "@/utils";
 import type { PaymentLink } from "@/types";
 import type { z } from "zod";
-
 type CreateFormData = z.infer<typeof createPaymentLinkSchema>;
 
 const CURRENCIES = ["NGN", "USD", "GBP", "EUR"];
@@ -205,12 +205,7 @@ function PaymentLinksContent() {
       className="space-y-4"
     >
       <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-medium">Payment Links</h1>
-          <p className="text-sm text-muted-foreground">
-            Create and manage shareable payment links
-          </p>
-        </div>
+        <PageHeader title="Payment Links" description="Create and manage shareable payment links" />
         <Button onClick={() => setCreateOpen(true)}>
           <Plus />
           Create Link

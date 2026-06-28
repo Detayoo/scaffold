@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { PageHeader } from "@/components/PageHeader";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { FormField } from "@/components/FormField";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -21,7 +22,6 @@ import { inviteSchema } from "@/utils/validators";
 import { formatDate } from "@/utils";
 import type { Column } from "@/components/DataTable";
 import type { Invite } from "@/types";
-
 type InviteForm = z.infer<typeof inviteSchema>;
 
 function InvitesContent() {
@@ -130,14 +130,7 @@ function InvitesContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-medium text-foreground">
-            Team Invitations
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Invite new members to join your team and manage pending invitations
-          </p>
-        </div>
+        <PageHeader title="Team Invitations" description="Invite new members to join your team and manage pending invitations" />
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="size-3.5" />
           Invite Member

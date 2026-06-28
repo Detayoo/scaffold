@@ -8,12 +8,12 @@ import { Ban, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getMembersFn, suspendMemberFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 import type { Column } from "@/components/DataTable";
 import type { Member } from "@/types";
-
 function MembersContent() {
   const queryClient = useQueryClient();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
@@ -105,12 +105,7 @@ function MembersContent() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-medium text-foreground">Team Members</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your team members and their access to the platform
-        </p>
-      </div>
+      <PageHeader title="Team Members" description="Manage your team members and their access to the platform" />
 
       <DataTable
         columns={columns}

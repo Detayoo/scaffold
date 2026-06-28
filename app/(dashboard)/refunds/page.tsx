@@ -8,6 +8,7 @@ import { CheckCircle2, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { approveRefundFn, deleteRefundRequestFn, getRefundDetailsFn, getRefundsFn } from "@/services";
 import { DataTable, type Column } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -18,7 +19,6 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import type { Refund, RefundDetails } from "@/types";
-
 function RefundsContent() {
   const { merchant } = useAuth();
   const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -136,10 +136,7 @@ function RefundsContent() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-medium text-foreground">Refunds</h1>
-        <p className="text-sm text-muted-foreground">Manage refund requests from your customers</p>
-      </div>
+      <PageHeader title="Refunds" description="Manage refund requests from your customers" />
 
       <SearchInput
         value={searchInput}

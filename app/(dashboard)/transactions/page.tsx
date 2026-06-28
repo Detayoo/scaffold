@@ -16,9 +16,9 @@ import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { DatePicker } from "@/components/DatePicker";
+import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import type { Transaction, TransactionDetails } from "@/types";
-
 function TransactionsContent() {
   const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [perPage, setPerPage] = useQueryState("size", parseAsInteger.withDefault(10));
@@ -142,10 +142,7 @@ function TransactionsContent() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-medium text-foreground">Transactions</h1>
-          <p className="text-sm text-muted-foreground">View and manage all your transactions</p>
-        </div>
+        <PageHeader title="Transactions" description="View and manage all your transactions" />
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setFilterOpen(true)}>
             <Filter className="size-4" />
