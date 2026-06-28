@@ -20,10 +20,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailRow } from "@/components/DetailRow";
 import { FormField } from "@/components/FormField";
+import { PasswordField } from "@/components/TextField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
@@ -187,16 +187,16 @@ function SecuritySection() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <FormField label="Current Password" error={form.formState.errors.oldPassword?.message as string} isRequired>
-                  <Input type="password" {...form.register("oldPassword")} placeholder="Enter current password" />
+                  <PasswordField {...form.register("oldPassword")} placeholder="Enter current password" />
                 </FormField>
               </div>
 
               <FormField label="New Password" error={form.formState.errors.newPassword?.message as string} isRequired>
-                <Input type="password" {...form.register("newPassword")} placeholder="At least 6 characters" />
+                <PasswordField {...form.register("newPassword")} placeholder="At least 6 characters" />
               </FormField>
 
               <FormField label="Confirm Password" error={form.formState.errors.password?.message as string} isRequired>
-                <Input type="password" {...form.register("password")} placeholder="Re-enter new password" />
+                <PasswordField {...form.register("password")} placeholder="Re-enter new password" />
               </FormField>
             </div>
 
