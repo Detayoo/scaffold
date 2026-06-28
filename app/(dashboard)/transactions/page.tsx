@@ -52,7 +52,8 @@ function TransactionsContent() {
 
   const {
     data: detailData,
-    isFetching: detailLoading,
+    isPending: detailPending,
+    isError: detailError,
     refetch: refetchDetail,
   } = useQuery({
     queryKey: ["transaction-detail", selectedId],
@@ -60,8 +61,8 @@ function TransactionsContent() {
     enabled: !!selectedId,
   });
 
-  const transactions = data?.data?.transactions;
   const transactionDetail = detailData as TransactionDetails | undefined;
+  const transactions = data?.data?.transactions;
 
   const handleSearch = useCallback(() => {
     setReference(searchInput);
@@ -234,13 +235,14 @@ function TransactionsContent() {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         title="Transaction Details"
-        isLoading={detailLoading}
-        isError={!transactionDetail?.data?.transaction}
+        isLoading={detailPending}
+        isError={detailError || !transactionDetail?.data?.transaction}
         onRetry={refetchDetail}
         errorMessage="Could not load transaction details"
       >
           {(() => {
-            const tx = transactionDetail!.data.transaction;
+            const tx = transactionDetail?.data?.transaction;
+            if (!tx) return null;
             return (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">

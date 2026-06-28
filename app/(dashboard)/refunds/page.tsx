@@ -45,7 +45,8 @@ function RefundsContent() {
 
   const {
     data: detailData,
-    isFetching: detailLoading,
+    isPending: detailPending,
+    isError: detailError,
     refetch: refetchDetail,
   } = useQuery({
     queryKey: ["refund-detail", selectedId],
@@ -148,13 +149,14 @@ function RefundsContent() {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         title="Refund Details"
-        isLoading={detailLoading}
-        isError={!refundDetail?.data?.refund}
+        isLoading={detailPending}
+        isError={detailError || !detailData}
         onRetry={refetchDetail}
         errorMessage="Could not load refund details"
       >
           {(() => {
-            const r = refundDetail!.data.refund;
+            const r = detailData?.data?.refund;
+            if (!r) return null;
             const isPendingStatus = r.status?.toLowerCase() === "pending" || r.status?.toLowerCase() === "refund-pending";
             const isApproved = r.status?.toLowerCase() === "approved";
 
