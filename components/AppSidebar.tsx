@@ -187,7 +187,7 @@ export function AppSidebar() {
             <LogOut className="size-4" />
           </button>
         </div>
-        <SidebarSeparator className="group-data-[collapsible=icon]:hidden" />
+        <SidebarSeparator />
         {/* User + logout — only when expanded */}
         <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
           <div className="flex items-center gap-2">
