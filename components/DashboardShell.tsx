@@ -15,7 +15,7 @@ export function DashboardShell({
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="relative flex-1 overflow-auto transition-all duration-200 ease-linear">
+          <div className="relative flex-1 overflow-auto transition-[margin,width] duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
             <SidebarTrigger className="fixed left-3 top-3 z-30 md:hidden" />
             <main className="p-6 md:p-8 pb-20 md:pb-8 pt-14 md:pt-14">
               {children}
