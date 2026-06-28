@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, Suspense } from "react";
+import { useCallback, useState } from "react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Trash2 } from "lucide-react";
@@ -17,6 +17,7 @@ import { DetailRow } from "@/components/DetailRow";
 import { DetailSheet } from "@/components/DetailSheet";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Separator } from "@/components/ui/separator";
+import { withSuspense } from "@/components/withSuspense";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
@@ -242,10 +243,4 @@ function RefundsContent() {
   );
 }
 
-export default function RefundsPage() {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <RefundsContent />
-    </Suspense>
-  );
-}
+export default withSuspense(RefundsContent);

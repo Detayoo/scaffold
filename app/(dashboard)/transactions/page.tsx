@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Download, Filter } from "lucide-react";
@@ -23,8 +23,8 @@ import { FilterModal } from "@/components/FilterModal";
 import { DetailRow } from "@/components/DetailRow";
 import { DetailSheet } from "@/components/DetailSheet";
 import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
-import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
+import { withSuspense } from "@/components/withSuspense";
 import { DatePicker } from "@/components/DatePicker";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
@@ -280,10 +280,4 @@ function TransactionsContent() {
   );
 }
 
-export default function TransactionsPage() {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <TransactionsContent />
-    </Suspense>
-  );
-}
+export default withSuspense(TransactionsContent);

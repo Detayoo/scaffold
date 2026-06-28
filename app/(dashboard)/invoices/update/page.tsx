@@ -25,6 +25,7 @@ import { CreateCustomerModal } from "@/components/CreateCustomerModal";
 import { AsyncContent } from "@/components/AsyncContent";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
+import { withSuspense } from "@/components/withSuspense";
 import { createInvoiceSchema } from "@/utils/validators";
 import { getCustomersFn, getSingleInvoiceFn, updateInvoiceFn } from "@/services/queries/invoices";
 import { getTaxesFn } from "@/services/queries/taxes";
@@ -350,10 +351,5 @@ function UpdateInvoiceContent() {
   );
 }
 
-export default function UpdateInvoicePage() {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <UpdateInvoiceContent />
-    </Suspense>
-  );
-}
+
+export default withSuspense(UpdateInvoiceContent);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -39,6 +39,7 @@ import {
 } from "@/services/queries/invoices";
 import { toastMessage, extractError, formatDate, formatMoney, triggerFileDownload } from "@/utils";
 import type { Invoice, FileType, FileUploadsType } from "@/types";
+import { withSuspense } from "@/components/withSuspense";
 const STATUS_OPTIONS = [
   { label: "All", value: "" },
   { label: "Draft", value: "DRAFT" },
@@ -301,10 +302,5 @@ function InvoicesContent() {
   );
 }
 
-export default function InvoicesPage() {
-  return (
-    <Suspense fallback={null}>
-      <InvoicesContent />
-    </Suspense>
-  );
-}
+
+export default withSuspense(InvoicesContent);

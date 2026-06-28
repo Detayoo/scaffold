@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,7 @@ import {
 import { createPaymentLinkSchema } from "@/utils/validators";
 import { toastMessage, extractError, formatDate, formatMoney } from "@/utils";
 import type { PaymentLink } from "@/types";
+import { withSuspense } from "@/components/withSuspense";
 import type { z } from "zod";
 type CreateFormData = z.infer<typeof createPaymentLinkSchema>;
 
@@ -368,10 +369,5 @@ function PaymentLinksContent() {
   );
 }
 
-export default function PaymentLinksPage() {
-  return (
-    <Suspense fallback={null}>
-      <PaymentLinksContent />
-    </Suspense>
-  );
-}
+
+export default withSuspense(PaymentLinksContent);

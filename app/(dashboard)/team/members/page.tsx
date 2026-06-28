@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ban, CheckCircle } from "lucide-react";
@@ -15,6 +15,7 @@ import { getMembersFn, suspendMemberFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 import type { Column } from "@/components/DataTable";
 import type { Member } from "@/types";
+import { withSuspense } from "@/components/withSuspense";
 function MembersContent() {
   const queryClient = useQueryClient();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
@@ -148,10 +149,5 @@ function MembersContent() {
   );
 }
 
-export default function MembersPage() {
-  return (
-    <Suspense fallback={null}>
-      <MembersContent />
-    </Suspense>
-  );
-}
+
+export default withSuspense(MembersContent);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ import { inviteSchema } from "@/utils/validators";
 import { formatDate } from "@/utils";
 import type { Column } from "@/components/DataTable";
 import type { Invite } from "@/types";
+import { withSuspense } from "@/components/withSuspense";
 type InviteForm = z.infer<typeof inviteSchema>;
 
 function InvitesContent() {
@@ -211,10 +212,5 @@ function InvitesContent() {
   );
 }
 
-export default function InvitesPage() {
-  return (
-    <Suspense fallback={null}>
-      <InvitesContent />
-    </Suspense>
-  );
-}
+
+export default withSuspense(InvitesContent);
