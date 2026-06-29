@@ -64,7 +64,7 @@ function NavItem({
   icon: any;
   pathname: string | null;
 }) {
-  const isActive = pathname?.startsWith(url);
+  const isActive = url === "/admin" ? pathname === url : pathname?.startsWith(url);
   const { setOpenMobile } = useSidebar();
   const router = useRouter();
 
