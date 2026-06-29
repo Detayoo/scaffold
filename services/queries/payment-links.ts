@@ -16,20 +16,20 @@ export const getPaylinksFn = async ({
 
 export const createPaylinkFn = async ({
   reference,
-  amountMinor,
+  amount,
   currency,
   channels,
   metadata,
 }: {
   reference: string;
-  amountMinor: number;
+  amount: number;
   currency: string;
   channels?: string[];
   metadata?: Record<string, string>;
 }) => {
   const { data } = await v1AuthenticatedApi().post("/paylinks", {
     reference,
-    amountMinor,
+    amount,
     currency,
     channels,
     metadata,

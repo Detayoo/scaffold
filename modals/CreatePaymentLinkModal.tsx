@@ -57,7 +57,7 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
   });
 
   const handleCreate = form.handleSubmit(async ({ reference, amount, currency }) => {
-    await createPaylink({ reference, amountMinor: Math.round(parseFloat(amount) * 100), currency });
+    await createPaylink({ reference, amount: Math.round(parseFloat(amount) * 100), currency });
   });
 
   const handleCopy = async (text: string) => {
