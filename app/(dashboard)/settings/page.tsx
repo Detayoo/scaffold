@@ -630,6 +630,7 @@ function WebhookSection() {
         title="Delivery Detail"
       >
         <AsyncContent isPending={detailLoading} isError={!detailData} onRetry={() => selectedLog && getWebhookDeliveryDetailFn({ id: selectedLog?.id ?? "" }).then(r => setDetailData(r?.data ?? null))} errorMessage="Failed to load delivery detail">
+          {detailData ? (
           <div className="space-y-4 pt-2">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -683,6 +684,7 @@ function WebhookSection() {
               </div>
             )}
           </div>
+          ) : null}
         </AsyncContent>
       </ResponsiveSheet>
 
