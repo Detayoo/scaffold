@@ -104,7 +104,7 @@ function DedicatedAccountsContent() {
     {
       key: "actions", header: "", className: "w-20",
       cell: (d) => (
-        <div className="flex gap-3">
+        <div className="flex gap-1">
           {d?.status === "active" && (
             <button type="button" onClick={(e) => { e.stopPropagation(); setConfirmAction({ type: "suspend", id: d.id }); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer" title="Suspend">
               <Ban className="size-3.5" />
@@ -187,7 +187,7 @@ function DedicatedAccountsContent() {
               </div>
               <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
               {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
-                <div className="flex flex-wrap gap-6 pt-6">
+                <div className="flex flex-wrap gap-4 pt-4">
                   <Button size="sm" className="gap-2" onClick={() => { setCreditAction("apply"); setPaymentIntentId(""); }}>
                     <Send className="size-3.5" /> Apply
                   </Button>
