@@ -74,7 +74,7 @@ export function ResponsiveSheet({
             )}
           </SheetHeader>
         )}
-        <ScrollArea className="h-full pr-4">
+        <ScrollArea className="h-full px-4">
           {children}
         </ScrollArea>
       </SheetContent>
