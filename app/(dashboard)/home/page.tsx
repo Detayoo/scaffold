@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp } from "lucide-react";
+import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark } from "lucide-react";
 import Link from "next/link";
 import { CountUp } from "@/components/CountUp";
 import { useAuth } from "@/contexts/auth-context";
