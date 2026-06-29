@@ -108,14 +108,9 @@ function PaymentLinksContent() {
     },
   });
 
-  const handleCreate = async (values: CreateFormData) => {
+  const handleCreate = async ({ amount, currency, reason, isReusable }: CreateFormData) => {
     try {
-      await createMutation.mutateAsync({
-        amount: Number(values.amount),
-        currency: values.currency,
-        reason: values.reason || undefined,
-        isReusable: values.isReusable,
-      });
+      await createMutation.mutateAsync({ amount, currency, reason: reason || undefined, isReusable });
     } catch {}
   };
 

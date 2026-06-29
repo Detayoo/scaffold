@@ -694,9 +694,9 @@ function TaxesSection() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreateTax = form.handleSubmit(async (v) => {
+  const handleCreateTax = form.handleSubmit(async ({ name, rate }) => {
     try {
-      await createTax({ name: v.name, rate: parseFloat(v.rate) });
+      await createTax({ name, rate });
     } catch {}
   });
 

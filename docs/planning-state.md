@@ -116,6 +116,8 @@ These are non-negotiable. Every single file must follow these patterns.
 - `FormField` component wraps label + error + required indicator
 - Never pass raw `register` to a non-standard component — use `watch`/`setValue` for custom components
 - **Never write inline async handlers in `handleSubmit`** — always extract into a named handler like `const handleSubmitForm = form.handleSubmit(async (data) => { try { ... } catch {} })`. This keeps the JSX clean and ensures consistent error handling.
+- **Destructure form data in handlers** — use `async ({ field1, field2 }) =>` not `async (data) => data.field1`. Never access form values through raw JS operations.
+- **Never use `parseFloat`, `parseInt`, or `Number()` to convert form values** — use `z.coerce.number()` in the zod schema instead. The schema should produce the correct types from the input.
 
 **API calls (services/):**
 - Every endpoint function in `services/queries/` follows `actionFn` naming

@@ -66,7 +66,7 @@ export const changePasswordSchema = z
   });
 
 export const createPaymentLinkSchema = z.object({
-  amount: z.string().nonempty({ message: "Amount is required" }),
+  amount: z.coerce.number().positive({ message: "Amount is required" }),
   currency: z.string().nonempty({ message: "Currency is required" }),
   reason: z.string().optional(),
   isReusable: z.boolean().optional(),
@@ -144,12 +144,7 @@ export const acceptInviteSchema = z.object({
 
 export const createTaxSchema = z.object({
   name: z.string().nonempty({ message: "Tax name is required" }),
-  rate: z
-    .string()
-    .nonempty({ message: "Rate is required" })
-    .refine((value) => parseFloat(value) <= 100, {
-      message: "Rate must not exceed 100%",
-    }),
+  rate: z.coerce.number().min(0.01, "Rate is required").max(100, "Rate must not exceed 100%"),
 });
 
 export const createCustomerSchema = z.object({
