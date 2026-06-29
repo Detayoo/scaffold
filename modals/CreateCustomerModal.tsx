@@ -7,6 +7,13 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { createGatewayCustomerFn } from "@/services";
@@ -16,7 +23,8 @@ import type { CreateCustomerPayload } from "@/types";
 const schema = z.object({
   reference: z.string().nonempty("Reference is required"),
   name: z.string().optional(),
-  email: z.string().optional(),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  status: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -30,7 +38,7 @@ interface CreateCustomerModalProps {
 export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCustomerModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { reference: "", name: "", email: "" },
+    defaultValues: { reference: "", name: "", email: "", status: "active" },
   });
 
   const { mutateAsync: createCustomer, isPending: creating } = useMutation({
@@ -44,11 +52,12 @@ export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCus
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ reference, name, email }) => {
+  const handleCreate = form.handleSubmit(async ({ reference, name, email, status }) => {
     try {
       const payload: CreateCustomerPayload = { reference };
       if (name) payload.name = name;
       if (email) payload.email = email;
+      if (status) payload.status = status;
       await createCustomer(payload);
     } catch {
       // handled by onError
@@ -71,6 +80,20 @@ export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCus
         </FormField>
         <FormField label="Email" error={form.formState.errors.email?.message}>
           <Input {...form.register("email")} placeholder="customer@example.com (optional)" />
+        </FormField>
+        <FormField label="Status" error={form.formState.errors.status?.message}>
+          <Select
+            value={form.watch("status")}
+            onValueChange={(v) => form.setValue("status", v)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>
