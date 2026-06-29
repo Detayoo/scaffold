@@ -248,6 +248,7 @@ When displaying bank account details in tables or lists:
   ```
 
 ### Table text truncation rules
+- **Never show raw ID/uuid columns** in tables unless explicitly requested. IDs are meaningless to users. Show a reference, a name, a date — something identifiable. If the user needs the ID, make it available via a tooltip or a detail sheet.
 - **Truncate:** long strings that cause overflow — references, transaction IDs, long descriptions. Use `truncate` + appropriate `max-w-[px]` per column
 - **Do NOT truncate:** names, email addresses, statuses, amounts, dates, account numbers — let them take natural width
 - **Do NOT truncate:** names, email addresses, statuses, amounts, dates — let them take natural width

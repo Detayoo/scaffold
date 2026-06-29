@@ -44,11 +44,6 @@ function SettlementsContent() {
 
   const columns: Column<SettlementBatch>[] = [
     {
-      key: "id",
-      header: "ID",
-      cell: (s) => <span className="text-sm text-foreground">{s?.id?.slice(0, 8)}...</span>,
-    },
-    {
       key: "channel",
       header: "Channel",
       cell: (s) => <span className="capitalize text-sm text-foreground">{s?.channel}</span>,
