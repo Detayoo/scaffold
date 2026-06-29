@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,9 +14,11 @@ import {
   Trash2,
   User,
   Lock,
-  Globe,
   Percent,
   Webhook,
+  List,
+  Pause,
+  Play,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,10 +30,21 @@ import { PasswordField } from "@/components/TextField";
 import { DataTable } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
+import { LoadingState } from "@/components/LoadingState";
+import { ErrorState } from "@/components/ErrorState";
+import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionHeader } from "@/components/SectionHeader";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMerchant } from "@/hooks/use-merchant";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
@@ -39,6 +52,12 @@ import {
   createKeyFn,
   revokeKeyFn,
   rotateKeyFn,
+  getWebhookEndpointsFn,
+  createWebhookEndpointFn,
+  pauseWebhookEndpointFn,
+  resumeWebhookEndpointFn,
+  getWebhookDeliveriesFn,
+  replayWebhookDeliveryFn,
   setupWebhookFn,
   changePasswordFn,
 } from "@/services";
@@ -46,7 +65,7 @@ import { getTaxesFn, createTaxFn, deleteTaxFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 import { changePasswordSchema, createTaxSchema } from "@/utils/validators";
 import type { Column } from "@/components/DataTable";
-import type { Tax } from "@/types";
+import type { Tax, WebhookEndpoint, WebhookDelivery, WebhookDeliveryDetail } from "@/types";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
@@ -403,49 +422,248 @@ function APIKeysSection() {
 }
 
 function WebhookSection() {
-  const merchantQuery = useMerchant();
-  const form = useForm({ defaultValues: { url: "" } });
-  const errorCode = (merchantQuery.error as any)?.status;
+  const [endpoints, setEndpoints] = useState<WebhookEndpoint[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [logsEndpoint, setLogsEndpoint] = useState<WebhookEndpoint | null>(null);
+  const [logs, setLogs] = useState<WebhookDelivery[]>([]);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [selectedLog, setSelectedLog] = useState<WebhookDelivery | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailData, setDetailData] = useState<WebhookDeliveryDetail | null>(null);
 
-  useEffect(() => {
-    if (merchantQuery.data?.data?.merchant?.webhookURL) {
-      form.reset({ url: merchantQuery.data.data.merchant.webhookURL });
+  const fetchEndpoints = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getWebhookEndpointsFn();
+      setEndpoints(res?.data ?? []);
+    } catch (err) {
+      setError(extractError(err));
+    } finally {
+      setLoading(false);
     }
-  }, [merchantQuery.data]);
+  }, []);
 
-  const { mutateAsync: updateWebhook, isPending } = useMutation({
-    mutationFn: setupWebhookFn,
-    onSuccess: (data) => { toastMessage("success", data?.message ?? "Webhook updated"); merchantQuery.refetch(); },
+  useEffect(() => { fetchEndpoints(); }, [fetchEndpoints]);
+
+  const createForm = useForm({
+    defaultValues: { url: "", environment: "" },
+  });
+
+  const { mutateAsync: createEndpoint, isPending: creating } = useMutation({
+    mutationFn: createWebhookEndpointFn,
+    onSuccess: () => {
+      toastMessage("success", "Webhook endpoint created");
+      setShowCreate(false);
+      createForm.reset();
+      fetchEndpoints();
+    },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const onSubmit = async (values: { url: string }) => {
-    try { await updateWebhook(values.url); } catch {}
-  };
+  const { mutateAsync: pauseEndpoint } = useMutation({
+    mutationFn: pauseWebhookEndpointFn,
+    onSuccess: () => {
+      toastMessage("success", "Endpoint paused");
+      fetchEndpoints();
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const { mutateAsync: resumeEndpoint } = useMutation({
+    mutationFn: resumeWebhookEndpointFn,
+    onSuccess: () => {
+      toastMessage("success", "Endpoint resumed");
+      fetchEndpoints();
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const fetchLogs = useCallback(async (endpointId: string) => {
+    setLogsLoading(true);
+    try {
+      const res = await getWebhookDeliveriesFn({ endpointId });
+      setLogs(res?.data ?? []);
+    } catch { } finally {
+      setLogsLoading(false);
+    }
+  }, []);
+
+  const { mutateAsync: replayDelivery } = useMutation({
+    mutationFn: replayWebhookDeliveryFn,
+    onSuccess: (res) => {
+      toastMessage("success", "Replay queued");
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
 
   return (
     <div className="space-y-5">
-      <SectionHeader title="Webhook" description="Configure your webhook endpoint URL" />
-      <AsyncContent isPending={merchantQuery.isPending} isError={merchantQuery.isError} onRetry={merchantQuery.refetch} errorMessage="Failed to load webhook">
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Webhook className="size-4 text-muted-foreground" />
-          Webhook URL
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm space-y-3">
-          <FormField label="URL" error={form.formState.errors.url?.message}>
-            <Input {...form.register("url")} placeholder="https://example.com/webhook" />
-          </FormField>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Saving..." : "Update Webhook"}
+      <SectionHeader
+        title="Webhook"
+        description="Configure and manage your webhook endpoints"
+        action={
+          <Button size="sm" onClick={() => setShowCreate(true)}>
+            <Plus className="size-3.5" />
+            Add Endpoint
           </Button>
+        }
+      />
+
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState message={error} onRetry={fetchEndpoints} />
+      ) : endpoints.length === 0 ? (
+        <EmptyState
+          title="No webhook endpoints"
+          description="Add an endpoint to start receiving payment events"
+          action={{ label: "Add Endpoint", onClick: () => setShowCreate(true) }}
+        />
+      ) : (
+        <div className="space-y-3">
+          {endpoints.map((ep) => (
+            <Card key={ep.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={ep.status} size="sm" />
+                      <span className="text-xs text-muted-foreground capitalize">{ep.environment}</span>
+                    </div>
+                    <p className="text-sm truncate">{ep.url}</p>
+                    {ep.eventFilter && ep.eventFilter.length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        Filter: {ep.eventFilter.join(", ")}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Secret: {ep.secretRef ?? "—"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => {
+                        setLogsEndpoint(ep);
+                        fetchLogs(ep.id);
+                      }}
+                    >
+                      <List className="size-3.5" />
+                    </Button>
+                    {ep.status === "active" ? (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => pauseEndpoint({ id: ep.id })}
+                      >
+                        <Pause className="size-3.5" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => resumeEndpoint({ id: ep.id })}
+                      >
+                        <Play className="size-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <ResponsiveSheet
+        open={!!logsEndpoint}
+        onOpenChange={(open) => { if (!open) setLogsEndpoint(null); }}
+        title="Delivery Logs"
+        description={logsEndpoint?.url ?? ""}
+      >
+        {logsLoading ? (
+          <LoadingState />
+        ) : logs.length === 0 ? (
+          <EmptyState title="No deliveries yet" description="Deliveries will appear here when events are sent" />
+        ) : (
+          <div className="space-y-2 pt-2">
+            {logs.map((d) => (
+              <Card key={d.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => {
+                setSelectedLog(d);
+              }}>
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <StatusBadge status={d.status} size="sm" />
+                    <span className="text-xs text-muted-foreground">{d.attempts} attempt(s)</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 truncate">{d.eventId}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-muted-foreground">
+                      {d.responseStatus ? `HTTP ${d.responseStatus}` : "—"}
+                    </span>
+                    {d.replayAvailable && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          replayDelivery({ id: d.id });
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        Replay
+                      </button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </ResponsiveSheet>
+
+      <ResponsiveModal
+        open={showCreate}
+        onOpenChange={setShowCreate}
+        title="Add Webhook Endpoint"
+        description="Create a new endpoint to receive payment events"
+      >
+        <form
+          onSubmit={createForm.handleSubmit((vals) =>
+            createEndpoint({ url: vals.url, environment: vals.environment })
+          )}
+          className="space-y-4 pt-2"
+        >
+          <FormField label="URL" isRequired>
+            <Input {...createForm.register("url")} placeholder="https://example.com/webhooks/malimbe" />
+          </FormField>
+          <FormField label="Environment" isRequired>
+            <Select
+              value={createForm.watch("environment")}
+              onValueChange={(v: "test" | "live") => createForm.setValue("environment", v)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="test">Test</SelectItem>
+                <SelectItem value="live">Live</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={creating}>
+              {creating ? "Creating..." : "Create Endpoint"}
+            </Button>
+          </div>
         </form>
-      </CardContent>
-    </Card>
-      </AsyncContent>
+      </ResponsiveModal>
     </div>
   );
 }
