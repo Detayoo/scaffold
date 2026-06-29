@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/FormField";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -128,7 +129,7 @@ export function MerchantReviewSheet({ merchant, onOpenChange }: MerchantReviewSh
                 </Select>
               </FormField>
               <FormField label="Note" error={form.formState.errors.note?.message}>
-                <Input {...form.register("note")} placeholder="Review note (optional)" />
+                <Textarea {...form.register("note")} placeholder="Review note (optional)" className="min-h-20" />
               </FormField>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="submit" disabled={reviewing}>{reviewing ? "Updating..." : "Update Merchant"}</Button>
