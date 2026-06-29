@@ -1,63 +1,49 @@
-import {
-  BareResponse,
-  CreatePaymentLinkPayload,
-  CreatePaymentLinkResponse,
-  PaymentLinks,
-  PaymentLinksTransaction,
-} from "@/types";
-import { getData, patchData, postData } from "..";
+import { v1AuthenticatedApi } from "../api";
 
-export const createPaymentLinkFn = (payload: CreatePaymentLinkPayload) => {
-  return postData<CreatePaymentLinkResponse>("/paylink", {
-    ...payload,
-    amount: Number(payload.amount),
-  });
-};
-
-export const getPaymentLinksFn = ({
-  page,
-  size,
+export const getPaylinksFn = async ({
+  reference,
   status,
-  reference,
-  isActive,
 }: {
-  page: number;
-  size: number;
+  reference?: string;
   status?: string;
-  reference?: string;
-  isActive?: any;
-}) => {
-  const params: Record<string, any> = {};
-  if (page) params.page = page;
-  if (size) params.size = size;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (reference) params.reference = reference;
   if (status) params.status = status;
-  if (reference) params.reference = reference;
-  if (isActive !== undefined && isActive !== "") params.isActive = isActive;
-  return getData<PaymentLinks>("/paylink", params);
+  const { data } = await v1AuthenticatedApi().get("/paylinks", { params });
+  return data;
 };
 
-export const managePaymentLinkFn = (payload: {
-  id: string;
-  state: string;
-}) => {
-  return patchData<BareResponse>("/paylink", payload);
-};
-
-export const getSinglePaymentLinkFn = ({
+export const createPaylinkFn = async ({
   reference,
-  forPayment,
-  page,
-  size,
+  amountMinor,
+  currency,
+  channels,
+  metadata,
 }: {
-  reference?: string;
-  forPayment?: boolean;
-  page?: number;
-  size?: number;
+  reference: string;
+  amountMinor: number;
+  currency: string;
+  channels?: string[];
+  metadata?: Record<string, string>;
 }) => {
-  const params: Record<string, any> = {};
-  if (reference) params.reference = reference;
-  if (forPayment) params.forPayment = forPayment;
-  if (page) params.page = page;
-  if (size) params.size = size;
-  return getData<PaymentLinksTransaction>("/paylink/details", params);
+  const { data } = await v1AuthenticatedApi().post("/paylinks", {
+    reference,
+    amountMinor,
+    currency,
+    channels,
+    metadata,
+  });
+  return data;
+};
+
+export const updatePaylinkStatusFn = async ({
+  id,
+  status,
+}: {
+  id: string;
+  status: string;
+}) => {
+  const { data } = await v1AuthenticatedApi().post(`/paylinks/${id}/status`, { status });
+  return data;
 };
