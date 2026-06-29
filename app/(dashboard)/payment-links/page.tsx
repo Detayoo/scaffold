@@ -97,14 +97,14 @@ function PaylinksContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Payment Links" description="Create and manage shareable payment links" />
-
-      <div className="flex items-center justify-between">
-        <div />
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="size-4" />
-          Create Link
-        </Button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader title="Payment Links" description="Create and manage shareable payment links" />
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus />
+            Create Link
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
