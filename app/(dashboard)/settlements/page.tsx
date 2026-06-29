@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Landmark } from "lucide-react";
 
-import { getSettlementsFn } from "@/services";
+import { getSettlementsFn, getBalancesFn } from "@/services";
+import { AnalyticsCard } from "@/components/AnalyticsCard";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
+import { SectionHeader } from "@/components/SectionHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate, formatMoney } from "@/utils";
 import type { SettlementBatch } from "@/types/finance";
@@ -24,7 +26,21 @@ function SettlementsContent() {
     queryFn: () => getSettlementsFn({ status: statusFilter || undefined }),
   });
 
+  const { data: balData } = useQuery({
+    queryKey: ["settlement-balances"],
+    queryFn: () => getBalancesFn({}),
+  });
+
   const settlements = data?.data;
+  const b = balData?.data?.[0];
+
+  const balanceLabels = [
+    { key: "Pending", field: b?.pendingAmountMinor },
+    { key: "Available", field: b?.availableAmountMinor },
+    { key: "Held", field: b?.heldAmountMinor },
+    { key: "Settlement Payable", field: b?.settlementPayableAmountMinor },
+    { key: "Paid", field: b?.paidAmountMinor },
+  ];
 
   const columns: Column<SettlementBatch>[] = [
     {
@@ -67,6 +83,14 @@ function SettlementsContent() {
   return (
     <div className="space-y-6">
       <PageHeader title="Settlements" description="View and manage your settlement batches" />
+
+      <SectionHeader title="Get merchant ledger-derived balances" description="Pending, available, held, settlement payable, and paid balances" />
+
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {balanceLabels.map((bl) => (
+          <AnalyticsCard key={bl.key} icon={Landmark} label={bl.key} value={bl.field} compact />
+        ))}
+      </div>
 
       <DataTable
         columns={columns}
