@@ -110,12 +110,12 @@ function AuditLogsContent() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value=" ">All actions</SelectItem>
-                <SelectItem value="payment.succeeded">payment.succeeded</SelectItem>
-                <SelectItem value="refund.approved">refund.approved</SelectItem>
-                <SelectItem value="dispute.opened">dispute.opened</SelectItem>
-                <SelectItem value="settlement.approved">settlement.approved</SelectItem>
-                <SelectItem value="merchant.updated">merchant.updated</SelectItem>
-                <SelectItem value="account_credit.applied">account_credit.applied</SelectItem>
+                <SelectItem value="payment.succeeded">Payment Succeeded</SelectItem>
+                <SelectItem value="refund.approved">Refund Approved</SelectItem>
+                <SelectItem value="dispute.opened">Dispute Opened</SelectItem>
+                <SelectItem value="settlement.approved">Settlement Approved</SelectItem>
+                <SelectItem value="merchant.updated">Merchant Updated</SelectItem>
+                <SelectItem value="account_credit.applied">Account Credit Applied</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
@@ -132,6 +132,8 @@ function AuditLogsContent() {
                 <SelectItem value="settlement">Settlement</SelectItem>
                 <SelectItem value="merchant">Merchant</SelectItem>
                 <SelectItem value="account_credit">Account Credit</SelectItem>
+                <SelectItem value="dedicated_account">Dedicated Account</SelectItem>
+                <SelectItem value="provider_health">Provider Health</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
