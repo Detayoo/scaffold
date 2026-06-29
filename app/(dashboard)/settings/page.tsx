@@ -38,6 +38,7 @@ import {
   getKeysFn,
   createKeyFn,
   revokeKeyFn,
+  rotateKeyFn,
   setupWebhookFn,
   changePasswordFn,
 } from "@/services";
@@ -269,6 +270,15 @@ function APIKeysSection() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
+  const { mutateAsync: rotateKey, isPending: rotating } = useMutation({
+    mutationFn: rotateKeyFn,
+    onSuccess: () => {
+      toastMessage("success", "Key rotated");
+      refetch();
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
   const handleCopy = async (text: string, label: string) => {
     const ok = await copy(text);
     toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
@@ -304,14 +314,24 @@ function APIKeysSection() {
                       </span>
                     </p>
                     {k.status === "active" && (
-                      <button
-                        type="button"
-                        onClick={() => revokeKey({ id: k.id })}
-                        disabled={revoking}
-                        className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
-                      >
-                        Revoke
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => rotateKey({ id: k.id })}
+                          disabled={rotating}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Rotate
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => revokeKey({ id: k.id })}
+                          disabled={revoking}
+                          className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                        >
+                          Revoke
+                        </button>
+                      </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
