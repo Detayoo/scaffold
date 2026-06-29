@@ -56,6 +56,34 @@ export const getAuditLogsFn = async ({
   return data;
 };
 
+export const getProviderHealthFn = async ({
+  provider,
+  channel,
+  environment,
+}: {
+  provider?: string;
+  channel?: string;
+  environment?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (provider) params.provider = provider;
+  if (channel) params.channel = channel;
+  if (environment) params.environment = environment;
+  const { data } = await v1AuthenticatedApi().get("/admin/provider-health", { params });
+  return data;
+};
+
+export const updateProviderHealthFn = async (payload: {
+  provider: string;
+  channel: string;
+  environment: string;
+  status: string;
+  routingEnabled: boolean;
+}) => {
+  const { data } = await v1AuthenticatedApi().post("/admin/provider-health", payload);
+  return data;
+};
+
 export const getCollectionOptionsFn = async () => {
   const { data } = await v1AuthenticatedApi().get("/collection-options");
   return data;

@@ -154,6 +154,16 @@ export type AuditLogEntry = {
   createdAt: string;
 };
 
+export type ProviderHealthEntry = {
+  id: string;
+  provider: string;
+  channel: string;
+  environment: string;
+  status: string;
+  reason?: string;
+  metadata?: Record<string, any>;
+};
+
 export type CollectionOption = {
   id: string;
   merchantId: string;
