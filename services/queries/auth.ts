@@ -51,6 +51,17 @@ export const resetPasswordFn = async ({
   return data;
 };
 
+export const adminLoginFn = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const { data } = await v1Api.post<LoginResponse>("/admin/auth/login", { email, password });
+  return data;
+};
+
 export const logoutFn = async () => {
   const { data } = await v1AuthenticatedApi().post<BareResponse>("/auth/logout");
   return data;
