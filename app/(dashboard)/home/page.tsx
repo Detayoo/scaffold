@@ -95,8 +95,6 @@ export default function HomePage() {
           </Card>
         ))}
       </div>
-
-      </div>
       </AsyncContent>
 
       <div>
