@@ -104,11 +104,11 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
         </div>
       ) : (
         <form onSubmit={handleCreate} className="space-y-4 pt-2">
-          <FormField label="Reference" error={form.formState.errors.reference?.message} isRequired>
-            <Input {...form.register("reference")} placeholder="pl_my_unique_ref" />
-          </FormField>
           <FormField label="Amount (NGN)" error={form.formState.errors.amount?.message} isRequired>
             <Input {...form.register("amount")} type="number" placeholder="10000" />
+          </FormField>
+          <FormField label="Reference" error={form.formState.errors.reference?.message} isRequired>
+            <Input {...form.register("reference")} placeholder="pl_my_unique_ref" />
           </FormField>
           <FormField label="Currency" isRequired>
             <Select
