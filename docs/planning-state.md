@@ -117,7 +117,10 @@ These are non-negotiable. Every single file must follow these patterns.
 - Never pass raw `register` to a non-standard component — use `watch`/`setValue` for custom components
 - **Never write inline async handlers in `handleSubmit`** — always extract into a named handler like `const handleSubmitForm = form.handleSubmit(async (data) => { try { ... } catch {} })`. This keeps the JSX clean and ensures consistent error handling.
 - **Destructure form data in handlers** — use `async ({ field1, field2 }) =>` not `async (data) => data.field1`. Never access form values through raw JS operations.
+- **Never use `.then()` or `.catch()` on promises directly in JSX or inline callbacks** — extract into named async functions with try/catch. Every promise chain must be an extracted handler.
 - **Never use `parseFloat`, `parseInt`, or `Number()` to convert form values** — use `z.coerce.number()` in the zod schema instead. The schema should produce the correct types from the input.
+- **Replay endpoint is merchant-available** — `POST /v1/webhook-events/{id}/replay` is not admin-only. Both replay-delivery and replay-event are available to merchants via dashboard session or secret key. Wire both.
+- **Always read the API spec before making assumptions about endpoint access level.**
 
 **API calls (services/):**
 - Every endpoint function in `services/queries/` follows `actionFn` naming

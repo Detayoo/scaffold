@@ -59,6 +59,7 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
   getWebhookDeliveriesFn,
   getWebhookDeliveryDetailFn,
   replayWebhookDeliveryFn,
+  replayWebhookEventFn,
   changePasswordFn,
 } from "@/services";
 import { getTaxesFn, createTaxFn, deleteTaxFn } from "@/services";
@@ -487,6 +488,22 @@ function WebhookSection() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
+  const { mutateAsync: replayEvent } = useMutation({
+    mutationFn: replayWebhookEventFn,
+    onSuccess: (res) => {
+      toastMessage("success", "Event replay queued");
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const reloadDeliveryDetail = async () => {
+    if (!selectedLog) return;
+    try {
+      const res = await getWebhookDeliveryDetailFn({ id: selectedLog?.id ?? "" });
+      setDetailData(res?.data ?? null);
+    } catch {}
+  };
+
   const handleCreateEndpoint = createForm.handleSubmit(async (vals) => {
     try {
       await createEndpoint({ url: vals.url, environment: vals.environment });
@@ -629,7 +646,7 @@ function WebhookSection() {
         onOpenChange={(open) => { if (!open) { setSelectedLog(null); setDetailData(null); } }}
         title="Delivery Detail"
       >
-        <AsyncContent isPending={detailLoading} isError={!detailData} onRetry={() => selectedLog && getWebhookDeliveryDetailFn({ id: selectedLog?.id ?? "" }).then(r => setDetailData(r?.data ?? null))} errorMessage="Failed to load delivery detail">
+        <AsyncContent isPending={detailLoading} isError={!detailData} onRetry={reloadDeliveryDetail} errorMessage="Failed to load delivery detail">
           {detailData ? (
           <div className="space-y-4 pt-2">
             <div className="grid grid-cols-2 gap-4">
@@ -683,6 +700,15 @@ function WebhookSection() {
                 </pre>
               </div>
             )}
+
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => replayDelivery({ id: selectedLog?.id ?? "" })}>
+                Replay Delivery
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => replayEvent({ id: selectedLog?.eventId ?? "" })}>
+                Replay Event
+              </Button>
+            </div>
           </div>
           ) : null}
         </AsyncContent>
