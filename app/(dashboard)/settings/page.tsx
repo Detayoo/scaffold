@@ -504,12 +504,6 @@ function WebhookSection() {
     } catch {}
   });
 
-  const handleCreateTax = form.handleSubmit(async (v) => {
-    try {
-      await createTax({ name: v.name, rate: parseFloat(v.rate) });
-    } catch {}
-  });
-
   return (
     <div className="space-y-5">
       <SectionHeader
@@ -698,6 +692,12 @@ function TaxesSection() {
     mutationFn: (id: string) => deleteTaxFn(id),
     onSuccess: () => { toastMessage("success", "Tax deleted"); setDeleteTarget(null); queryClient.invalidateQueries({ queryKey: ["taxes"] }); },
     onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const handleCreateTax = form.handleSubmit(async (v) => {
+    try {
+      await createTax({ name: v.name, rate: parseFloat(v.rate) });
+    } catch {}
   });
 
   const columns: Column<Tax>[] = [
