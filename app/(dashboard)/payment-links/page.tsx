@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
-import { Search, Filter, Plus } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -17,6 +16,7 @@ import {
 import { FormField } from "@/components/FormField";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
+import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { PaymentLinkDetailSheet } from "@/modals/PaymentLinkDetailSheet";
@@ -27,7 +27,7 @@ import { toastMessage, extractError, formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 
 function PaylinksContent() {
-  const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
+  const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -36,9 +36,17 @@ function PaylinksContent() {
   const [detailRef, setDetailRef] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState("");
 
+  const handleSearch = useCallback(() => {
+    // search triggers refetch via query key change
+  }, []);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchInput("");
+  }, []);
+
   const { data, isPending, isError, refetch, isFetching } = useQuery({
-    queryKey: ["paylinks", statusFilter, search],
-    queryFn: () => getPaylinksFn({ reference: search || undefined, status: statusFilter || undefined }),
+    queryKey: ["paylinks", statusFilter, searchInput],
+    queryFn: () => getPaylinksFn({ reference: searchInput || undefined, status: statusFilter || undefined }),
   });
 
   const paylinks = data?.data;
@@ -108,15 +116,15 @@ function PaylinksContent() {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by reference..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
-          />
-        </div>
+        <SearchInput
+          value={searchInput}
+          onChange={setSearchInput}
+          onSearch={handleSearch}
+          onClear={handleClearSearch}
+          showClear={!!searchInput}
+          placeholder="Search by reference..."
+          className="flex-1"
+        />
         <Button variant="outline" className="size-10" onClick={() => { setLocalStatus(statusFilter); setFilterOpen(true); }}>
           <Filter className="size-4" />
         </Button>

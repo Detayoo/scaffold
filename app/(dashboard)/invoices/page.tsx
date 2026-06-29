@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Upload, Filter, Search, MoreHorizontal, Download, Trash2, Eye } from "lucide-react";
+import { Plus, Upload, Filter, MoreHorizontal, Download, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/DataTable";
 import { referenceColumn, amountColumn, statusColumn, dateColumn, actionsColumn } from "@/components/ColumnHelpers";
+import { SearchInput } from "@/components/SearchInput";
 import { TableActions } from "@/components/TableActions";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -55,6 +55,8 @@ function InvoicesContent() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
   const [size, setSize] = useQueryState("size", parseAsInteger.withDefault(10));
   const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
+  const handleSearch = () => setPage(0);
+  const handleClearSearch = () => { setSearch(""); setPage(0); };
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [startDate, setStartDate] = useQueryState("startDate", parseAsString.withDefault(""));
   const [endDate, setEndDate] = useQueryState("endDate", parseAsString.withDefault(""));
@@ -167,15 +169,15 @@ function InvoicesContent() {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by invoice number..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            className="pl-8"
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          onSearch={handleSearch}
+          onClear={handleClearSearch}
+          showClear={!!search}
+          placeholder="Search by invoice number..."
+          className="flex-1"
+        />
         <Button variant="outline" className="size-10" onClick={() => setFilterOpen(true)}>
           <Filter className="size-4" />
         </Button>

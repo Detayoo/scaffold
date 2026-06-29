@@ -25,7 +25,7 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <div className="relative flex-1 max-w-xs">
+      <div className="relative flex-1 max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"

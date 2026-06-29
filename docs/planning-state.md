@@ -318,6 +318,7 @@ Rules:
 - Search fields: `h-10` — matches button height
 - Filter/icon buttons: `size-10` (not `size="icon"` which is 32px)
 - The only exception is inline table action buttons which may use `h-8` or `size-8` for compactness
+- Search input widths: all search fields must use `max-w-sm` — `SearchInput` component, raw `Input` in search bars, and filter search fields. No `max-w-xs` anywhere.
 
 ### Design conventions
 - B/W minimal, black primary
