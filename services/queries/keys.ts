@@ -1,4 +1,4 @@
-import { authenticatedApi, baseApi } from "../api";
+import { v1AuthenticatedApi } from "../api";
 import type { APIKeyResponse, ApiKeysListResponse, BareResponse } from "@/types";
 
 export const getKeysFn = async ({
@@ -11,7 +11,7 @@ export const getKeysFn = async ({
   const params: Record<string, string> = {};
   if (environment) params.environment = environment;
   if (type) params.type = type;
-  const { data } = await authenticatedApi().get<ApiKeysListResponse>("/v1/keys", { params });
+  const { data } = await v1AuthenticatedApi().get<ApiKeysListResponse>("/keys", { params });
   return data;
 };
 
@@ -20,16 +20,16 @@ export const createKeyFn = async ({
 }: {
   environment: string;
 }) => {
-  const { data } = await authenticatedApi().post<APIKeyResponse>("/v1/keys", { environment });
+  const { data } = await v1AuthenticatedApi().post<APIKeyResponse>("/keys", { environment });
   return data;
 };
 
 export const rotateKeyFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().post<BareResponse>(`/v1/keys/${id}/rotate`);
+  const { data } = await v1AuthenticatedApi().post<BareResponse>(`/keys/${id}/rotate`);
   return data;
 };
 
 export const revokeKeyFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().post<BareResponse>(`/v1/keys/${id}/revoke`);
+  const { data } = await v1AuthenticatedApi().post<BareResponse>(`/keys/${id}/revoke`);
   return data;
 };

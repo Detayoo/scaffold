@@ -1,4 +1,4 @@
-import { authenticatedApi } from "../api";
+import { v1AuthenticatedApi } from "../api";
 import type {
   WebhookEndpointsResponse,
   WebhookEndpointResponse,
@@ -14,7 +14,7 @@ export const getWebhookEndpointsFn = async ({
 } = {}) => {
   const params: Record<string, string> = {};
   if (status) params.status = status;
-  const { data } = await authenticatedApi().get<WebhookEndpointsResponse>("/v1/webhook-endpoints", { params });
+  const { data } = await v1AuthenticatedApi().get<WebhookEndpointsResponse>("/webhook-endpoints", { params });
   return data;
 };
 
@@ -27,7 +27,7 @@ export const createWebhookEndpointFn = async ({
   environment: string;
   eventFilter?: string[];
 }) => {
-  const { data } = await authenticatedApi().post<WebhookEndpointResponse>("/v1/webhook-endpoints", {
+  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>("/webhook-endpoints", {
     url,
     environment,
     eventFilter,
@@ -36,12 +36,12 @@ export const createWebhookEndpointFn = async ({
 };
 
 export const pauseWebhookEndpointFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/pause`);
+  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/pause`);
   return data;
 };
 
 export const resumeWebhookEndpointFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/resume`);
+  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/resume`);
   return data;
 };
 
@@ -58,12 +58,12 @@ export const getWebhookDeliveriesFn = async ({
   if (endpointId) params.endpointId = endpointId;
   if (eventId) params.eventId = eventId;
   if (status) params.status = status;
-  const { data } = await authenticatedApi().get<WebhookDeliveriesResponse>("/v1/webhook-deliveries", { params });
+  const { data } = await v1AuthenticatedApi().get<WebhookDeliveriesResponse>("/webhook-deliveries", { params });
   return data;
 };
 
 export const getWebhookDeliveryDetailFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().get<WebhookDeliveryDetailResponse>(`/v1/webhook-deliveries/${id}`);
+  const { data } = await v1AuthenticatedApi().get<WebhookDeliveryDetailResponse>(`/v1/webhook-deliveries/${id}`);
   return data;
 };
 
@@ -74,13 +74,13 @@ export const replayWebhookDeliveryFn = async ({
   id: string;
   forceResend?: boolean;
 }) => {
-  const { data } = await authenticatedApi().post<ReplayResponse>(`/v1/webhook-deliveries/${id}/replay`, {
+  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/v1/webhook-deliveries/${id}/replay`, {
     forceResend,
   });
   return data;
 };
 
 export const replayWebhookEventFn = async ({ id }: { id: string }) => {
-  const { data } = await authenticatedApi().post<ReplayResponse>(`/v1/webhook-events/${id}/replay`);
+  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/v1/webhook-events/${id}/replay`);
   return data;
 };

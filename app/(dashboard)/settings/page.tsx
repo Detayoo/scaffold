@@ -58,7 +58,6 @@ import {
   resumeWebhookEndpointFn,
   getWebhookDeliveriesFn,
   replayWebhookDeliveryFn,
-  setupWebhookFn,
   changePasswordFn,
 } from "@/services";
 import { getTaxesFn, createTaxFn, deleteTaxFn } from "@/services";
@@ -397,7 +396,7 @@ function APIKeysSection() {
                   </div>
                 </div>
               ))}
-              <Button variant="outline" size="sm" onClick={() => setNewKeys(null)}>
+              <Button variant="outline" onClick={() => setNewKeys(null)}>
                 Done
               </Button>
             </div>
@@ -632,9 +631,11 @@ function WebhookSection() {
         description="Create a new endpoint to receive payment events"
       >
         <form
-          onSubmit={createForm.handleSubmit((vals) =>
-            createEndpoint({ url: vals.url, environment: vals.environment })
-          )}
+          onSubmit={createForm.handleSubmit(async (vals) => {
+            try {
+              await createEndpoint({ url: vals.url, environment: vals.environment });
+            } catch {}
+          })}
           className="space-y-4 pt-2"
         >
           <FormField label="URL" isRequired>

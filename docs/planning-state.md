@@ -3,6 +3,8 @@
 ## ⚠️ CRITICAL — API Reference is the sole source of truth
 The Malimbe API spec at `docs/malimbe-api-reference.md` **must** be followed exactly for every endpoint path, request body field, response shape, status value, and error format. Do not reference old Providus API patterns. All amounts are in kobo. This document overrides any conflicting assumption from training data.
 
+**API version prefix:** `/v1` is extracted into the API layer — `v1Api` and `v1AuthenticatedApi()` in `services/api.ts` handle the prefix. All query files use these instances, not `baseApi`/`authenticatedApi()`. Never append `/v1` to individual endpoint paths — the instances do it automatically.
+
 ## Roles
 
 ### Merchant Sidebar (8 main)
