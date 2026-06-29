@@ -108,6 +108,10 @@ Settings tabs: Webhooks, Adjustments
 - Frontend starts at Phase 4
 - Backend is being built in parallel
 
+### Remaining work after v1
+- **`GET /v1/admin/payments/{reference}/timeline`** — not wired. Belongs on an admin payment inspection page or as a tab in merchant review.
+- **`/developers` merchant page** — API keys display, test/live environment toggle, documentation links. Purely frontend, no new endpoints needed (keys already in Settings).
+
 ### Identified gaps (not yet planned)
 - Merchant payout method / settlement bank account management
 - API documentation page / webhook testing tool
