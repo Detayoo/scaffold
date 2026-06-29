@@ -173,7 +173,7 @@ function PaylinksContent() {
         description={`Are you sure you want to ${confirmAction === "inactive" ? "deactivate" : "activate"} this payment link?`}
         confirmLabel={confirmAction === "inactive" ? "Deactivate" : "Activate"}
         variant={confirmAction === "inactive" ? "destructive" : "default"}
-        onConfirm={() => confirmId && updateStatus({ id: confirmId, status: confirmAction })}
+        onConfirm={async () => { try { if (confirmId) await updateStatus({ id: confirmId, status: confirmAction }); } catch { /* handled by onError */ } }}
         loading={updating}
       />
     </div>

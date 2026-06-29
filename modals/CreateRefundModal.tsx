@@ -59,12 +59,16 @@ export function CreateRefundModal({ open, onOpenChange, onSuccess }: CreateRefun
   });
 
   const handleCreate = form.handleSubmit(async ({ amount, reference, currency, reason }) => {
-    await createRefund({
-      amount: Math.round(parseFloat(amount) * 100),
-      reference,
-      currency,
-      reason: reason || undefined,
-    });
+    try {
+      await createRefund({
+        amount: Math.round(parseFloat(amount) * 100),
+        reference,
+        currency,
+        reason: reason || undefined,
+      });
+    } catch {
+      // handled by onError callback
+    }
   });
 
   return (

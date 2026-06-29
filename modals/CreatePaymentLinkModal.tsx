@@ -62,10 +62,14 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
   });
 
   const handleCreate = form.handleSubmit(async ({ reference, amount, currency, cardChannel, transferChannel }) => {
-    const channels: string[] = [];
-    if (cardChannel) channels.push("card");
-    if (transferChannel) channels.push("bank_transfer");
-    await createPaylink({ reference, amount: Math.round(parseFloat(amount) * 100), currency, channels });
+    try {
+      const channels: string[] = [];
+      if (cardChannel) channels.push("card");
+      if (transferChannel) channels.push("bank_transfer");
+      await createPaylink({ reference, amount: Math.round(parseFloat(amount) * 100), currency, channels });
+    } catch {
+      // handled by onError callback
+    }
   });
 
   const handleCopy = async (text: string) => {
