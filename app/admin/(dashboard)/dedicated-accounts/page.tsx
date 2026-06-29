@@ -187,7 +187,7 @@ function DedicatedAccountsContent() {
               </div>
               <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
               {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
-                <div className="flex flex-wrap gap-4 pt-4">
+                <div className="flex flex-wrap gap-2 pt-1">
                   <Button size="sm" className="gap-2" onClick={() => { setCreditAction("apply"); setPaymentIntentId(""); }}>
                     <Send className="size-3.5" /> Apply
                   </Button>
