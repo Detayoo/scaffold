@@ -74,7 +74,7 @@ function PaymentLinksContent() {
   const form = useForm<CreateFormData>({
     resolver: zodResolver(createPaymentLinkSchema),
     defaultValues: {
-      amount: 0,
+      amount: "" as any,
       currency: "NGN",
       reason: "",
       isReusable: false,
