@@ -190,3 +190,91 @@ export const markAdminRefundFailedFn = async ({ id, reason }: { id: string; reas
   });
   return data;
 };
+
+export const getAdminDisputesFn = async ({
+  reference,
+  status,
+}: {
+  reference?: string;
+  status?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (reference) params.reference = reference;
+  if (status) params.status = status;
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/disputes", { params });
+  return data;
+};
+
+export const createAdminDisputeFn = async (payload: {
+  paymentReference: string;
+  amountMinor: number;
+  currency: string;
+  reason: string;
+  evidenceDueAt?: string;
+  metadata?: Record<string, string>;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/disputes", payload);
+  return data;
+};
+
+export const holdAdminDisputeFn = async ({
+  id,
+  amountMinor,
+  holdScope,
+}: {
+  id: string;
+  amountMinor: number;
+  holdScope: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/hold`, {
+    amountMinor,
+    currency: "NGN",
+    holdScope,
+  });
+  return data;
+};
+
+export const assignAdminDisputeFn = async ({
+  id,
+  ownerId,
+  ownerName,
+}: {
+  id: string;
+  ownerId: string;
+  ownerName: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/assign`, {
+    ownerId,
+    ownerName,
+  });
+  return data;
+};
+
+export const outcomeAdminDisputeFn = async ({
+  id,
+  outcome,
+  note,
+}: {
+  id: string;
+  outcome: string;
+  note?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/outcome`, {
+    outcome,
+    note,
+  });
+  return data;
+};
+
+export const closeAdminDisputeFn = async ({
+  id,
+  note,
+}: {
+  id: string;
+  note?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/close`, {
+    note: note ?? "Closed after outcome",
+  });
+  return data;
+};
