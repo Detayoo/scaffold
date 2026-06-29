@@ -422,9 +422,6 @@ function APIKeysSection() {
 }
 
 function WebhookSection() {
-  const [endpoints, setEndpoints] = useState<WebhookEndpoint[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [logsEndpoint, setLogsEndpoint] = useState<WebhookEndpoint | null>(null);
   const [logs, setLogs] = useState<WebhookDelivery[]>([]);
@@ -433,20 +430,11 @@ function WebhookSection() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailData, setDetailData] = useState<WebhookDeliveryDetail | null>(null);
 
-  const fetchEndpoints = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await getWebhookEndpointsFn();
-      setEndpoints(res?.data ?? []);
-    } catch (err) {
-      setError(extractError(err));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchEndpoints(); }, [fetchEndpoints]);
+  const { data: endpointsData, isPending, isError, refetch } = useQuery({
+    queryKey: ["webhook-endpoints"],
+    queryFn: () => getWebhookEndpointsFn(),
+  });
+  const endpoints = endpointsData?.data ?? [];
 
   const createForm = useForm({
     defaultValues: { url: "", environment: "" },
@@ -458,7 +446,7 @@ function WebhookSection() {
       toastMessage("success", "Webhook endpoint created");
       setShowCreate(false);
       createForm.reset();
-      fetchEndpoints();
+      refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
@@ -467,7 +455,7 @@ function WebhookSection() {
     mutationFn: pauseWebhookEndpointFn,
     onSuccess: () => {
       toastMessage("success", "Endpoint paused");
-      fetchEndpoints();
+      refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
@@ -476,7 +464,7 @@ function WebhookSection() {
     mutationFn: resumeWebhookEndpointFn,
     onSuccess: () => {
       toastMessage("success", "Endpoint resumed");
-      fetchEndpoints();
+      refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
@@ -518,10 +506,10 @@ function WebhookSection() {
         }
       />
 
-      {loading ? (
+      {isPending ? (
         <LoadingState />
-      ) : error ? (
-        <ErrorState message={error} onRetry={fetchEndpoints} />
+      ) : isError ? (
+        <ErrorState message="Failed to load webhook endpoints" onRetry={refetch} />
       ) : endpoints.length === 0 ? (
         <EmptyState
           title="No webhook endpoints"
@@ -531,22 +519,22 @@ function WebhookSection() {
       ) : (
         <div className="space-y-3">
           {endpoints.map((ep) => (
-            <Card key={ep.id}>
+            <Card key={ep?.id}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center gap-2">
-                      <StatusBadge status={ep.status} size="sm" />
-                      <span className="text-xs text-muted-foreground capitalize">{ep.environment}</span>
+                      <StatusBadge status={ep?.status} size="sm" />
+                      <span className="text-xs text-muted-foreground capitalize">{ep?.environment}</span>
                     </div>
-                    <p className="text-sm truncate">{ep.url}</p>
-                    {ep.eventFilter && ep.eventFilter.length > 0 && (
+                    <p className="text-sm truncate">{ep?.url}</p>
+                    {ep?.eventFilter && ep.eventFilter.length > 0 && (
                       <p className="text-xs text-muted-foreground">
                         Filter: {ep.eventFilter.join(", ")}
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      Secret: {ep.secretRef ?? "—"}
+                      Secret: {ep?.secretRef ?? "—"}
                     </p>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
@@ -555,16 +543,16 @@ function WebhookSection() {
                       size="icon-sm"
                       onClick={() => {
                         setLogsEndpoint(ep);
-                        fetchLogs(ep.id);
+                        fetchLogs(ep?.id ?? "");
                       }}
                     >
                       <List className="size-3.5" />
                     </Button>
-                    {ep.status === "active" ? (
+                    {ep?.status === "active" ? (
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        onClick={() => pauseEndpoint({ id: ep.id })}
+                        onClick={() => pauseEndpoint({ id: ep?.id ?? "" })}
                       >
                         <Pause className="size-3.5" />
                       </Button>
@@ -572,7 +560,7 @@ function WebhookSection() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        onClick={() => resumeEndpoint({ id: ep.id })}
+                        onClick={() => resumeEndpoint({ id: ep?.id ?? "" })}
                       >
                         <Play className="size-3.5" />
                       </Button>
@@ -598,11 +586,11 @@ function WebhookSection() {
         ) : (
           <div className="space-y-2 pt-2">
             {logs.map((d) => (
-              <Card key={d.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={async () => {
+              <Card key={d?.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={async () => {
                 setSelectedLog(d);
                 setDetailLoading(true);
                 try {
-                  const res = await getWebhookDeliveryDetailFn({ id: d.id });
+                  const res = await getWebhookDeliveryDetailFn({ id: d?.id ?? "" });
                   setDetailData(res?.data ?? null);
                 } catch {} finally {
                   setDetailLoading(false);
@@ -610,20 +598,20 @@ function WebhookSection() {
               }}>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
-                    <StatusBadge status={d.status} size="sm" />
-                    <span className="text-xs text-muted-foreground">{d.attempts} attempt(s)</span>
+                    <StatusBadge status={d?.status} size="sm" />
+                    <span className="text-xs text-muted-foreground">{d?.attempts} attempt(s)</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 truncate">{d.eventId}</p>
+                  <p className="text-xs text-muted-foreground mt-1 truncate">{d?.eventId}</p>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-xs text-muted-foreground">
-                      {d.responseStatus ? `HTTP ${d.responseStatus}` : "—"}
+                      {d?.responseStatus ? `HTTP ${d.responseStatus}` : "—"}
                     </span>
-                    {d.replayAvailable && (
+                    {d?.replayAvailable && (
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          replayDelivery({ id: d.id });
+                          replayDelivery({ id: d?.id ?? "" });
                         }}
                         className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                       >
@@ -652,25 +640,25 @@ function WebhookSection() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground">Status</p>
-                <StatusBadge status={detailData.status} size="sm" />
+                <StatusBadge status={detailData?.status} size="sm" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Attempt</p>
-                <p className="text-sm font-medium">#{detailData.attemptNo}</p>
+                <p className="text-sm font-medium">#{detailData?.attemptNo}</p>
               </div>
-              {detailData.responseCode && (
+              {detailData?.responseCode && (
                 <div>
                   <p className="text-xs text-muted-foreground">Response</p>
                   <p className="text-sm font-medium">HTTP {detailData.responseCode}</p>
                 </div>
               )}
-              {detailData.lastAttemptAt && (
+              {detailData?.lastAttemptAt && (
                 <div className="col-span-2">
                   <p className="text-xs text-muted-foreground">Last Attempt</p>
                   <p className="text-sm">{detailData.lastAttemptAt}</p>
                 </div>
               )}
-              {detailData.nextRetryAt && (
+              {detailData?.nextRetryAt && (
                 <div className="col-span-2">
                   <p className="text-xs text-muted-foreground">Next Retry</p>
                   <p className="text-sm">{detailData.nextRetryAt}</p>
@@ -678,7 +666,7 @@ function WebhookSection() {
               )}
             </div>
 
-            {detailData.signatureHeaders && (
+            {detailData?.signatureHeaders && (
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Signature Headers</p>
                 <div className="rounded-lg bg-muted p-3 space-y-1">
