@@ -498,13 +498,25 @@ function WebhookSection() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
+  const handleCreateEndpoint = createForm.handleSubmit(async (vals) => {
+    try {
+      await createEndpoint({ url: vals.url, environment: vals.environment });
+    } catch {}
+  });
+
+  const handleCreateTax = form.handleSubmit(async (v) => {
+    try {
+      await createTax({ name: v.name, rate: parseFloat(v.rate) });
+    } catch {}
+  });
+
   return (
     <div className="space-y-5">
       <SectionHeader
         title="Webhook"
         description="Configure and manage your webhook endpoints"
         action={
-          <Button size="sm" onClick={() => setShowCreate(true)}>
+          <Button onClick={() => setShowCreate(true)}>
             <Plus className="size-3.5" />
             Add Endpoint
           </Button>
@@ -630,14 +642,7 @@ function WebhookSection() {
         title="Add Webhook Endpoint"
         description="Create a new endpoint to receive payment events"
       >
-        <form
-          onSubmit={createForm.handleSubmit(async (vals) => {
-            try {
-              await createEndpoint({ url: vals.url, environment: vals.environment });
-            } catch {}
-          })}
-          className="space-y-4 pt-2"
-        >
+        <form onSubmit={handleCreateEndpoint} className="space-y-4 pt-2">
           <FormField label="URL" isRequired>
             <Input {...createForm.register("url")} placeholder="https://example.com/webhooks/malimbe" />
           </FormField>
@@ -745,7 +750,7 @@ function TaxesSection() {
       />
 
       <ResponsiveModal open={modalOpen} onOpenChange={setModalOpen} title="Add Tax" description="Create a new tax rate">
-        <form onSubmit={form.handleSubmit((v) => createTax({ name: v.name, rate: parseFloat(v.rate) }))} className="space-y-4 pt-2">
+        <form onSubmit={handleCreateTax} className="space-y-4 pt-2">
           <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
             <Input {...form.register("name")} placeholder="e.g. VAT" />
           </FormField>

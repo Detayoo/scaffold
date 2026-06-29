@@ -115,6 +115,7 @@ These are non-negotiable. Every single file must follow these patterns.
 - `useFieldArray` for dynamic lists (invoice items, split recipients)
 - `FormField` component wraps label + error + required indicator
 - Never pass raw `register` to a non-standard component — use `watch`/`setValue` for custom components
+- **Never write inline async handlers in `handleSubmit`** — always extract into a named handler like `const handleSubmitForm = form.handleSubmit(async (data) => { try { ... } catch {} })`. This keeps the JSX clean and ensures consistent error handling.
 
 **API calls (services/):**
 - Every endpoint function in `services/queries/` follows `actionFn` naming
