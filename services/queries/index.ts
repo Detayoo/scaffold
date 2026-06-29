@@ -11,4 +11,5 @@ export * from "./invoices";
 export * from "./team";
 export * from "./refunds";
 export * from "./disputes";
+export * from "./customers";
 export * from "./taxes";

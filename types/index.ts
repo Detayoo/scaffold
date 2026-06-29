@@ -216,6 +216,36 @@ export type SubmitEvidencePayload = {
   metadata?: Record<string, string>;
 };
 
+export type GatewayCustomer = {
+  id: string;
+  reference: string;
+  email?: string;
+  name?: string;
+  status: string;
+  metadata?: Record<string, string>;
+};
+
+export type VirtualAccount = {
+  id: string;
+  customerId?: string;
+  provider?: string;
+  environment?: string;
+  accountType: string;
+  accountNumber: string;
+  accountName: string;
+  bankName: string;
+  currency: string;
+  status: string;
+};
+
+export type CreateCustomerPayload = {
+  reference: string;
+  email?: string;
+  name?: string;
+  status?: string;
+  metadata?: Record<string, string>;
+};
+
 export type CreateInviteType = {
   email: string;
   firstName: string;
