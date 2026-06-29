@@ -1,6 +1,7 @@
 export * from "./auth";
 export * from "./keys";
 export * from "./webhooks";
+export * from "./finance";
 export * from "./transactions";
 export * from "./collections";
 export * from "./settings";

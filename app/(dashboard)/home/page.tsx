@@ -2,78 +2,76 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Wallet } from "lucide-react";
-import { CountUp } from "@/components/CountUp";
+import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark } from "lucide-react";
 import Link from "next/link";
-
+import { CountUp } from "@/components/CountUp";
 import { useAuth } from "@/contexts/auth-context";
-import { getTransactionsFn, getCollectionsFn } from "@/services";
+import { getTransactionsFn } from "@/services";
+import { getDashboardHomeFn, getBalancesFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { AsyncContent } from "@/components/AsyncContent";
-import { formatDate, formatMoney } from "@/utils";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
+import { formatDate, formatMoney, formatMoneyCompact } from "@/utils";
 
 export default function HomePage() {
   const { merchant } = useAuth();
   const today = format(new Date(), "EEEE, MMMM do, yyyy");
+
+  const { data: homeData, isPending: homePending } = useQuery({
+    queryKey: ["dashboard-home"],
+    queryFn: getDashboardHomeFn,
+  });
+
+  const { data: balData } = useQuery({
+    queryKey: ["dashboard-balances"],
+    queryFn: () => getBalancesFn({}),
+  });
 
   const { data: txData, isPending: txPending, isFetching: txLoading, isError: txError, refetch: refetchTx } = useQuery({
     queryKey: ["dashboard-transactions"],
     queryFn: () => getTransactionsFn({ page: 1, size: 5 }),
   });
 
-  const { data: collectionsData } = useQuery({
-    queryKey: ["dashboard-collections"],
-    queryFn: getCollectionsFn,
-  });
-
-  const transactions = txData?.data?.transactions ?? [];
-  const totalTransactions = txData?.data?.totalRecords ?? 0;
-  const activeCollections = collectionsData?.data?.collectionOptions?.filter((c) => c.status === "active")?.length ?? 0;
+  const home = homeData?.data;
+  const balances = balData?.data?.[0];
+  const transactions = txData?.data?.transactions;
 
   const stats = [
     {
       icon: Receipt,
-      label: "Total Transactions",
-      value: totalTransactions,
-    },
-    {
-      icon: Wallet,
-      label: "Volume",
-      value: (
-        <>
-          {formatMoney(transactions.reduce((sum, t) => sum + (t?.amount ?? 0), 0))}
-        </>
-      ),
+      label: "Today",
+      value: home?.today?.transactionCount,
     },
     {
       icon: TrendingUp,
-      label: "Active Collections",
-      value: activeCollections,
+      label: "Volume",
+      value: home?.today?.successVolumeMinor,
+      compact: true,
+    },
+    {
+      icon: Landmark,
+      label: "Pending Settlement",
+      value: home?.pendingSettlementMinor,
+      compact: true,
     },
     {
       icon: RefreshCw,
-      label: "Account",
-      value: merchant?.accountNumber ?? "—",
-      mono: true,
+      label: "Available",
+      value: home?.availableBalanceMinor,
+      compact: true,
     },
   ];
+
+  const balanceItems = balances ? [
+    { label: "Pending", value: balances.pendingAmountMinor },
+    { label: "Available", value: balances.availableAmountMinor },
+    { label: "Held", value: balances.heldAmountMinor },
+    { label: "Settlement Payable", value: balances.settlementPayableAmountMinor },
+    { label: "Paid", value: balances.paidAmountMinor },
+  ] : [];
 
   const quickActions = [
     { label: "Create Payment Link", href: "/payment-links", icon: CreditCard },
@@ -88,27 +86,52 @@ export default function HomePage() {
         <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
       </div>
 
+      <AsyncContent isPending={homePending} isError={false}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.label}>
+        {stats.map((s) => (
+          <Card key={s.label}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <stat.icon className="size-4 text-muted-foreground" />
-                {stat.label}
+                <s.icon className="size-4 text-muted-foreground" />
+                {s.label}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className={stat.mono ? "text-2xl font-semibold font-mono" : "text-2xl font-semibold"}>
-                {typeof stat.value === "number" ? (
-                  <CountUp end={stat.value} />
-                ) : (
-                  stat.value
-                )}
+              <p className="text-2xl font-semibold">
+                {s.value !== undefined && s.value !== null ? (
+                  s.compact ? (
+                    <CountUp end={s.value} />
+                  ) : (
+                    <CountUp end={s.value} />
+                  )
+                ) : "—"}
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {balanceItems.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Landmark className="size-4 text-muted-foreground" />
+              Balance Breakdown
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {balanceItems.map((b) => (
+                <div key={b.label}>
+                  <p className="text-xs text-muted-foreground">{b.label}</p>
+                  <p className="text-lg font-semibold mt-0.5">{formatMoneyCompact(b.value)}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      </AsyncContent>
 
       <div>
         <Card>
@@ -137,7 +160,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="p-0">
             <AsyncContent isPending={txPending} isError={txError} onRetry={refetchTx} errorMessage="Failed to load transactions">
-              {transactions.length === 0 ? (
+              {!transactions || transactions.length === 0 ? (
                 <div className="p-4">
                   <EmptyState title="No transactions yet" description="Your first transaction will appear here" />
                 </div>
@@ -151,28 +174,26 @@ export default function HomePage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b">
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Reference</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Amount</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Status</th>
-                        <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground md:table-cell">Customer</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Reference</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Amount</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Status</th>
+                        <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-foreground md:table-cell">Customer</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-foreground">Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {transactions.map((tx) => (
-                        <tr key={tx.id} className="border-b last:border-0">
-                          <td className="px-4 py-3 font-mono text-xs">{tx.reference}</td>
+                        <tr key={tx?.id} className="border-b last:border-0">
+                          <td className="px-4 py-3 text-sm text-foreground">{tx?.reference}</td>
+                          <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
                           <td className="px-4 py-3">
-                            {formatMoney(tx.amount)}
+                            <StatusBadge status={tx?.status} />
                           </td>
-                          <td className="px-4 py-3">
-                            <StatusBadge status={tx.status} />
+                          <td className="hidden px-4 py-3 text-foreground md:table-cell">
+                            {tx?.customerName ?? tx?.customerEmail ?? "—"}
                           </td>
-                          <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
-                            {tx.customerName ?? tx.customerEmail ?? "—"}
-                          </td>
-                          <td className="px-4 py-3 text-right text-xs text-muted-foreground">
-                            {formatDate(tx.createdAt)}
+                          <td className="px-4 py-3 text-right text-sm text-foreground">
+                            {formatDate(tx?.createdAt)}
                           </td>
                         </tr>
                       ))}

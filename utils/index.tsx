@@ -24,6 +24,14 @@ export const formatMoney = (text: any): string => {
   }).format(Number(text));
 };
 
+export const formatMoneyCompact = (text: any): string => {
+  return Intl.NumberFormat("en-NG", {
+    notation: "compact",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  }).format(Number(text));
+};
+
 export const formatDate = (date: string) => {
   if (!date) return "N/A";
   const d = new Date(date);
