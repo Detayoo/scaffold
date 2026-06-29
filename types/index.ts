@@ -176,6 +176,32 @@ export type SettlementPayout = {
   evidence?: Record<string, string>;
 };
 
+export type ReconciliationException = {
+  id: string;
+  type: string;
+  status: string;
+  provider: string;
+  environment: string;
+  accountNumber?: string;
+  providerReference?: string;
+  expectedAmountMinor?: number;
+  receivedAmountMinor?: number;
+  currency: string;
+  context?: Record<string, any>;
+  ownerId?: string;
+  ownerName?: string;
+};
+
+export type AccountCreditEntry = {
+  id: string;
+  amountMinor: number;
+  currency: string;
+  status: string;
+  customerId?: string;
+  merchantId?: string;
+  createdAt?: string;
+};
+
 export type ProviderHealthEntry = {
   id: string;
   provider: string;

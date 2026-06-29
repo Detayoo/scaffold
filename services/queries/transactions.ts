@@ -322,3 +322,124 @@ export const runSplitSettlementFn = async (payload?: {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/split-settlements", payload ?? {});
   return data;
 };
+
+export const importProviderStatementsFn = async (payload: {
+  provider: string;
+  environment: string;
+  items: Array<{ providerReference: string; accountNumber: string; amountMinor: number; currency: string; settledAt: string }>;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/provider-statements/import", payload);
+  return data;
+};
+
+export const runReconciliationFn = async (payload: {
+  type: string;
+  environment: string;
+  provider: string;
+  dateFrom: string;
+  dateTo: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/reconciliation-runs", payload);
+  return data;
+};
+
+export const getReconciliationExceptionsFn = async ({
+  status,
+  type,
+  ownerId,
+}: {
+  status?: string;
+  type?: string;
+  ownerId?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (status) params.status = status;
+  if (type) params.type = type;
+  if (ownerId) params.ownerId = ownerId;
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/reconciliation-exceptions", { params });
+  return data;
+};
+
+export const assignReconciliationExceptionFn = async ({
+  id,
+  ownerId,
+  ownerName,
+}: {
+  id: string;
+  ownerId: string;
+  ownerName: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/reconciliation-exceptions/${id}/assign`, { ownerId, ownerName });
+  return data;
+};
+
+export const resolveReconciliationExceptionFn = async ({
+  id,
+  reason,
+  evidence,
+}: {
+  id: string;
+  reason: string;
+  evidence?: Record<string, string>;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/reconciliation-exceptions/${id}/resolve`, {
+    resolutionReason: reason,
+    resolutionEvidence: evidence ?? {},
+  });
+  return data;
+};
+
+export const createManualAdjustmentFn = async (payload: {
+  merchantId: string;
+  currency: string;
+  amountMinor: number;
+  direction: string;
+  reason: string;
+  evidence?: Record<string, string>;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/manual-adjustments", payload);
+  return data;
+};
+
+export const getAccountCreditsFn = async ({
+  status,
+  customerId,
+}: {
+  status?: string;
+  customerId?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (status) params.status = status;
+  if (customerId) params.customerId = customerId;
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/account-credits", { params });
+  return data;
+};
+
+export const applyAccountCreditFn = async ({ id, paymentIntentId }: { id: string; paymentIntentId: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/apply`, { paymentIntentId });
+  return data;
+};
+
+export const holdAccountCreditFn = async ({ id, reason }: { id: string; reason: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/hold`, { reason });
+  return data;
+};
+
+export const refundAccountCreditFn = async ({
+  id,
+  destinationAccountNumber,
+  destinationBankCode,
+  reason,
+}: {
+  id: string;
+  destinationAccountNumber: string;
+  destinationBankCode: string;
+  reason: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/refund`, {
+    destinationAccountNumber,
+    destinationBankCode,
+    reason,
+  });
+  return data;
+};

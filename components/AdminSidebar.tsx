@@ -47,6 +47,7 @@ const mainNav = [
   { name: "Disputes", url: "/admin/disputes", icon: Scale },
   { name: "Audit Logs", url: "/admin/audit-logs", icon: FileText },
   { name: "Provider Health", url: "/admin/provider-health", icon: Activity },
+  { name: "Dedicated Accounts", url: "/admin/dedicated-accounts", icon: Landmark },
 ];
 
 const bottomNav = [
