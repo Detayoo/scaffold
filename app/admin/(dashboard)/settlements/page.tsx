@@ -1,0 +1,77 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Play } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { DataTable, type Column } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
+import { StatusBadge } from "@/components/StatusBadge";
+import { SettlementDetailSheet } from "@/modals/SettlementDetailSheet";
+import { runSettlementFn, runSplitSettlementFn } from "@/services";
+import { formatMoney, toastMessage, extractError } from "@/utils";
+import { withSuspense } from "@/components/withSuspense";
+import type { SettlementBatch } from "@/types";
+
+const MOCK_BATCHES: SettlementBatch[] = [
+  { id: "a2eb6401-160a-4031-b6e3-9a1df9e09d50", merchantId: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", currency: "NGN", channel: "bank_transfer", provider: "VPS", status: "generated", netAmountMinor: 1225000, itemCount: 1 },
+  { id: "b3f5c2e1-260b-5142-c7f4-0b2ef0f10e61", merchantId: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", currency: "NGN", channel: "bank_transfer", provider: "VPS", status: "approved", netAmountMinor: 3450000, itemCount: 3, approvedAt: "2026-06-30T12:00:00.000Z" },
+  { id: "c4d6f3e2-370c-6253-d8a5-1c3fg1f20f72", merchantId: "a2b3c4d5-6789-0123-4567-89abcdef012345", currency: "NGN", channel: "card", provider: "MPGS", status: "paid", netAmountMinor: 875000, itemCount: 2, approvedAt: "2026-06-29T10:00:00.000Z" },
+];
+
+function AdminSettlementsContent() {
+  const [selectedBatch, setSelectedBatch] = useState<SettlementBatch | null>(null);
+
+  const { mutateAsync: runBatch, isPending: isRunning } = useMutation({
+    mutationFn: runSettlementFn,
+    onSuccess: () => toastMessage("success", "Settlement run completed"),
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const { mutateAsync: runSplit, isPending: isSplitting } = useMutation({
+    mutationFn: runSplitSettlementFn,
+    onSuccess: () => toastMessage("success", "Split settlement generated"),
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const columns: Column<SettlementBatch>[] = [
+    { key: "id", header: "ID", cell: (b) => <span className="text-xs text-muted-foreground font-mono">{b?.id?.slice(0, 8)}...</span> },
+    { key: "currency", header: "Currency", cell: (b) => <span className="text-sm text-foreground">{b?.currency}</span> },
+    { key: "netAmountMinor", header: "Net Amount", cell: (b) => <span className="text-sm text-foreground">{formatMoney(b?.netAmountMinor)}</span> },
+    { key: "status", header: "Status", cell: (b) => <StatusBadge status={b?.status} size="sm" /> },
+    { key: "itemCount", header: "Items", cell: (b) => <span className="text-sm text-foreground">{b?.itemCount}</span> },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader title="Settlements" description="Generate and manage merchant settlement batches" />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" disabled={isSplitting} onClick={async () => { try { await runSplit({}); } catch {} }}>
+            <Play className="size-4" />
+            Run Split Settlement
+          </Button>
+          <Button disabled={isRunning} onClick={async () => { try { await runBatch({}); } catch {} }}>
+            <Play className="size-4" />
+            Run Settlement
+          </Button>
+        </div>
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={MOCK_BATCHES}
+        isPending={false}
+        isError={false}
+        emptyTitle="No settlement batches"
+        emptyDescription="Run a settlement to generate batches"
+        onRowClick={(b) => setSelectedBatch(b)}
+      />
+
+      <SettlementDetailSheet batch={selectedBatch} onOpenChange={(o) => { if (!o) setSelectedBatch(null); }} />
+    </div>
+  );
+}
+
+export default withSuspense(AdminSettlementsContent);

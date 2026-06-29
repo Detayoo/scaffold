@@ -154,6 +154,28 @@ export type AuditLogEntry = {
   createdAt: string;
 };
 
+export type SettlementBatch = {
+  id: string;
+  merchantId?: string;
+  currency: string;
+  channel?: string;
+  provider?: string;
+  status: string;
+  netAmountMinor: number;
+  itemCount?: number;
+  approvedAt?: string;
+  payoutEvidence?: Record<string, string>;
+};
+
+export type SettlementPayout = {
+  id: string;
+  provider: string;
+  currency: string;
+  amountMinor: number;
+  status: string;
+  evidence?: Record<string, string>;
+};
+
 export type ProviderHealthEntry = {
   id: string;
   provider: string;

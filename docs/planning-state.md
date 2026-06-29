@@ -48,6 +48,7 @@ Settings tabs: Webhooks, Adjustments
 **Batch 6 — Admin Disputes:** `GET /v1/admin/disputes` + `POST /v1/admin/disputes` + `POST .../{id}/hold|assign|evidence|outcome|close`.
 
 **Batch 7 — Settlements:** `POST /v1/admin/settlement-runs` + `POST .../settlements/{id}/approve|mark-paid` + `POST /v1/admin/split-settlements`.
+⚠️ No list endpoint exists. Uses hardcoded mock batches (`MOCK_BATCHES`). Runs and detail actions call real endpoints.
 
 **Batch 8 — Reconciliation (most complex):** `POST /v1/admin/reconciliation-runs`, `GET .../exceptions` + `GET .../exceptions/{id}`, `POST .../{id}/assign|resolve`, `POST /v1/admin/manual-adjustments`, `POST .../provider-statements/import`, `POST .../account-credits/{id}/apply|hold|refund`.
 

@@ -278,3 +278,47 @@ export const closeAdminDisputeFn = async ({
   });
   return data;
 };
+
+export const runSettlementFn = async (payload?: {
+  merchantId?: string;
+  environment?: string;
+  currency?: string;
+  channel?: string;
+  asOf?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/settlement-runs", payload ?? {});
+  return data;
+};
+
+export const approveSettlementFn = async ({ id }: { id: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/settlements/${id}/approve`);
+  return data;
+};
+
+export const markSettlementPaidFn = async ({
+  id,
+  provider,
+  paidAt,
+  evidence,
+}: {
+  id: string;
+  provider: string;
+  paidAt: string;
+  evidence: { bank: string; nibss_reference: string; destination_account?: string };
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/settlements/${id}/mark-paid`, {
+    provider,
+    paidAt,
+    evidence,
+  });
+  return data;
+};
+
+export const runSplitSettlementFn = async (payload?: {
+  environment?: string;
+  currency?: string;
+  cutoffDate?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/split-settlements", payload ?? {});
+  return data;
+};
