@@ -142,6 +142,18 @@ export type TransactionDetail = {
   };
 };
 
+export type AuditLogEntry = {
+  id: string;
+  actorType: string;
+  actorId: string;
+  merchantId: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  metadata?: Record<string, string>;
+  createdAt: string;
+};
+
 export type CollectionOption = {
   id: string;
   merchantId: string;

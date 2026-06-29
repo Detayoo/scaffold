@@ -39,6 +39,23 @@ export const getTransactionTimelineFn = async ({ reference }: { reference: strin
   return data;
 };
 
+export const getAuditLogsFn = async ({
+  action,
+  targetType,
+  actorId,
+}: {
+  action?: string;
+  targetType?: string;
+  actorId?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (action) params.action = action;
+  if (targetType) params.targetType = targetType;
+  if (actorId) params.actorId = actorId;
+  const { data } = await v1AuthenticatedApi().get("/admin/audit-logs", { params });
+  return data;
+};
+
 export const getCollectionOptionsFn = async () => {
   const { data } = await v1AuthenticatedApi().get("/collection-options");
   return data;
