@@ -29,12 +29,12 @@ export default function OperationsPage() {
     queryFn: () => getExportsFn({}),
   });
 
-  const { data: modelsData } = useQuery({
+  const { data: modelsData, isPending: modelsPending, isError: modelsError, refetch: refetchModels } = useQuery({
     queryKey: ["read-models"],
     queryFn: getReadModelsFn,
   });
 
-  const { data: runbooksData } = useQuery({
+  const { data: runbooksData, isPending: runbooksPending, isError: runbooksError, refetch: refetchRunbooks } = useQuery({
     queryKey: ["runbooks"],
     queryFn: getRunbooksFn,
   });
@@ -107,6 +107,7 @@ export default function OperationsPage() {
           <RefreshCw className="size-4 inline mr-2 text-muted-foreground" />
           Read Models
         </h2>
+        <AsyncContent isPending={modelsPending} isError={modelsError} onRetry={refetchModels} errorMessage="Failed to load read models">
         <Card>
           <CardContent className="p-0">
             {models.length === 0 ? (
@@ -137,6 +138,7 @@ export default function OperationsPage() {
             )}
           </CardContent>
         </Card>
+        </AsyncContent>
       </div>
 
       <div>
@@ -144,6 +146,7 @@ export default function OperationsPage() {
           <BookOpen className="size-4 inline mr-2 text-muted-foreground" />
           Runbooks
         </h2>
+        <AsyncContent isPending={runbooksPending} isError={runbooksError} onRetry={refetchRunbooks} errorMessage="Failed to load runbooks">
         <div className="space-y-3">
           {runbooks.length === 0 ? (
             <p className="text-sm text-muted-foreground">No runbooks available.</p>
@@ -166,6 +169,7 @@ export default function OperationsPage() {
             ))
           )}
         </div>
+        </AsyncContent>
       </div>
 
       <ExportModal
