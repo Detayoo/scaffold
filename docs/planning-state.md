@@ -32,6 +32,23 @@ Team commented out.
 
 Settings tabs: Webhooks, Adjustments
 
+### Admin Build Batches (order by complexity)
+**Batch 1 — Auth + Layout:** `POST /v1/admin/auth/login`, admin sidebar, route group `app/admin/(dashboard)/`, shell page with no features.
+
+**Batch 2 — Audit Logs:** `GET /v1/admin/audit-logs`. Simple list page with search/filter.
+
+**Batch 3 — Provider Health:** `GET /v1/admin/provider-health`, `POST /v1/admin/provider-health`. List providers with status badges + toggle to enable/disable routing.
+
+**Batch 4 — Merchant Review:** `POST /v1/admin/merchants/{id}/review`. List merchants → detail sheet with status/risk tier update.
+
+**Batch 5 — Admin Refunds:** `GET /v1/admin/refunds` + `POST /v1/admin/refunds` + `POST .../refunds/{id}/approve|reject|process|mark-succeeded|mark-failed`.
+
+**Batch 6 — Admin Disputes:** `GET /v1/admin/disputes` + `POST /v1/admin/disputes` + `POST .../{id}/hold|assign|evidence|outcome|close`.
+
+**Batch 7 — Settlements:** `POST /v1/admin/settlement-runs` + `POST .../settlements/{id}/approve|mark-paid` + `POST /v1/admin/split-settlements`.
+
+**Batch 8 — Reconciliation (most complex):** `POST /v1/admin/reconciliation-runs`, `GET .../exceptions` + `GET .../exceptions/{id}`, `POST .../{id}/assign|resolve`, `POST /v1/admin/manual-adjustments`, `POST .../provider-statements/import`, `POST .../account-credits/{id}/apply|hold|refund`.
+
 ## Architecture Decisions
 
 ### Shared components to build
