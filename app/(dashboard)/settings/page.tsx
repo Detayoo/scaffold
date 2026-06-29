@@ -865,7 +865,7 @@ function TaxesSection() {
 }
 
 function ChannelsSection() {
-  const { data, isPending, isError, refetch } = useQuery({
+  const { data, isFetching, isError, refetch } = useQuery({
     queryKey: ["collection-options"],
     queryFn: () => getCollectionOptionsFn(),
   });
@@ -882,16 +882,19 @@ function ChannelsSection() {
   const channels = data?.data;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-base font-semibold text-foreground">Collection Channels</h2>
-        <p className="text-sm text-muted-foreground">Enable or disable payment collection channels</p>
-      </div>
+    <div className="space-y-4">
+      <SectionHeader
+        title="Channels"
+        description="Enable or disable payment collection channels"
+      />
 
-      {isPending ? (
+      {isFetching ? (
         <p className="text-sm text-muted-foreground">Loading...</p>
       ) : isError ? (
-        <p className="text-sm text-destructive">Failed to load channels.</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-destructive">Failed to load channels.</p>
+          <button type="button" onClick={() => refetch()} className="text-sm text-foreground underline cursor-pointer">Retry</button>
+        </div>
       ) : !channels || channels.length === 0 ? (
         <p className="text-sm text-muted-foreground">No channels configured.</p>
       ) : (
