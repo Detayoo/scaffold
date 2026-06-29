@@ -15,6 +15,7 @@ import {
   ExternalLink,
   Sun,
   Moon,
+  Landmark,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ const mainNav = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
   { name: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { name: "Refunds", url: "/refunds", icon: Undo2 },
+  { name: "Settlements", url: "/settlements", icon: Landmark },
 ];
 
 const businessNav = [
