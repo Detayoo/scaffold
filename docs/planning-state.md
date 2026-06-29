@@ -66,6 +66,7 @@ Settings tabs: Webhooks, Adjustments
 - /disputes + /disputes/:id
 - /refunds/:id
 - /developers
+- /operations (with reusable ExportModal for transactions, settlements, refunds, disputes)
 
 ### New admin pages
 - /admin - Home overview

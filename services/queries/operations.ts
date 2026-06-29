@@ -36,3 +36,13 @@ export const getExportDownloadFn = async ({ id }: { id: string }) => {
   const { data } = await v1AuthenticatedApi().get<ExportResponse>(`/exports/${id}/download`);
   return data;
 };
+
+export const getReadModelsFn = async () => {
+  const { data } = await v1AuthenticatedApi().get("/operations/read-models");
+  return data;
+};
+
+export const getRunbooksFn = async () => {
+  const { data } = await v1AuthenticatedApi().get("/operations/runbooks");
+  return data;
+};
