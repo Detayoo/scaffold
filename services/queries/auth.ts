@@ -1,39 +1,44 @@
 import { BareResponse, LoginResponse, RegistrationDTO } from "@/types";
-import { postData } from "..";
+import { authenticatedApi, baseApi } from "../api";
 
-export const registerFn = (payload: RegistrationDTO) => {
-  return postData<BareResponse>("/auth/register", payload, false);
+export const registerFn = async (payload: RegistrationDTO) => {
+  const { data } = await baseApi.post<BareResponse>("/v1/auth/register", payload);
+  return data;
 };
 
-export const loginFn = ({
+export const loginFn = async ({
   email,
   password,
 }: {
   email: string;
   password: string;
 }) => {
-  return postData<LoginResponse>("/auth/login", { email, password }, false);
+  const { data } = await baseApi.post<LoginResponse>("/v1/auth/login", { email, password });
+  return data;
 };
 
-export const verifyOtpFn = ({
+export const verifyOtpFn = async ({
   otp,
   email,
 }: {
   otp: string;
   email: string;
 }) => {
-  return postData<BareResponse>("/auth/verify", { otp, email }, false);
+  const { data } = await baseApi.post<BareResponse>("/v1/auth/verify", { otp, email });
+  return data;
 };
 
-export const resendOtpFn = ({ email }: { email: string }) => {
-  return postData<BareResponse>("/auth/resend-verify-otp", { email }, false);
+export const resendOtpFn = async ({ email }: { email: string }) => {
+  const { data } = await baseApi.post<BareResponse>("/v1/auth/resend-verify-otp", { email });
+  return data;
 };
 
-export const forgotPasswordFn = (email: string) => {
-  return postData<BareResponse>("/auth/forgot-password", { email }, false);
+export const forgotPasswordFn = async (email: string) => {
+  const { data } = await baseApi.post<BareResponse>("/v1/auth/forgot-password", { email });
+  return data;
 };
 
-export const resetPasswordFn = ({
+export const resetPasswordFn = async ({
   otp,
   password,
   email,
@@ -42,14 +47,11 @@ export const resetPasswordFn = ({
   password: string;
   email: string;
 }) => {
-  return postData<BareResponse>(
-    "/auth/reset-password",
-    { otp, password, email },
-    false
-  );
+  const { data } = await baseApi.post<BareResponse>("/v1/auth/reset-password", { otp, password, email });
+  return data;
 };
 
-export const logoutFn = () => {
-  return postData<BareResponse>("/auth/logout");
+export const logoutFn = async () => {
+  const { data } = await authenticatedApi().post<BareResponse>("/v1/auth/logout");
+  return data;
 };
-

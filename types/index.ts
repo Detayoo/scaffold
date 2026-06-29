@@ -423,9 +423,26 @@ export type GetMerchantProfileResponse = {
   };
 };
 
-export type APIKeysResponse = {
+export type ApiKey = {
+  id: string;
+  merchantId: string;
+  environment: "test" | "live";
+  type: "public" | "secret";
+  keyPrefix: string;
+  maskedKey: string;
+  status: "active" | "revoked";
+  createdAt: string;
+};
+
+export type ApiKeysListResponse = {
+  status: boolean;
+  data: ApiKey[];
+};
+
+export type APIKeyResponse = {
+  status: boolean;
   data: {
-    public: string;
-    secret: string;
+    publicKey: string;
+    secretKey: string;
   };
 };

@@ -1,21 +1,13 @@
 import { BareResponse } from "@/types";
 import { getData, postData } from "..";
-import type { APIKeysResponse, GetMerchantProfileResponse } from "@/types";
-
-export const setupWebhookFn = (url: string) => {
-  return postData<BareResponse>("/merchant/webhook", { url });
-};
+import type { GetMerchantProfileResponse } from "@/types";
 
 export const getMerchantProfileFn = () => {
   return getData<GetMerchantProfileResponse>("/merchant");
 };
 
-export const getKeysFn = () => {
-  return getData<APIKeysResponse>("/merchant/keys");
-};
-
-export const generateMerchantKeyFn = () => {
-  return postData<BareResponse>("/merchant/keys");
+export const setupWebhookFn = (url: string) => {
+  return postData<BareResponse>("/merchant/webhook", { url });
 };
 
 export const changePasswordFn = (payload: {

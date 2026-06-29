@@ -36,7 +36,8 @@ import { useMerchant } from "@/hooks/use-merchant";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   getKeysFn,
-  generateMerchantKeyFn,
+  createKeyFn,
+  revokeKeyFn,
   setupWebhookFn,
   changePasswordFn,
 } from "@/services";
@@ -240,16 +241,31 @@ function SecuritySection() {
 function APIKeysSection() {
   const { data, isFetching, isError, refetch, error } = useQuery({
     queryKey: ["merchant-keys"],
-    queryFn: getKeysFn,
+    queryFn: () => getKeysFn({}),
   });
   const errorCode = (error as any)?.status;
   const copy = useCopyToClipboard();
   const [showPK, setShowPK] = useState(false);
   const [showSK, setShowSK] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
-    mutationFn: generateMerchantKeyFn,
-    onSuccess: () => { toastMessage("success", "New keys generated"); refetch(); },
+    mutationFn: createKeyFn,
+    onSuccess: (res) => {
+      setNewKeys(res.data);
+      setCreating(false);
+      refetch();
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const { mutateAsync: revokeKey, isPending: revoking } = useMutation({
+    mutationFn: revokeKeyFn,
+    onSuccess: () => {
+      toastMessage("success", "Key revoked");
+      refetch();
+    },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
@@ -258,7 +274,7 @@ function APIKeysSection() {
     toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
   };
 
-  const { public: pub, secret } = data?.data ?? {};
+  const keys = data?.data ?? [];
 
   return (
     <div className="space-y-5">
@@ -272,38 +288,93 @@ function APIKeysSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[
-            { label: "Public Key", value: pub, show: showPK, toggle: () => setShowPK(!showPK) },
-            { label: "Secret Key", value: secret, show: showSK, toggle: () => setShowSK(!showSK) },
-          ].map((k, i) => (
-            <div key={i} className="space-y-1.5">
-              <p className="text-xs text-muted-foreground">{k.label}</p>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    type={k.show ? "text" : "password"}
-                    value={k.value ?? ""}
-                    readOnly
-                    className="pr-16 font-mono text-xs"
-                  />
-                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                    <button type="button" onClick={k.toggle} className="flex size-7 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                      {k.show ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-                    </button>
-                    {k.value && (
-                      <button type="button" onClick={() => handleCopy(k.value!, k.label)} className="flex size-7 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                        <Copy className="size-3.5" />
+          {keys.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
+          ) : (
+            <div className="space-y-3">
+              {keys.map((k) => (
+                <div key={k.id} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {k.environment === "test" ? "Test" : "Live"} — {k.type === "public" ? "Public" : "Secret"}
+                      <span className="ml-2 inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
+                        data-status={k.status}
+                      >
+                        {k.status}
+                      </span>
+                    </p>
+                    {k.status === "active" && (
+                      <button
+                        type="button"
+                        onClick={() => revokeKey({ id: k.id })}
+                        disabled={revoking}
+                        className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                      >
+                        Revoke
                       </button>
                     )}
                   </div>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        type={showPK ? "text" : "password"}
+                        value={k.maskedKey}
+                        readOnly
+                        className="pr-9 text-sm"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)}
+                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    >
+                      <Copy className="size-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-          <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
-            <Key className="size-3.5" />
-            {generating ? "Generating..." : "Generate New Keys"}
-          </Button>
+          )}
+          {newKeys && (
+            <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+              <p className="text-xs font-medium">Keys generated — copy them now. You won't see them again.</p>
+              {[
+                { label: "Public Key", value: newKeys.publicKey },
+                { label: "Secret Key", value: newKeys.secretKey },
+              ].map((nk) => (
+                <div key={nk.label} className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{nk.label}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Input value={nk.value} readOnly className="pr-9 text-sm font-mono text-xs" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(nk.value, nk.label)}
+                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    >
+                      <Copy className="size-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" onClick={() => setNewKeys(null)}>
+                Done
+              </Button>
+            </div>
+          )}
+          {!newKeys && (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setCreating(true)} disabled={generating}>
+                <Key className="size-3.5" />
+                Create Test Key
+              </Button>
+              <Button variant="outline" onClick={() => generateKeys({ environment: "live" })} disabled={generating}>
+                <Key className="size-3.5" />
+                Create Live Key
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
       </AsyncContent>
