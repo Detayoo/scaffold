@@ -39,8 +39,9 @@ Settings tabs: Webhooks, Adjustments
 
 **Batch 3 — Provider Health:** `GET /v1/admin/provider-health`, `POST /v1/admin/provider-health`. List providers with status badges + toggle to enable/disable routing.
 
-**Batch 4 — Merchant Review:** `POST /v1/admin/merchants/{id}/review`, `GET /v1/admin/payments/{reference}/timeline` (inspect merchant payment timeline). List merchants → detail sheet with status/risk tier update → payment timeline tab.
+**Batch 4 — Merchant Review:** `POST /v1/admin/merchants/{id}/review`. List merchants → detail sheet with status/risk tier update.
 ⚠️ `GET /v1/admin/merchants` does NOT exist in the API spec. The merchants list page uses **hardcoded mock data** (`MOCK_MERCHANTS` in `app/admin/(dashboard)/merchants/page.tsx`). Remove mock data and wire to a real list endpoint when available. The review form (`MerchantReviewSheet`) calls the real `POST /v1/admin/merchants/{id}/review` endpoint.
+⚠️ `GET /v1/admin/payments/{reference}/timeline` excluded from Batch 4 — belongs in a payment inspection tool, not merchant review.
 
 **Batch 5 — Admin Refunds:** `GET /v1/admin/refunds` + `POST /v1/admin/refunds` + `POST .../refunds/{id}/approve|reject|process|mark-succeeded|mark-failed`.
 
