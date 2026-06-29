@@ -84,6 +84,25 @@ export const updateProviderHealthFn = async (payload: {
   return data;
 };
 
+export const reviewMerchantFn = async ({
+  id,
+  status,
+  riskTier,
+  note,
+}: {
+  id: string;
+  status: string;
+  riskTier: string;
+  note?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/merchants/${id}/review`, {
+    status,
+    riskTier,
+    note,
+  });
+  return data;
+};
+
 export const getCollectionOptionsFn = async () => {
   const { data } = await v1AuthenticatedApi().get("/collection-options");
   return data;
