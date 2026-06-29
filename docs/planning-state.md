@@ -76,6 +76,7 @@ Settings tabs: Webhooks, Adjustments
 - /admin/refunds
 - /admin/disputes
 - /admin/audit-logs
+- /admin/operations — read-models rebuild (POST /v1/operations/read-models/rebuild), provider health, ops runbooks
 
 ### Not pages (modals/sheets)
 - Transaction detail (merchant + admin) - WideSheet
