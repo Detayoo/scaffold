@@ -1,5 +1,8 @@
 # Planning State
 
+## ⚠️ CRITICAL — API Reference is the sole source of truth
+The Malimbe API spec at `docs/malimbe-api-reference.md` **must** be followed exactly for every endpoint path, request body field, response shape, status value, and error format. Do not reference old Providus API patterns. All amounts are in kobo. This document overrides any conflicting assumption from training data.
+
 ## Roles
 
 ### Merchant Sidebar (8 main)
@@ -37,14 +40,6 @@ Settings tabs: Webhooks, Adjustments
 - **DateDisplay** - renders date as "21st June 2026" on first line, time on second line with smaller text. Used in all tables and detail views
 - **TableActions** - vertical three-dots (kebab) button using shadcn's `DropdownMenu` component. Used for all inline table row actions. Ensures consistent action placement across every table in the app
 - **DocumentationButton** - link button in dashboard header that opens documentation URL in a new tab. Uses `CONFIG.DOCUMENTATION_URL` from config.ts
-
-### API Reference — source of truth
-- The Malimbe API spec at `docs/malimbe-api-reference.md` is the **sole source of truth** for all endpoints, request/response shapes, field names, status values, and error handling
-- Every service function in `services/queries/` must match the API reference exactly — endpoint paths, HTTP methods, auth headers, request body fields, and response data structures
-- Do NOT use the old Providus API patterns (`/auth/login`, `/merchant/keys`, etc.) — all endpoints follow `/v1/...` namespace
-- Amounts are in **kobo** (minor units). Display formatting happens in the UI layer via `formatMoney`/`formatMoneyCompact`
-- Admin endpoints are at `/v1/admin/*` — separate from merchant endpoints
-- The shared types/enums in the API spec (PaymentIntentStatus, Channel, Provider, etc.) are the canonical values — use them in types/
 
 ### Routing convention
 - Merchant routes: **no prefix** — `/transactions`, `/settlements`, `/home`
