@@ -20,7 +20,7 @@ import { loginSchema } from "@/utils/validators";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setToken, setUser, setMerchant } = useAuth();
+  const { setToken, setUser } = useAuth();
 
   const {
     register,

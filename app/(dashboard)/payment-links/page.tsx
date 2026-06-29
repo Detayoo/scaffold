@@ -109,12 +109,14 @@ function PaymentLinksContent() {
   });
 
   const handleCreate = async (values: CreateFormData) => {
-    await createMutation.mutateAsync({
-      amount: Number(values.amount),
-      currency: values.currency,
-      reason: values.reason || undefined,
-      isReusable: values.isReusable,
-    });
+    try {
+      await createMutation.mutateAsync({
+        amount: Number(values.amount),
+        currency: values.currency,
+        reason: values.reason || undefined,
+        isReusable: values.isReusable,
+      });
+    } catch {}
   };
 
   const handleManage = (id: string, state: "ACTIVATE" | "DEACTIVATE") => {
@@ -124,7 +126,9 @@ function PaymentLinksContent() {
 
   const confirmManage = async () => {
     if (!confirmId) return;
-    await manageMutation.mutateAsync({ id: confirmId, state: confirmAction });
+    try {
+      await manageMutation.mutateAsync({ id: confirmId, state: confirmAction });
+    } catch {}
   };
 
   const handleCopy = async (text: string) => {

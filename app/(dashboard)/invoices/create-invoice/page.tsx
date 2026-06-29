@@ -96,7 +96,8 @@ export default function CreateInvoicePage() {
       ? values.taxes.map((t) => ({ id: t.id, name: t.name, rate: t.rate }))
       : undefined;
 
-    await createInvoiceMutation.mutateAsync({
+    try {
+      await createInvoiceMutation.mutateAsync({
       customerId: selectedCustomerId,
       dueDate: values.dueDate,
       invoiceDate: values.invoiceDate || undefined,
@@ -112,6 +113,7 @@ export default function CreateInvoicePage() {
       notes: values.notes || undefined,
       invoiceNumber: values.invoiceNumber || undefined,
     });
+    } catch {}
   };
 
   return (

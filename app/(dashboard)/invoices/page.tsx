@@ -117,7 +117,9 @@ function InvoicesContent() {
     if (files.length === 0) return;
     const formData = new FormData();
     files.filter((f): f is FileType => typeof f !== "string").forEach((f) => formData.append("file", f.file));
-    await uploadMutation.mutateAsync(formData);
+    try {
+      await uploadMutation.mutateAsync(formData);
+    } catch {}
   };
 
   const invoices = data?.data?.invoices;

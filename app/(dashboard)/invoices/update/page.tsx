@@ -131,6 +131,7 @@ function UpdateInvoiceContent() {
       ? values.taxes.map((t) => ({ id: t.id, name: t.name, rate: t.rate }))
       : undefined;
 
+    try {
     await updateInvoiceMutation.mutateAsync({
       id,
       customerId: selectedCustomerId,
@@ -146,6 +147,7 @@ function UpdateInvoiceContent() {
       discount: values.discount || undefined,
       notes: values.notes || undefined,
     });
+    } catch {}
   };
 
   if (!id) {
@@ -154,8 +156,7 @@ function UpdateInvoiceContent() {
 
   return (
     <AsyncContent isPending={invoiceLoading} isError={invoiceError} onRetry={refetch} errorMessage="Failed to load invoice.">
-        className="space-y-6 max-w-2xl mx-auto"
-  <div>
+      <div className="space-y-6 max-w-2xl mx-auto">
         <Link
           href="/invoices"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
