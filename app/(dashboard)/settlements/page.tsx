@@ -56,17 +56,19 @@ function SettlementsContent() {
     {
       key: "gross",
       header: "Gross",
+      className: "w-32",
       cell: (s) => <span className="text-sm text-foreground">{formatMoney(s?.grossAmountMinor)}</span>,
     },
     {
       key: "fee",
       header: "Fee",
+      className: "w-24",
       cell: (s) => <span className="text-sm text-foreground">{formatMoney(s?.feeAmountMinor)}</span>,
     },
     {
       key: "net",
       header: "Net",
-      cell: (s) => <span className="text-sm text-foreground">{formatMoney(s?.netAmountMinor)}</span>,
+      className: "w-32",
     },
     {
       key: "status",
