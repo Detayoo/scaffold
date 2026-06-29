@@ -131,11 +131,10 @@ function ProfileSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
-          <DetailRow label="First Name" value={owner?.firstName} />
-          <DetailRow label="Last Name" value={owner?.lastName} />
+          <DetailRow label="Name" value={owner?.name} />
           <DetailRow label="Email" value={owner?.email} />
           <DetailRow label="Role" value={owner?.role} capitalize />
-          <DetailRow label="Verified" value={owner?.isVerified ? "Yes" : "No"} />
+          <DetailRow label="Status" value={owner?.status} capitalize />
         </CardContent>
       </Card>
       </AsyncContent>

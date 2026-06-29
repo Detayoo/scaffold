@@ -40,7 +40,7 @@ export default function RegisterPage({
   const onSubmit = async (data: z.infer<typeof registrationSchema>) => {
     try {
       await registerFn(data);
-      toastMessage("success", "Account created successfully");
+      toastMessage("success", "Account created");
       router.push(`/verification?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
       toastMessage("error", extractError(error));
@@ -49,8 +49,7 @@ export default function RegisterPage({
 
   return (
     <AuthLayout>
-        className="space-y-6"
-  <div>
+      <div className="space-y-6">
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold">Create your account</h1>
           <p className="text-sm text-muted-foreground">
@@ -58,32 +57,20 @@ export default function RegisterPage({
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField label="Business name" error={errors.businessName?.message} isRequired>
-            <Input placeholder="Your business name" {...register("businessName")} />
+          <FormField label="Business name" error={errors.displayName?.message} isRequired>
+            <Input placeholder="Your business name" {...register("displayName")} />
           </FormField>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="First name" error={errors.firstName?.message} isRequired>
-              <Input placeholder="John" {...register("firstName")} />
-            </FormField>
-            <FormField label="Last name" error={errors.lastName?.message} isRequired>
-              <Input placeholder="Doe" {...register("lastName")} />
-            </FormField>
-          </div>
+          <FormField label="Legal name" error={errors.legalName?.message} isRequired>
+            <Input placeholder="Your registered legal name" {...register("legalName")} />
+          </FormField>
+          <FormField label="Owner name" error={errors.ownerName?.message} isRequired>
+            <Input placeholder="Full name of the business owner" {...register("ownerName")} />
+          </FormField>
           <FormField label="Email" error={errors.email?.message} isRequired>
             <Input type="email" placeholder="you@example.com" {...register("email")} />
           </FormField>
           <FormField label="Password" error={errors.password?.message} isRequired>
             <PasswordField placeholder="At least 6 characters" {...register("password")} />
-          </FormField>
-          <FormField label="Address" error={errors.address?.message} isRequired>
-            <Input placeholder="Your business address" {...register("address")} />
-          </FormField>
-          <FormField
-            label="Account number"
-            error={errors.accountNumber?.message}
-            isOptional
-          >
-            <Input placeholder="10-digit account number" {...register("accountNumber")} />
           </FormField>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="size-4 animate-spin" />}
@@ -92,10 +79,7 @@ export default function RegisterPage({
         </form>
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link
-            href="/"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
-          >
+          <Link href="/" className="font-medium text-foreground underline-offset-4 hover:underline">
             Log in
           </Link>
         </p>

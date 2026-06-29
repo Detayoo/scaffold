@@ -98,7 +98,7 @@ export function AppSidebar() {
   const { theme, setTheme, resolvedTheme } = useTheme();
 
   const initials = user
-    ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`
+    ? `${user.name?.charAt(0) ?? "?"}`
     : "?";
 
   return (

@@ -21,7 +21,7 @@ export function AppHeader() {
   const { user, logout } = useAuth();
 
   const initials = user
-    ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`
+    ? `${user.name?.charAt(0) ?? "?"}`
     : "?";
 
   return (
@@ -41,7 +41,7 @@ export function AppHeader() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-44">
           <div className="px-2 py-1.5 text-sm font-medium">
-            {user?.firstName} {user?.lastName}
+            {user?.name}
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>

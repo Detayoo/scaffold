@@ -12,9 +12,8 @@ export const loginSchema = z.object({
 });
 
 export const registrationSchema = z.object({
-  businessName: z.string().nonempty({ message: "Business name is required" }),
-  firstName: z.string().nonempty({ message: "First name is required" }),
-  lastName: z.string().nonempty({ message: "Last name is required" }),
+  displayName: z.string().nonempty({ message: "Business name is required" }),
+  legalName: z.string().nonempty({ message: "Legal name is required" }),
   email: z
     .string()
     .email({ message: "Invalid email" })
@@ -23,13 +22,7 @@ export const registrationSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .nonempty({ message: "Password is required" }),
-  address: z.string().nonempty({ message: "Address is required" }),
-  accountNumber: z
-    .string()
-    .optional()
-    .refine((value) => !value || value.length === 10, {
-      message: "Account number must be 10 digits",
-    }),
+  ownerName: z.string().nonempty({ message: "Owner name is required" }),
 });
 
 export const forgotPasswordSchema = z.object({

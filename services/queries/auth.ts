@@ -12,7 +12,7 @@ export const loginFn = ({
   email: string;
   password: string;
 }) => {
-  return postData<LoginResponse>("/auth", { email, password }, false);
+  return postData<LoginResponse>("/auth/login", { email, password }, false);
 };
 
 export const verifyOtpFn = ({

@@ -36,7 +36,6 @@ export default function LoginPage() {
       const d = res?.data;
       if (d?.token) setToken(d.token);
       if (d?.user) setUser(d.user);
-      if (d?.merchant) setMerchant(d.merchant);
       toastMessage("success", "Logged in");
       router.push("/home");
     } catch (error) {

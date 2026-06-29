@@ -18,25 +18,18 @@ export type LoginResponse = {
   data: {
     token: string;
     user: User;
-    merchant: Merchant;
   };
 };
 
 export type User = {
   id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
   merchantId: string;
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  isPrimaryMerchant: boolean;
-  isPaylinkEnabled?: boolean;
-  isInvoiceEnabled?: boolean;
-  isReusablePaylinkEnabled?: boolean;
+  email: string;
+  name: string;
+  role: string;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Merchant = {
@@ -80,13 +73,11 @@ export type State = {
 };
 
 export type RegistrationDTO = {
-  businessName: string;
-  firstName: string;
-  lastName: string;
+  displayName: string;
+  legalName: string;
   email: string;
   password: string;
-  address: string;
-  accountNumber?: string;
+  ownerName: string;
 };
 
 export type Collections = {
