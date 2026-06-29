@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CountUp } from "@/components/CountUp";
+import { formatMoney, formatMoneyCompact } from "@/utils";
 
 interface AnalyticsCardProps {
   icon: LucideIcon;
@@ -14,15 +14,11 @@ interface AnalyticsCardProps {
 }
 
 export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: AnalyticsCardProps) {
-  const displayValue = () => {
+  const renderValue = () => {
     if (value === undefined || value === null) return "—";
-
     if (typeof value === "string") return value;
-
-    if (compact) {
-      return <CountUp end={value} />;
-    }
-    return <CountUp end={value} />;
+    if (compact) return <>{formatMoneyCompact(value)}</>;
+    return <>{formatMoney(value)}</>;
   };
 
   return (
@@ -35,7 +31,7 @@ export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: Analy
       </CardHeader>
       <CardContent>
         <p className={mono ? "text-2xl font-semibold font-mono" : "text-2xl font-semibold"}>
-          {displayValue()}
+          {renderValue()}
         </p>
       </CardContent>
     </Card>
