@@ -8,6 +8,7 @@ export * from "./collections";
 export * from "./settings";
 export * from "./payment-links";
 export * from "./invoices";
+export * from "./splits";
 export * from "./team";
 export * from "./refunds";
 export * from "./disputes";

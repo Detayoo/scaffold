@@ -246,6 +246,43 @@ export type CreateCustomerPayload = {
   metadata?: Record<string, string>;
 };
 
+export type Subaccount = {
+  id: string;
+  merchantId: string;
+  environment: string;
+  name: string;
+  settlementBankAccountId: string;
+  status: string;
+  metadata?: Record<string, string>;
+};
+
+export type CreateSubaccountPayload = {
+  name: string;
+  settlementBankAccountId: string;
+  environment?: string;
+  metadata?: Record<string, string>;
+};
+
+export type SplitRuleRecipientInput = {
+  subaccountId: string;
+  role?: string;
+  percentageBps?: number;
+  flatAmountMinor?: number;
+  feeBearer?: string;
+};
+
+export type CreateSplitRulePayload = {
+  name: string;
+  ruleType: "percentage" | "flat" | "hybrid";
+  basis: "net" | "gross";
+  feeBearer: "customer" | "merchant";
+  liabilityMode?: string;
+  environment?: string;
+  recipients: SplitRuleRecipientInput[];
+  remainderRecipientSubaccountId?: string;
+  metadata?: Record<string, string>;
+};
+
 export type CreateInviteType = {
   email: string;
   firstName: string;
