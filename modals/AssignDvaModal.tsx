@@ -23,6 +23,7 @@ const schema = z.object({
   accountNumber: z.string().nonempty("Account number is required"),
   accountName: z.string().nonempty("Account name is required"),
   bankName: z.string().nonempty("Bank name is required"),
+  accountType: z.string().nonempty("Account type is required"),
   provider: z.string().optional(),
   currency: z.string().optional(),
 });
@@ -39,7 +40,7 @@ interface AssignDvaModalProps {
 export function AssignDvaModal({ open, onOpenChange, customerId, onSuccess }: AssignDvaModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { accountNumber: "", accountName: "", bankName: "", provider: "VPS", currency: "NGN" },
+    defaultValues: { accountNumber: "", accountName: "", bankName: "", accountType: "customer_dedicated", provider: "VPS", currency: "NGN" },
   });
 
   const { mutateAsync: assignDva, isPending: assigning } = useMutation({
@@ -61,9 +62,9 @@ export function AssignDvaModal({ open, onOpenChange, customerId, onSuccess }: As
           accountNumber: data.accountNumber,
           accountName: data.accountName,
           bankName: data.bankName,
+          accountType: data.accountType,
           provider: data.provider ?? "VPS",
           currency: data.currency ?? "NGN",
-          accountType: "customer_dedicated",
         },
       });
     } catch {
@@ -88,6 +89,20 @@ export function AssignDvaModal({ open, onOpenChange, customerId, onSuccess }: As
         <FormField label="Bank Name" error={form.formState.errors.bankName?.message} isRequired>
           <Input {...form.register("bankName")} placeholder="VPS Dedicated Bank" />
         </FormField>
+        <FormField label="Account Type" error={form.formState.errors.accountType?.message} isRequired>
+          <Select
+            value={form.watch("accountType")}
+            onValueChange={(v) => form.setValue("accountType", v)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="customer_dedicated">Customer Dedicated</SelectItem>
+              <SelectItem value="merchant_dedicated">Merchant Dedicated</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormField>
         <FormField label="Provider" error={form.formState.errors.provider?.message}>
           <Select
             value={form.watch("provider")}
@@ -97,7 +112,9 @@ export function AssignDvaModal({ open, onOpenChange, customerId, onSuccess }: As
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="INTERSWITCH">INTERSWITCH</SelectItem>
               <SelectItem value="VPS">VPS</SelectItem>
+              <SelectItem value="MPGS">MPGS</SelectItem>
             </SelectContent>
           </Select>
         </FormField>
