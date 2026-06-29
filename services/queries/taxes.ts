@@ -1,26 +1,29 @@
 import { BareResponse, Taxes } from "@/types";
-import { deleteData, getData, postData } from "..";
+import { v1AuthenticatedApi } from "../api";
 
-export const getTaxesFn = ({
+export const getTaxesFn = async ({
   page,
   size,
 }: {
   page: number;
   size: number;
 }) => {
-  return getData<Taxes>("/tax", { page, size });
+  const { data } = await v1AuthenticatedApi().get<Taxes>("/tax", { params: { page, size } });
+  return data;
 };
 
-export const createTaxFn = ({
+export const createTaxFn = async ({
   rate,
   name,
 }: {
-  rate: number;
+  rate: number | string;
   name: string;
 }) => {
-  return postData<BareResponse>("/tax", { rate, name });
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/tax", { rate: Number(rate), name });
+  return data;
 };
 
-export const deleteTaxFn = (id: string) => {
-  return deleteData<BareResponse>("/tax", { id });
+export const deleteTaxFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().delete<BareResponse>("/tax", { data: { id } });
+  return data;
 };

@@ -8,7 +8,10 @@ import {
 import { getData, patchData, postData } from "..";
 
 export const createPaymentLinkFn = (payload: CreatePaymentLinkPayload) => {
-  return postData<CreatePaymentLinkResponse>("/paylink", payload);
+  return postData<CreatePaymentLinkResponse>("/paylink", {
+    ...payload,
+    amount: Number(payload.amount),
+  });
 };
 
 export const getPaymentLinksFn = ({

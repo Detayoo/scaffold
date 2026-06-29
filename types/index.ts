@@ -218,7 +218,7 @@ export type AcceptInvite = {
 };
 
 export type CreatePaymentLinkPayload = {
-  amount: number;
+  amount: number | string;
   currency: string;
   reason?: string;
   isReusable?: boolean;
