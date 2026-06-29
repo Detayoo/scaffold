@@ -22,10 +22,7 @@ import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { ResponsiveSheet } from "@/components/ResponsiveSheet";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { AsyncContent } from "@/components/AsyncContent";
-import { Card, CardContent } from "@/components/ui/card";
+import { PaymentLinkDetailSheet } from "@/components/PaymentLinkDetailSheet";
 import { getPaylinksFn, createPaylinkFn, updatePaylinkStatusFn } from "@/services";
 import { toastMessage, extractError, formatMoney } from "@/utils";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
@@ -52,13 +49,6 @@ function PaylinksContent() {
   const [confirmAction, setConfirmAction] = useState<"active" | "inactive">("active");
   const [newLink, setNewLink] = useState<{ url: string; reference: string } | null>(null);
   const [detailRef, setDetailRef] = useState<string | null>(null);
-
-  const { data: detailData, isFetching: detailLoading } = useQuery({
-    queryKey: ["paylink-detail", detailRef],
-    queryFn: () => getPaylinksFn({ reference: detailRef ?? undefined }),
-    enabled: !!detailRef,
-  });
-  const detailPaylink = detailData?.data?.[0];
 
   const { data, isPending, isError, refetch, isFetching } = useQuery({
     queryKey: ["paylinks", page, size, statusFilter, search],
@@ -182,55 +172,7 @@ function PaylinksContent() {
         onRowClick={(pl) => setDetailRef(pl?.reference)}
       />
 
-      <ResponsiveSheet
-        open={!!detailRef}
-        onOpenChange={(o) => { if (!o) { setDetailRef(null); } }}
-        title="Payment Link Details"
-      >
-        {detailLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
-          </div>
-        ) : detailPaylink ? (
-          <div className="space-y-4 pt-2">
-            <div>
-              <p className="text-xs text-muted-foreground">Reference</p>
-              <p className="text-sm font-medium">{detailPaylink?.reference}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Amount</p>
-              <p className="text-sm font-medium">{detailPaylink?.currency} {formatMoney(detailPaylink?.amountMinor ?? 0)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Status</p>
-              <StatusBadge status={detailPaylink?.status ?? ""} size="sm" />
-            </div>
-            {detailPaylink?.channels && detailPaylink.channels.length > 0 && (
-              <div>
-                <p className="text-xs text-muted-foreground">Channels</p>
-                <p className="text-sm capitalize">{detailPaylink.channels.join(", ")}</p>
-              </div>
-            )}
-            {detailPaylink?.payUrl && (
-              <div>
-                <p className="text-xs text-muted-foreground">URL</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="flex-1 rounded-lg border bg-muted px-3 py-2 text-xs break-all">
-                    {detailPaylink.payUrl}
-                  </code>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(detailPaylink.payUrl ?? "", "detail")}
-                    className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                  >
-                    {copied === "detail" ? <Check className="size-4" /> : <Copy className="size-4" />}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : null}
-      </ResponsiveSheet>
+      <PaymentLinkDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
 
       <ResponsiveModal
         open={createOpen}
