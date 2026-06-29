@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
-import { Filter } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { CustomerDetailSheet } from "@/modals/CustomerDetailSheet";
+import { CreateCustomerModal } from "@/modals/CreateCustomerModal";
 import { getCustomerListFn } from "@/services";
 import { withSuspense } from "@/components/withSuspense";
 import type { GatewayCustomer } from "@/types";
@@ -28,6 +29,7 @@ function CustomersContent() {
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<GatewayCustomer | null>(null);
   const [localStatus, setLocalStatus] = useState("");
 
@@ -65,6 +67,12 @@ function CustomersContent() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader title="Customers" description="View and manage your customers" />
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus />
+            Create Customer
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -114,6 +122,7 @@ function CustomersContent() {
         onRowClick={(c) => setSelectedCustomer(c)}
       />
 
+      <CreateCustomerModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
       <CustomerDetailSheet customer={selectedCustomer} onOpenChange={(o) => { if (!o) setSelectedCustomer(null); }} />
     </div>
   );
