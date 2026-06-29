@@ -69,10 +69,10 @@ export function MerchantReviewSheet({ merchant, onOpenChange }: MerchantReviewSh
     >
       {merchant ? (
         <div className="space-y-4 pt-2">
-          <div className="space-y-1">
+          <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
             <div>
               <p className="text-xs text-muted-foreground">Name</p>
-              <p className="text-sm text-foreground">{merchant?.name}</p>
+              <p className="text-sm font-medium text-foreground">{merchant?.name}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Email</p>
