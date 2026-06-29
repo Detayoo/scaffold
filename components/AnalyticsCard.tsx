@@ -22,7 +22,7 @@ export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: Analy
   };
 
   return (
-    <Card className="border">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Icon className="size-4 text-muted-foreground" />

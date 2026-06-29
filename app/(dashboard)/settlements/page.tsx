@@ -44,6 +44,11 @@ function SettlementsContent() {
 
   const columns: Column<SettlementBatch>[] = [
     {
+      key: "date",
+      header: "Date",
+      cell: (s) => <span className="text-sm text-foreground">{formatDate(s?.createdAt)}</span>,
+    },
+    {
       key: "channel",
       header: "Channel",
       cell: (s) => <span className="capitalize text-sm text-foreground">{s?.channel}</span>,
@@ -72,11 +77,6 @@ function SettlementsContent() {
       key: "reconciliation",
       header: "Reconciliation",
       cell: (s) => <StatusBadge status={s?.reconciliationStatus ?? ""} size="sm" />,
-    },
-    {
-      key: "date",
-      header: "Date",
-      cell: (s) => <span className="text-sm text-foreground">{formatDate(s?.createdAt)}</span>,
     },
   ];
 
