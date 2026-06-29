@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Download, FileText, ArrowLeftRight, Undo2, Landmark, RefreshCw, BookOpen } from "lucide-react";
 
-import { getExportsFn, getReadModelsFn, getRunbooksFn } from "@/services";
+import { getExportsFn, getExportDownloadFn, getReadModelsFn, getRunbooksFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
@@ -87,8 +87,14 @@ export default function OperationsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={job?.status} size="sm" />
-                      {job?.status === "completed" && job?.storageRef && (
-                        <Button variant="outline" size="sm" onClick={() => window.open(job.storageRef, "_blank")}>
+                      {job?.status === "completed" && (
+                        <Button variant="outline" onClick={async () => {
+                          try {
+                            const res = await getExportDownloadFn({ id: job?.id ?? "" });
+                            const ref = res?.data?.storageRef;
+                            if (ref) window.open(ref, "_blank");
+                          } catch {}
+                        }}>
                           <Download className="size-3.5" />
                           Download
                         </Button>
