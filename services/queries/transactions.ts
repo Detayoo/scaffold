@@ -1,4 +1,4 @@
-import { v1AuthenticatedApi } from "../api";
+import { v1AuthenticatedApi, v1AdminAuthenticatedApi } from "../api";
 
 export const getTransactionsFn = async ({
   reference,
@@ -52,7 +52,7 @@ export const getAuditLogsFn = async ({
   if (action) params.action = action;
   if (targetType) params.targetType = targetType;
   if (actorId) params.actorId = actorId;
-  const { data } = await v1AuthenticatedApi().get("/admin/audit-logs", { params });
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/audit-logs", { params });
   return data;
 };
 
@@ -69,7 +69,7 @@ export const getProviderHealthFn = async ({
   if (provider) params.provider = provider;
   if (channel) params.channel = channel;
   if (environment) params.environment = environment;
-  const { data } = await v1AuthenticatedApi().get("/admin/provider-health", { params });
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/provider-health", { params });
   return data;
 };
 
@@ -80,7 +80,7 @@ export const updateProviderHealthFn = async (payload: {
   status: string;
   routingEnabled: boolean;
 }) => {
-  const { data } = await v1AuthenticatedApi().post("/admin/provider-health", payload);
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/provider-health", payload);
   return data;
 };
 

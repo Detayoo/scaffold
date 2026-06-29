@@ -73,3 +73,30 @@ export const v1AuthenticatedApi = () => {
 
   return instance;
 };
+
+export const v1AdminAuthenticatedApi = () => {
+  const token = decrypt(localStorage.getItem("admin_token") ?? "") ?? null;
+  const instance = axios.create({
+    baseURL: V1_URL,
+    headers: {
+      "ngrok-skip-browser-warning": "any",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  instance.interceptors.response.use(
+    (res) => res,
+    async (err) => {
+      if (err?.response?.status === 401 && typeof window !== "undefined") {
+        toast.error("Admin session expired. Please login again.");
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_user");
+        window.location.replace("/admin/login");
+      }
+      return Promise.reject(err);
+    }
+  );
+
+  return instance;
+};
