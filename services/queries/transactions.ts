@@ -118,3 +118,75 @@ export const toggleCollectionChannelFn = async ({
   const { data } = await v1AuthenticatedApi().post("/collection-options", { channel, enabled });
   return data;
 };
+
+export const getAdminRefundsFn = async ({
+  reference,
+  status,
+}: {
+  reference?: string;
+  status?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (reference) params.reference = reference;
+  if (status) params.status = status;
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/refunds", { params });
+  return data;
+};
+
+export const createAdminRefundFn = async (payload: {
+  amount: number;
+  reference: string;
+  currency: string;
+  reason?: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/refunds", payload);
+  return data;
+};
+
+export const approveAdminRefundFn = async ({ id, note }: { id: string; note?: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/approve`, { note });
+  return data;
+};
+
+export const rejectAdminRefundFn = async ({ id, reason }: { id: string; reason?: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/reject`, { reason });
+  return data;
+};
+
+export const processAdminRefundFn = async ({
+  id,
+  executionMode,
+  provider,
+}: {
+  id: string;
+  executionMode: string;
+  provider: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/process`, { executionMode, provider });
+  return data;
+};
+
+export const markAdminRefundSucceededFn = async ({
+  id,
+  providerReference,
+  succeededAt,
+}: {
+  id: string;
+  providerReference: string;
+  succeededAt: string;
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/mark-succeeded`, {
+    providerReference,
+    evidence: { operator: "Admin" },
+    succeededAt,
+  });
+  return data;
+};
+
+export const markAdminRefundFailedFn = async ({ id, reason }: { id: string; reason?: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/mark-failed`, {
+    reason: reason ?? "Processing failed",
+    evidence: {},
+  });
+  return data;
+};
