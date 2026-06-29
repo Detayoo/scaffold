@@ -27,7 +27,6 @@ const BANKS = [
 const schema = z.object({
   name: z.string().nonempty("Name is required"),
   settlementBankAccountId: z.string().nonempty("Bank account ID is required"),
-  environment: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -41,7 +40,7 @@ interface CreateSubaccountModalProps {
 export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateSubaccountModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", settlementBankAccountId: "", environment: "test" },
+    defaultValues: { name: "", settlementBankAccountId: "" },
   });
 
   const { mutateAsync: createSubaccount, isPending: creating } = useMutation({
@@ -55,9 +54,9 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ name, settlementBankAccountId, environment }) => {
+  const handleCreate = form.handleSubmit(async ({ name, settlementBankAccountId }) => {
     try {
-      await createSubaccount({ name, settlementBankAccountId, environment: environment || undefined });
+      await createSubaccount({ name, settlementBankAccountId });
     } catch {
       // handled by onError
     }
@@ -88,20 +87,6 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
                   {bank.name}
                 </SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-        </FormField>
-        <FormField label="Environment" error={form.formState.errors.environment?.message}>
-          <Select
-            value={form.watch("environment")}
-            onValueChange={(v) => form.setValue("environment", v)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="test">Test</SelectItem>
-              <SelectItem value="live">Live</SelectItem>
             </SelectContent>
           </Select>
         </FormField>

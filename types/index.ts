@@ -259,7 +259,6 @@ export type Subaccount = {
 export type CreateSubaccountPayload = {
   name: string;
   settlementBankAccountId: string;
-  environment?: string;
   metadata?: Record<string, string>;
 };
 
