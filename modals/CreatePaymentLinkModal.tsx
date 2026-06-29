@@ -66,7 +66,7 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
       const channels: string[] = [];
       if (cardChannel) channels.push("card");
       if (transferChannel) channels.push("bank_transfer");
-      await createPaylink({ reference, amount: Number(amount) * 100, currency, channels });
+      await createPaylink({ reference, amount: Number(amount), currency, channels });
     } catch {
       // handled by onError callback
     }

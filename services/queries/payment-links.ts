@@ -29,7 +29,7 @@ export const createPaylinkFn = async ({
 }) => {
   const { data } = await v1AuthenticatedApi().post("/paylinks", {
     reference,
-    amount,
+    amountMinor: amount,
     currency,
     channels,
     metadata,
