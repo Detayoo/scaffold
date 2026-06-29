@@ -1,39 +1,56 @@
-import { BareResponse, TransactionDetails, Transactions } from "@/types";
-import { getData } from "..";
+import { v1AuthenticatedApi } from "../api";
 
-export const getTransactionDetailsFn = (id: string) => {
-  return getData<TransactionDetails>(`/transaction/details?id=${id}`);
-};
-
-export const getTransactionsFn = ({
-  page,
-  size,
+export const getTransactionsFn = async ({
   reference,
   status,
+  channel,
+  createdFrom,
+  createdTo,
+  amountMin,
+  amountMax,
 }: {
-  page: number;
-  size: number;
   reference?: string;
   status?: string;
-}) => {
-  const params: Record<string, any> = { page, size };
+  channel?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  amountMin?: number;
+  amountMax?: number;
+} = {}) => {
+  const params: Record<string, string> = {};
   if (reference) params.reference = reference;
   if (status) params.status = status;
-  return getData<Transactions>("/transaction", params);
+  if (channel) params.channel = channel;
+  if (createdFrom) params.createdFrom = createdFrom;
+  if (createdTo) params.createdTo = createdTo;
+  if (amountMin) params.amountMin = String(amountMin);
+  if (amountMax) params.amountMax = String(amountMax);
+  const { data } = await v1AuthenticatedApi().get("/transactions", { params });
+  return data;
 };
 
-export const exportTransactionsFn = ({
-  startDate,
-  endDate,
-  status,
+export const getTransactionDetailFn = async ({ reference }: { reference: string }) => {
+  const { data } = await v1AuthenticatedApi().get(`/transactions/${reference}/detail`);
+  return data;
+};
+
+export const getTransactionTimelineFn = async ({ reference }: { reference: string }) => {
+  const { data } = await v1AuthenticatedApi().get(`/transactions/${reference}/timeline`);
+  return data;
+};
+
+export const getCollectionOptionsFn = async () => {
+  const { data } = await v1AuthenticatedApi().get("/collection-options");
+  return data;
+};
+
+export const toggleCollectionChannelFn = async ({
+  channel,
+  enabled,
 }: {
-  startDate?: string;
-  endDate?: string;
-  status?: string;
+  channel: string;
+  enabled: boolean;
 }) => {
-  const params: Record<string, any> = {};
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
-  if (status) params.status = status;
-  return getData<BareResponse>("/transaction/export", params);
+  const { data } = await v1AuthenticatedApi().post("/collection-options", { channel, enabled });
+  return data;
 };

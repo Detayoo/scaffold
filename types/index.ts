@@ -98,40 +98,59 @@ export type ConfigureCollectionOptions = {
 };
 
 export type Transaction = {
-  id: string;
   reference: string;
+  created_at: string;
+  status: string;
   amount: number;
   currency: string;
-  status: string;
-  cardScheme?: string;
-  scheme?: string;
-  customerEmail?: string;
-  customerName?: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Transactions = {
-  data: {
-    transactions: Transaction[];
-  } & PaginatedResponse;
-};
-
-export type TransactionDetails = {
-  data: {
-    transaction: Transaction & {
-      fee?: number;
-      netAmount?: number;
-      channel?: string;
-      merchantId?: string;
-    };
+  customer?: { name?: string; email?: string; phone?: string };
+  settlement_status: string;
+  settlement_available_at?: string;
+  channel: string;
+  provider?: string;
+  provider_reference?: string;
+  financials?: {
+    gross_amount_minor: number;
+    fee_amount_minor: number;
+    net_amount_minor: number;
+    settlement_status: string;
+    settlement_available_at?: string;
+    ledger_status: string;
   };
 };
 
-export type ExportTransactions = {
-  startDate?: string;
-  endDate?: string;
-  status?: string;
+export type TimelineEntry = {
+  occurred_at: string;
+  source: string;
+  type: string;
+  source_id: string;
+  data?: Record<string, any>;
+};
+
+export type TransactionDetail = {
+  status: boolean;
+  data: {
+    paymentIntent: Record<string, any>;
+    attempts: any[];
+    refunds: any[];
+    disputes: any[];
+    credits: any[];
+    splitAllocations: any[];
+    splitLiabilities: any[];
+    financials: Record<string, any>;
+    timeline: TimelineEntry[];
+  };
+};
+
+export type CollectionOption = {
+  id: string;
+  merchantId: string;
+  environment: string;
+  channel: string;
+  enabled: boolean;
+  routingPolicyId?: string;
+  settlementPolicyId?: string;
+  riskPolicyId?: string;
 };
 
 export type Refund = {

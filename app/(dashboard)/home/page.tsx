@@ -26,11 +26,11 @@ export default function HomePage() {
 
   const { data: txData, isPending: txPending, isFetching: txLoading, isError: txError, refetch: refetchTx } = useQuery({
     queryKey: ["dashboard-transactions"],
-    queryFn: () => getTransactionsFn({ page: 1, size: 5 }),
+    queryFn: () => getTransactionsFn(),
   });
 
   const home = homeData?.data;
-  const transactions = txData?.data?.transactions;
+  const transactions = txData?.data;
 
   const stats = [
     { icon: Receipt, label: "Today", value: home?.today?.transactionCount },
@@ -107,18 +107,18 @@ export default function HomePage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {transactions.map((tx) => (
-                        <tr key={tx?.id} className="border-b last:border-0">
+{transactions.map((tx: any) => (
+                        <tr key={tx?.reference} className="border-b last:border-0">
                           <td className="px-4 py-3 text-sm text-foreground">{tx?.reference}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
                           <td className="px-4 py-3">
                             <StatusBadge status={tx?.status} />
                           </td>
-                          <td className="hidden px-4 py-3 text-foreground md:table-cell">
-                            {tx?.customerName ?? tx?.customerEmail ?? "—"}
+                          <td className="hidden px-4 py-3 text-sm text-muted-foreground md:table-cell">
+                            {tx?.customer?.name ?? tx?.customer?.email ?? "—"}
                           </td>
-                          <td className="px-4 py-3 text-right text-sm text-foreground">
-                            {formatDate(tx?.createdAt)}
+                          <td className="px-4 py-3 text-right text-sm text-muted-foreground">
+                            {tx?.created_at ? formatDate(tx?.created_at) : "—"}
                           </td>
                         </tr>
                       ))}

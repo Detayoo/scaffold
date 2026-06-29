@@ -1,16 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { Download, Filter } from "lucide-react";
+import { useQueryState, parseAsString } from "nuqs";
+import { Filter, Download } from "lucide-react";
 
-import { getTransactionsFn, getTransactionDetailsFn, exportTransactionsFn } from "@/services";
-import { DataTable, type Column } from "@/components/DataTable";
-import { referenceColumn, amountColumn, statusColumn, dateColumn } from "@/components/ColumnHelpers";
-import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -18,122 +13,86 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { FilterModal } from "@/components/FilterModal";
-import { DetailRow } from "@/components/DetailRow";
-import { DetailSheet } from "@/components/DetailSheet";
-import { formatDate, formatMoney, toastMessage, extractError } from "@/utils";
-import { ErrorState } from "@/components/ErrorState";
-import { withSuspense } from "@/components/withSuspense";
-import { DatePicker } from "@/components/DatePicker";
+import { Input } from "@/components/ui/input";
+import { FormField } from "@/components/FormField";
+import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
-import type { Transaction, TransactionDetails } from "@/types";
+import { StatusBadge } from "@/components/StatusBadge";
+import { FilterModal } from "@/components/FilterModal";
+import { ExportModal } from "@/components/ExportModal";
+import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
+import { getTransactionsFn } from "@/services";
+import { formatMoney, formatDate } from "@/utils";
+import { withSuspense } from "@/components/withSuspense";
+import type { Transaction } from "@/types";
+
 function TransactionsContent() {
-  const [currentPage, setCurrentPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [perPage, setPerPage] = useQueryState("size", parseAsInteger.withDefault(10));
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
-  const [reference, setReference] = useQueryState("ref", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+  const [channelFilter, setChannelFilter] = useQueryState("channel", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
-  const [localStatusFilter, setLocalStatusFilter] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
-  const [exportStartDate, setExportStartDate] = useQueryState("from", parseAsString.withDefault(""));
-  const [exportEndDate, setExportEndDate] = useQueryState("to", parseAsString.withDefault(""));
-  const [exportStatus, setExportStatus] = useQueryState("estatus", parseAsString.withDefault(""));
-  const [exporting, setExporting] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailRef, setDetailRef] = useState<string | null>(null);
+  const [localStatus, setLocalStatus] = useState("");
+  const [localChannel, setLocalChannel] = useState("");
 
-  const { data, isPending, isError, error, refetch, isFetching } = useQuery({
-    queryKey: ["transactions", currentPage, perPage, reference, statusFilter],
-    queryFn: () => getTransactionsFn({ page: currentPage, size: perPage, reference: reference || undefined, status: statusFilter || undefined }),
+  const { data, isPending, isError, refetch, isFetching } = useQuery({
+    queryKey: ["transactions", statusFilter, channelFilter, searchInput],
+    queryFn: () =>
+      getTransactionsFn({
+        reference: searchInput || undefined,
+        status: statusFilter || undefined,
+        channel: channelFilter || undefined,
+      }),
   });
 
-  const {
-    data: detailData,
-    isPending: detailPending,
-    isError: detailError,
-    refetch: refetchDetail,
-  } = useQuery({
-    queryKey: ["transaction-detail", selectedId],
-    queryFn: () => getTransactionDetailsFn(selectedId!),
-    enabled: !!selectedId,
-  });
-
-  const transactionDetail = detailData as TransactionDetails | undefined;
-  const transactions = data?.data?.transactions;
-
-  const handleSearch = useCallback(() => {
-    setReference(searchInput);
-    setCurrentPage(1);
-  }, [searchInput]);
-
-  const handleClearSearch = useCallback(() => {
-    setSearchInput("");
-    setReference("");
-    setCurrentPage(1);
-  }, []);
-
-  const handleRowClick = useCallback((tx: Transaction) => {
-    setSelectedId(tx.id);
-    setDetailOpen(true);
-  }, []);
-
-  const handleExport = useCallback(async () => {
-    setExporting(true);
-    try {
-      await exportTransactionsFn({
-        startDate: exportStartDate || undefined,
-        endDate: exportEndDate || undefined,
-        status: exportStatus || undefined,
-      });
-      toastMessage("success", "Export initiated. You will receive an email when ready.");
-      setExportOpen(false);
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    } finally {
-      setExporting(false);
-    }
-  }, [exportStartDate, exportEndDate, exportStatus]);
+  const transactions = data?.data;
 
   const columns: Column<Transaction>[] = [
-    referenceColumn((tx) => tx.reference),
-    amountColumn((tx) => tx.amount),
-    statusColumn((tx) => tx.status),
+    {
+      key: "reference",
+      header: "Reference",
+      cell: (tx) => <span className="text-sm text-foreground">{tx?.reference}</span>,
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      cell: (tx) => <span className="text-sm text-foreground">{formatMoney(tx?.amount)}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (tx) => <StatusBadge status={tx?.status} size="sm" />,
+    },
+    {
+      key: "channel",
+      header: "Channel",
+      cell: (tx) => <span className="text-sm text-foreground capitalize">{tx?.channel}</span>,
+    },
     {
       key: "customer",
       header: "Customer",
-      className: "hidden md:table-cell",
       cell: (tx) => (
-        <span className="text-muted-foreground">
-          {tx.customerName ?? tx.customerEmail ?? "—"}
+        <span className="text-sm text-foreground">
+          {tx?.customer?.name ?? tx?.customer?.email ?? "—"}
         </span>
       ),
     },
-    dateColumn((tx) => tx.createdAt),
-  ];
-
-  const itemOffset = (currentPage - 1) * perPage;
-
-  const statusOptions = [
-    { value: "", label: "All Statuses" },
-    { value: "success", label: "Success" },
-    { value: "failed", label: "Failed" },
-    { value: "pending", label: "Pending" },
-    { value: "abandoned", label: "Abandoned" },
-    { value: "refunded", label: "Refunded" },
+    {
+      key: "created_at",
+      header: "Date",
+      cell: (tx) => (
+        <span className="text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
+      ),
+    },
   ];
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <PageHeader title="Transactions" description="View and manage all your transactions" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader title="Transactions" description="View and search all your transactions" />
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setFilterOpen(true)}>
-            <Filter className="size-4" />
-            Filter
-          </Button>
           <Button variant="outline" onClick={() => setExportOpen(true)}>
             <Download className="size-4" />
             Export
@@ -141,142 +100,76 @@ function TransactionsContent() {
         </div>
       </div>
 
-      <SearchInput
-        value={searchInput}
-        onChange={setSearchInput}
-        onSearch={handleSearch}
-        onClear={handleClearSearch}
-        showClear={!!reference}
-        placeholder="Search by reference..."
-      />
+      <div className="flex items-center gap-2">
+        <SearchInput
+          value={searchInput}
+          onChange={setSearchInput}
+          onSearch={() => {}}
+          onClear={() => setSearchInput("")}
+          showClear={!!searchInput}
+          placeholder="Search by reference..."
+          className="flex-1"
+        />
+        <Button variant="outline" className="size-10" onClick={() => { setLocalStatus(statusFilter); setLocalChannel(channelFilter); setFilterOpen(true); }}>
+          <Filter className="size-4" />
+        </Button>
+      </div>
+
+      <FilterModal
+        open={filterOpen}
+        onOpenChange={(open) => { setFilterOpen(open); if (open) { setLocalStatus(statusFilter); setLocalChannel(channelFilter); } }}
+        onApply={() => { setStatusFilter(localStatus); setChannelFilter(localChannel); setFilterOpen(false); }}
+        onClear={() => { setLocalStatus(""); setLocalChannel(""); setStatusFilter(""); setChannelFilter(""); setFilterOpen(false); }}
+      >
+        <div className="space-y-4">
+          <FormField label="Status">
+            <Select value={localStatus} onValueChange={setLocalStatus}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All statuses</SelectItem>
+                <SelectItem value="succeeded">Succeeded</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="requires_action">Requires Action</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="expired">Expired</SelectItem>
+                <SelectItem value="canceled">Canceled</SelectItem>
+                <SelectItem value="refunded">Refunded</SelectItem>
+                <SelectItem value="disputed">Disputed</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Channel">
+            <Select value={localChannel} onValueChange={setLocalChannel}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All channels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All channels</SelectItem>
+                <SelectItem value="card">Card</SelectItem>
+                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+        </div>
+      </FilterModal>
 
       <DataTable
         columns={columns}
         data={transactions}
         isPending={isPending}
         isError={isError}
-        error={error}
         onRetry={refetch}
-        pageCount={data?.data?.totalPages}
-        currentPage={currentPage - 1}
-        perPage={perPage}
-        totalRecords={data?.data?.totalRecords}
-        itemOffset={itemOffset}
-        onPageChange={(selected) => setCurrentPage(selected + 1)}
-        onPerPageChange={(size) => setPerPage(size)}
         isFetching={isFetching}
-        onRowClick={handleRowClick}
         emptyTitle="No transactions found"
-        emptyDescription={reference ? "Try a different search term" : undefined}
+        emptyDescription={searchInput ? "Try a different search term" : "No transactions yet"}
+        onRowClick={(tx) => setDetailRef(tx?.reference)}
       />
 
-      <FilterModal
-        open={filterOpen}
-        onOpenChange={(open) => {
-          setFilterOpen(open);
-          if (open) setLocalStatusFilter(statusFilter);
-        }}
-        onApply={() => {
-          setStatusFilter(localStatusFilter);
-          setCurrentPage(1);
-          setFilterOpen(false);
-        }}
-        onClear={() => {
-          setLocalStatusFilter("");
-          setStatusFilter("");
-          setCurrentPage(1);
-          setFilterOpen(false);
-        }}
-      >
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">Status</label>
-          <Select value={localStatusFilter} onValueChange={setLocalStatusFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </FilterModal>
+      <ExportModal open={exportOpen} onOpenChange={setExportOpen} exportType="transactions" label="Transactions" />
 
-      <ResponsiveModal open={exportOpen} onOpenChange={setExportOpen} title="Export Transactions">
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Status</label>
-            <Select value={exportStatus} onValueChange={setExportStatus}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="All statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <DatePicker value={exportStartDate ? new Date(exportStartDate) : undefined} onChange={(d) => setExportStartDate(d ? d.toISOString().split("T")[0] : "")} label="Start Date" />
-            <DatePicker value={exportEndDate ? new Date(exportEndDate) : undefined} onChange={(d) => setExportEndDate(d ? d.toISOString().split("T")[0] : "")} label="End Date" />
-          </div>
-          <Button variant="default" className="w-full" onClick={handleExport} disabled={exporting}>
-            {exporting ? "Exporting..." : "Export"}
-          </Button>
-        </div>
-      </ResponsiveModal>
-
-      <DetailSheet
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-        title="Transaction Details"
-        isLoading={detailPending}
-        isError={detailError || !transactionDetail?.data?.transaction}
-        onRetry={refetchDetail}
-        errorMessage="Could not load transaction details"
-      >
-          {(() => {
-            const tx = transactionDetail?.data?.transaction;
-            if (!tx) return null;
-            return (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <DetailRow label="Reference" value={tx.reference} mono />
-                  <DetailRow label="Status" value={<StatusBadge status={tx.status} size="sm" />} />
-                  <DetailRow label="Amount" value={formatMoney(tx.amount)} />
-                  {tx.fee !== undefined && (
-                    <DetailRow label="Fee" value={formatMoney(tx.fee)} />
-                  )}
-                  {tx.netAmount !== undefined && (
-                    <DetailRow label="Net Amount" value={formatMoney(tx.netAmount)} />
-                  )}
-                  <DetailRow label="Currency" value={tx.currency} />
-                  {tx.channel && (
-                    <DetailRow label="Channel" value={tx.channel} capitalize />
-                  )}
-                  {tx.cardScheme && (
-                    <DetailRow label="Card Scheme" value={tx.cardScheme} />
-                  )}
-                  <DetailRow label="Customer" value={tx.customerName ?? tx.customerEmail ?? "—"} className="col-span-2" />
-                  <DetailRow label="Date" value={formatDate(tx.createdAt)} className="col-span-2" />
-                </div>
-                <Separator />
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">
-                    <Download className="size-4" />
-                    Download Receipt
-                  </Button>
-                </div>
-              </div>
-            );
-          })()}
-      </DetailSheet>
+      <TransactionDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
     </div>
   );
 }

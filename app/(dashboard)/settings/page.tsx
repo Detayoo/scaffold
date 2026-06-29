@@ -62,7 +62,7 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
   replayWebhookEventFn,
   changePasswordFn,
 } from "@/services";
-import { getTaxesFn, createTaxFn, deleteTaxFn } from "@/services";
+import { getTaxesFn, createTaxFn, deleteTaxFn, getCollectionOptionsFn, toggleCollectionChannelFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 import { changePasswordSchema, createTaxSchema } from "@/utils/validators";
 import type { Column } from "@/components/DataTable";
@@ -74,6 +74,7 @@ const tabs = [
   { id: "keys", label: "API Keys", icon: Key },
   { id: "webhook", label: "Webhook", icon: Webhook },
   { id: "taxes", label: "Taxes", icon: Percent },
+  { id: "channels", label: "Channels", icon: List },
 ];
 
 export default function SettingsPage() {
@@ -113,6 +114,7 @@ export default function SettingsPage() {
           {tab === "keys" && <APIKeysSection />}
           {tab === "webhook" && <WebhookSection />}
           {tab === "taxes" && <TaxesSection />}
+          {tab === "channels" && <ChannelsSection />}
         </div>
       </div>
     </div>
@@ -849,15 +851,79 @@ function TaxesSection() {
       </ResponsiveModal>
 
       <ConfirmDialog
-        open={!!deleteTarget}
+        open={deleteTarget !== null}
         onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}
-        title="Delete Tax"
+        title="Delete Tax Rate"
         description="Are you sure? This action cannot be undone."
         confirmLabel="Delete"
         variant="destructive"
         onConfirm={() => deleteTarget && removeTax(deleteTarget)}
         loading={deleting}
       />
+    </div>
+  );
+}
+
+function ChannelsSection() {
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["collection-options"],
+    queryFn: () => getCollectionOptionsFn(),
+  });
+
+  const { mutateAsync: toggleChannel, isPending: toggling } = useMutation({
+    mutationFn: toggleCollectionChannelFn,
+    onSuccess: () => {
+      toastMessage("success", "Channel updated");
+      refetch();
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
+  const channels = data?.data;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-base font-semibold text-foreground">Collection Channels</h2>
+        <p className="text-sm text-muted-foreground">Enable or disable payment collection channels</p>
+      </div>
+
+      {isPending ? (
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      ) : isError ? (
+        <p className="text-sm text-destructive">Failed to load channels.</p>
+      ) : !channels || channels.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No channels configured.</p>
+      ) : (
+        <div className="space-y-3">
+          {channels.map((ch: any) => (
+            <div key={ch?.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+              <div>
+                <p className="text-sm font-medium text-foreground capitalize">{ch?.channel}</p>
+                <p className="text-xs text-muted-foreground capitalize">{ch?.environment}</p>
+              </div>
+              <button
+                type="button"
+                disabled={toggling}
+                onClick={async () => {
+                  try {
+                    await toggleChannel({ channel: ch.channel, enabled: !ch.enabled });
+                  } catch {}
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                  ch?.enabled ? "bg-foreground" : "bg-muted-foreground/30"
+                }`}
+              >
+                <span
+                  className={`inline-block size-5 rounded-full bg-background transition-transform ${
+                    ch?.enabled ? "translate-x-6" : "translate-x-0.5"
+                  }`}
+                />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
