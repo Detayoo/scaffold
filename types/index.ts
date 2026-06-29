@@ -173,6 +173,49 @@ export type CreateRefundPayload = {
   metadata?: Record<string, any>;
 };
 
+export type DisputeCase = {
+  id: string;
+  reference: string;
+  amountMinor: number;
+  currency: string;
+  status: string;
+  reason?: string;
+};
+
+export type DisputeEvidenceItem = {
+  evidenceType: string;
+  note?: string;
+};
+
+export type DisputeHold = {
+  amountMinor: number;
+  currency: string;
+  status: string;
+};
+
+export type DisputeEvidencePack = {
+  customer: { name: string };
+  split_liabilities: Array<{ amountMinor: number; currency: string }>;
+  settlement_status: string;
+};
+
+export type DisputeDetail = {
+  status: boolean;
+  data: {
+    dispute: DisputeCase;
+    evidence: DisputeEvidenceItem[];
+    holds: DisputeHold[];
+    evidencePack: DisputeEvidencePack;
+  };
+};
+
+export type SubmitEvidencePayload = {
+  evidenceType: string;
+  note?: string;
+  files?: Array<{ file_name: string; url: string }>;
+  metadata?: Record<string, string>;
+};
+
 export type CreateInviteType = {
   email: string;
   firstName: string;

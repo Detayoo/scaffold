@@ -7,6 +7,7 @@ import {
   Receipt,
   ArrowLeftRight,
   Undo2,
+  Scale,
   FileText,
   Users,
   Settings,
@@ -41,6 +42,7 @@ const mainNav = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
   { name: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { name: "Refunds", url: "/refunds", icon: Undo2 },
+  { name: "Disputes", url: "/disputes", icon: Scale },
   { name: "Settlements", url: "/settlements", icon: Landmark },
   { name: "Operations", url: "/operations", icon: Settings },
 ];

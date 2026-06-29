@@ -10,4 +10,5 @@ export * from "./payment-links";
 export * from "./invoices";
 export * from "./team";
 export * from "./refunds";
+export * from "./disputes";
 export * from "./taxes";
