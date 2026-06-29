@@ -69,6 +69,7 @@ function SettlementsContent() {
       key: "net",
       header: "Net",
       className: "w-32",
+      cell: (s) => <span className="text-sm text-foreground">{formatMoney(s?.netAmountMinor)}</span>,
     },
     {
       key: "status",

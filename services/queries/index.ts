@@ -2,6 +2,7 @@ export * from "./auth";
 export * from "./keys";
 export * from "./webhooks";
 export * from "./finance";
+export * from "./operations";
 export * from "./transactions";
 export * from "./collections";
 export * from "./settings";
