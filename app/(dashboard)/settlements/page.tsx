@@ -6,12 +6,12 @@ import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Landmark } from "lucide-react";
 
 import { getSettlementsFn, getBalancesFn } from "@/services";
+import { AnalyticsCard } from "@/components/AnalyticsCard";
 import { DataTable, type Column } from "@/components/DataTable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
-import { AsyncContent } from "@/components/AsyncContent";
+import { SectionHeader } from "@/components/SectionHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatDate, formatMoney, formatMoneyCompact } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 import type { SettlementBatch } from "@/types/finance";
 import { withSuspense } from "@/components/withSuspense";
 
@@ -26,7 +26,7 @@ function SettlementsContent() {
     queryFn: () => getSettlementsFn({ status: statusFilter || undefined }),
   });
 
-  const { data: balData, isPending: balPending, isError: balError, refetch: refetchBal } = useQuery({
+  const { data: balData } = useQuery({
     queryKey: ["settlement-balances"],
     queryFn: () => getBalancesFn({}),
   });
@@ -89,28 +89,13 @@ function SettlementsContent() {
     <div className="space-y-6">
       <PageHeader title="Settlements" description="View and manage your settlement batches" />
 
-      <AsyncContent isPending={balPending} isError={balError} onRetry={refetchBal} errorMessage="Failed to load balances">
-        {balanceItems.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Landmark className="size-4 text-muted-foreground" />
-                Get merchant ledger-derived balances
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                {balanceItems.map((b) => (
-                  <div key={b.label}>
-                    <p className="text-xs text-muted-foreground">{b.label}</p>
-                    <p className="text-lg font-semibold mt-0.5">{formatMoneyCompact(b?.value)}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </AsyncContent>
+      <SectionHeader title="Get merchant ledger-derived balances" description="Pending, available, held, settlement payable, and paid balances" />
+
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {balanceItems.map((b) => (
+          <AnalyticsCard key={b.label} icon={Landmark} label={b.label} value={b.value} compact />
+        ))}
+      </div>
 
       <DataTable
         columns={columns}

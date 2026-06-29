@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark } from "lucide-react";
 import Link from "next/link";
-import { CountUp } from "@/components/CountUp";
+import { AnalyticsCard } from "@/components/AnalyticsCard";
 import { useAuth } from "@/contexts/auth-context";
 import { getTransactionsFn, getDashboardHomeFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,7 @@ export default function HomePage() {
   const { merchant } = useAuth();
   const today = format(new Date(), "EEEE, MMMM do, yyyy");
 
-  const { data: homeData, isPending: homePending } = useQuery({
+  const { data: homeData } = useQuery({
     queryKey: ["dashboard-home"],
     queryFn: getDashboardHomeFn,
   });
@@ -33,29 +33,10 @@ export default function HomePage() {
   const transactions = txData?.data?.transactions;
 
   const stats = [
-    {
-      icon: Receipt,
-      label: "Today",
-      value: home?.today?.transactionCount,
-    },
-    {
-      icon: TrendingUp,
-      label: "Volume",
-      value: home?.today?.successVolumeMinor,
-      compact: true,
-    },
-    {
-      icon: Landmark,
-      label: "Pending Settlement",
-      value: home?.pendingSettlementMinor,
-      compact: true,
-    },
-    {
-      icon: RefreshCw,
-      label: "Available",
-      value: home?.availableBalanceMinor,
-      compact: true,
-    },
+    { icon: Receipt, label: "Today", value: home?.today?.transactionCount },
+    { icon: TrendingUp, label: "Volume", value: home?.today?.successVolumeMinor, compact: true },
+    { icon: Landmark, label: "Pending Settlement", value: home?.pendingSettlementMinor, compact: true },
+    { icon: RefreshCw, label: "Available", value: home?.availableBalanceMinor, compact: true },
   ];
 
   const quickActions = [
@@ -71,31 +52,11 @@ export default function HomePage() {
         <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
       </div>
 
-      <AsyncContent isPending={homePending} isError={false}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
-          <Card key={s.label}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <s.icon className="size-4 text-muted-foreground" />
-                {s.label}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-semibold">
-                {s.value !== undefined && s.value !== null ? (
-                  s.compact ? (
-                    <CountUp end={s.value} />
-                  ) : (
-                    <CountUp end={s.value} />
-                  )
-                ) : "—"}
-              </p>
-            </CardContent>
-          </Card>
+          <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
         ))}
       </div>
-      </AsyncContent>
 
       <div>
         <Card>

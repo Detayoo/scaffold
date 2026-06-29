@@ -35,6 +35,7 @@ Settings tabs: Webhooks, Adjustments
 ## Architecture Decisions
 
 ### Shared components to build
+- **AnalyticsCard** — reusable card for analytics/metrics display. Props: `icon: LucideIcon`, `label: string`, `value?: number | string | null`, `compact?: boolean`, `mono?: boolean`. Defaults to `"—"` when value is null/undefined. No loading state — numbers default to 0. Handles CountUp animation internally.
 - **Timeline** - vertical chronological component for payment lifecycle
 - **EvidencePack** - file upload + viewer for disputes
 - **FilterBar** - reusable filter with nuqs state management
@@ -108,6 +109,7 @@ These are non-negotiable. Every single file must follow these patterns.
 - The `mutateAsync` pattern wrapped in try/catch is used at the FORM SUBMIT level (handleSubmit), not inside mutation callbacks
 - `isPending` for initial load gating, `isFetching` for background refetch overlay
 - Query keys: simple strings or arrays like `["merchant"]`, `["transactions", page, size]`
+- **Analytics cards/metrics displays have NO loading state** — no `isPending`/`isFetching` gating. Default to 0 or "—" as fallback until data arrives. These are decorative widgets, not primary content. The shimmer/empty loading pattern only applies to tables, lists, and detail views.`
 
 **Forms (react-hook-form + zod):**
 - Every form uses `zodResolver` with `@hookform/resolvers/zod`
