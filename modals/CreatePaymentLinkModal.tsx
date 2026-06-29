@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Copy, Check, Plus } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ const createSchema = z.object({
   reference: z.string().nonempty("Reference is required"),
   amount: z.string().nonempty("Amount is required"),
   currency: z.string().nonempty("Currency is required"),
+  cardChannel: z.boolean().optional(),
+  transferChannel: z.boolean().optional(),
 });
 
 type CreateForm = z.infer<typeof createSchema>;
@@ -43,8 +45,11 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
 
   const form = useForm<CreateForm>({
     resolver: zodResolver(createSchema),
-    defaultValues: { reference: "", amount: "", currency: "NGN" },
+    defaultValues: { reference: "", amount: "", currency: "NGN", cardChannel: true, transferChannel: false },
   });
+
+  const cardChannel = form.watch("cardChannel");
+  const transferChannel = form.watch("transferChannel");
 
   const { mutateAsync: createPaylink, isPending: creating } = useMutation({
     mutationFn: createPaylinkFn,
@@ -56,8 +61,11 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ reference, amount, currency }) => {
-    await createPaylink({ reference, amount: Math.round(parseFloat(amount) * 100), currency });
+  const handleCreate = form.handleSubmit(async ({ reference, amount, currency, cardChannel, transferChannel }) => {
+    const channels: string[] = [];
+    if (cardChannel) channels.push("card");
+    if (transferChannel) channels.push("bank_transfer");
+    await createPaylink({ reference, amount: Math.round(parseFloat(amount) * 100), currency, channels });
   });
 
   const handleCopy = async (text: string) => {
@@ -68,7 +76,7 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
   return (
     <ResponsiveModal
       open={open}
-      onOpenChange={(o) => { if (!o) { onOpenChange(false); setNewLink(null); form.reset(); } }}
+      onOpenChange={(o) => { if (!o && !creating && !newLink) { onOpenChange(false); form.reset(); } if (!o && newLink) { onOpenChange(false); setNewLink(null); form.reset(); } }}
       title="Create Payment Link"
       description="Generate a new shareable payment link"
     >
@@ -115,8 +123,31 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
               </SelectContent>
             </Select>
           </FormField>
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Channels</p>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cardChannel}
+                  onChange={(e) => form.setValue("cardChannel", e.target.checked)}
+                  className="size-4 rounded border-border text-foreground focus:ring-ring"
+                />
+                <span className="text-sm">Card</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={transferChannel}
+                  onChange={(e) => form.setValue("transferChannel", e.target.checked)}
+                  className="size-4 rounded border-border text-foreground focus:ring-ring"
+                />
+                <span className="text-sm">Bank Transfer</span>
+              </label>
+            </div>
+          </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>
             <Button type="submit" disabled={creating}>{creating ? "Creating..." : "Create Link"}</Button>
           </div>
         </form>

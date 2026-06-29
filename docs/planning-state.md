@@ -203,6 +203,7 @@ return <ActualContent data={data} />;
 - `useMutation({ mutationFn, onSuccess, onError })` — success/error handled in callbacks
 - Clear form on success: `reset()` or `setValue()`
 - Optimistic updates when appropriate, always rollback on error
+- **Modals and confirm dialogs must never close on failure** — only close on success. Guard `onOpenChange` to reject close attempts while `loading`/`creating`/`updating` is `true`. On error, keep the modal open so the user can retry. This applies to `ResponsiveModal`, `ConfirmDialog`, and any other dialog/sheet.
 
 ### Mandatory post-feature assessment
 After every feature is built, run a full assessment checking:
