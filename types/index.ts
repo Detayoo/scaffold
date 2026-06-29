@@ -134,38 +134,43 @@ export type ExportTransactions = {
   status?: string;
 };
 
-export type InitiateRefundResponse = {
-  type: string;
-  amount: number;
+export type Refund = {
+  id: string;
   reference: string;
+  amountMinor: number;
+  currency: string;
+  status: string;
   reason?: string;
 };
 
-export type Refund = {
+export type RefundAttempt = {
   id: string;
-  type: string;
-  amount: number;
-  reference: string;
-  transactionReference: string;
+  provider: string;
+  channel: string;
+  executionMode: string;
+  amountMinor: number;
+  currency: string;
   status: string;
-  reason: string;
-  createdAt: string;
-};
-
-export type Refunds = {
-  data: {
-    refunds: Refund[];
-  } & PaginatedResponse;
 };
 
 export type RefundDetails = {
+  status: boolean;
   data: {
-    refund: Refund & {
-      merchantId: string;
-      transactionId: string;
-      updatedAt: string;
-    };
+    refund: Refund;
+    attempts: RefundAttempt[];
   };
+};
+
+export type CreateRefundPayload = {
+  amount: number;
+  reference: string;
+  currency: string;
+  paymentIntentId?: string;
+  reason?: string;
+  executionMode?: string;
+  feePolicy?: string;
+  evidence?: Record<string, any>;
+  metadata?: Record<string, any>;
 };
 
 export type CreateInviteType = {

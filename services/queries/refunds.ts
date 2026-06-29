@@ -1,44 +1,26 @@
-import { deleteData, getData, patchData, postData } from "..";
-import {
-  BareResponse,
-  InitiateRefundResponse,
-  RefundDetails,
-  Refunds,
-} from "@/types";
+import { v1AuthenticatedApi } from "../api";
+import type { CreateRefundPayload } from "@/types";
 
-export const initiateRefundFn = (payload: InitiateRefundResponse) => {
-  return postData<BareResponse>("/transaction/refund", payload);
-};
-
-export const getRefundsFn = ({
-  page,
-  size,
-  merchantId,
+export const getRefundsFn = async ({
   reference,
+  status,
 }: {
-  page: number;
-  size: number;
-  merchantId?: string;
   reference?: string;
-}) => {
-  const params: Record<string, any> = { page, size };
+  status?: string;
+} = {}) => {
+  const params: Record<string, string> = {};
   if (reference) params.reference = reference;
-  if (merchantId) params.merchantId = merchantId;
-  return getData<Refunds>("/transaction/refund", params);
+  if (status) params.status = status;
+  const { data } = await v1AuthenticatedApi().get("/refunds", { params });
+  return data;
 };
 
-export const approveRefundFn = ({ id }: { id: string }) => {
-  return patchData<BareResponse>("/transaction/refund", { id });
+export const createRefundFn = async (payload: CreateRefundPayload) => {
+  const { data } = await v1AuthenticatedApi().post("/refunds", payload);
+  return data;
 };
 
-export const deleteRefundRequestFn = ({ id }: { id: string }) => {
-  return deleteData<BareResponse>("/transaction/refund", { id });
-};
-
-export const getRefundDetailsFn = ({ id }: { id: string }) => {
-  return getData<RefundDetails>("/transaction/refund/detail", { id });
-};
-
-export const getRefundStatusFn = ({ reference }: { reference: string }) => {
-  return getData<BareResponse>("/transaction/refund/status", { reference });
+export const getRefundDetailsFn = async ({ id }: { id: string }) => {
+  const { data } = await v1AuthenticatedApi().get(`/refunds/${id}`);
+  return data;
 };
