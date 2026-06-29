@@ -39,7 +39,7 @@ Settings tabs: Webhooks, Adjustments
 
 **Batch 3 — Provider Health:** `GET /v1/admin/provider-health`, `POST /v1/admin/provider-health`. List providers with status badges + toggle to enable/disable routing.
 
-**Batch 4 — Merchant Review:** `POST /v1/admin/merchants/{id}/review`. List merchants → detail sheet with status/risk tier update.
+**Batch 4 — Merchant Review:** `POST /v1/admin/merchants/{id}/review`, `GET /v1/admin/payments/{reference}/timeline` (inspect merchant payment timeline). List merchants → detail sheet with status/risk tier update → payment timeline tab.
 
 **Batch 5 — Admin Refunds:** `GET /v1/admin/refunds` + `POST /v1/admin/refunds` + `POST .../refunds/{id}/approve|reject|process|mark-succeeded|mark-failed`.
 
