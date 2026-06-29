@@ -303,6 +303,7 @@ Rules:
 - No custom modal sizes per-feature — use the standard `ResponsiveModal`, `ResponsiveSheet`, or `WideSheet`
 - Close button always in top-right
 - Content scrolls internally when long, never the page behind
+- **Every modal, sheet, or dialog MUST be its own component file** — never inline them in a page. The page only imports and renders the component. This keeps the page lean and the modal self-contained with its own state, queries, and mutations.
 
 ### UI rules
 - **No backdrop blur** (`backdrop-blur-*`) anywhere in the app — keep it clean and flat
