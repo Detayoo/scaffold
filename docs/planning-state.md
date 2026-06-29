@@ -2,20 +2,20 @@
 
 ## Roles
 
-### Merchant Sidebar (7 main)
-1. Home
-2. Transactions
-3. Refunds
-4. Customers
-5. Disputes
-6. Settlements
-7. Team
+### Merchant Sidebar (8 main)
+1. Home (with balances/analytics)
+2. Payment Links
+3. Transactions
+4. Refunds
+5. Customers
+6. Disputes
+7. Settlements
+8. Developers
 
 Settings tabs: Profile, Security, API Keys, Webhook Endpoints, Webhook Logs (WideSheet), Split Rules, Subaccounts
+Team commented out.
 
-Invoices + Payment Links: code kept, commented out of sidebar.
-
-### Admin Sidebar (7 main)
+### Admin Sidebar (8 main)
 1. Home
 2. Merchants
 3. Settlements
@@ -23,8 +23,9 @@ Invoices + Payment Links: code kept, commented out of sidebar.
 5. Refunds
 6. Disputes
 7. Audit Logs
+8. Provider Health
 
-Settings tabs: Webhooks, Provider Health, Adjustments
+Settings tabs: Webhooks, Adjustments
 
 ## Architecture Decisions
 
@@ -37,10 +38,18 @@ Settings tabs: Webhooks, Provider Health, Adjustments
 - **TableActions** - vertical three-dots (kebab) button using shadcn's `DropdownMenu` component. Used for all inline table row actions. Ensures consistent action placement across every table in the app
 - **DocumentationButton** - link button in dashboard header that opens documentation URL in a new tab. Uses `CONFIG.DOCUMENTATION_URL` from config.ts
 
+### Routing convention
+- Merchant routes: **no prefix** — `/transactions`, `/settlements`, `/home`
+- Admin routes: **`/admin` prefix** — `/admin/merchants`, `/admin/settlements`
+- App Router route groups: `app/(dashboard)/` for merchant, `app/admin/(dashboard)/` for admin
+- No `/merchant` prefix — merchants are the primary user, they get clean URLs
+
 ### Merchant/Admin sharing pattern
-- Same component, different route wrapper
-- Merchant knows `merchant_id: me` from auth context
-- Admin can filter by merchant_id
+- Same component for shared pages (transactions, settlements, refunds, disputes)
+- Merchant route passes `merchantId: me` from auth context
+- Admin route can filter by specific merchantId or show all
+- Admin-only pages get their own components (Reconciliation, AuditLogs, ProviderHealth)
+- Merchant-only pages get their own (Home, PaymentLinks, Developers, Subaccounts, SplitRules)
 - All filter/pagination state managed by nuqs
 
 ### New merchant pages (9)
@@ -50,6 +59,7 @@ Settings tabs: Webhooks, Provider Health, Adjustments
 - /subaccounts
 - /disputes + /disputes/:id
 - /refunds/:id
+- /developers
 
 ### New admin pages
 - /admin - Home overview
