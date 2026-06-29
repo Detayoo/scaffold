@@ -506,11 +506,8 @@ function WebhookSection() {
         }
       />
 
-      {isPending ? (
-        <LoadingState />
-      ) : isError ? (
-        <ErrorState message="Failed to load webhook endpoints" onRetry={refetch} />
-      ) : endpoints.length === 0 ? (
+      <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load webhook endpoints">
+      {endpoints.length === 0 ? (
         <EmptyState
           title="No webhook endpoints"
           description="Add an endpoint to start receiving payment events"
@@ -571,7 +568,8 @@ function WebhookSection() {
             </Card>
           ))}
         </div>
-      )}
+        )}
+      </AsyncContent>
 
       <ResponsiveSheet
         open={!!logsEndpoint}
@@ -579,9 +577,8 @@ function WebhookSection() {
         title="Delivery Logs"
         description={logsEndpoint?.url ?? ""}
       >
-        {logsLoading ? (
-          <LoadingState />
-        ) : logs.length === 0 ? (
+        <AsyncContent isPending={logsLoading} isError={false} errorMessage="Failed to load deliveries">
+        {logs.length === 0 ? (
           <EmptyState title="No deliveries yet" description="Deliveries will appear here when events are sent" />
         ) : (
           <div className="space-y-2 pt-2">
@@ -623,7 +620,8 @@ function WebhookSection() {
               </Card>
             ))}
           </div>
-        )}
+          )}
+        </AsyncContent>
       </ResponsiveSheet>
 
       <ResponsiveSheet
@@ -631,16 +629,12 @@ function WebhookSection() {
         onOpenChange={(open) => { if (!open) { setSelectedLog(null); setDetailData(null); } }}
         title="Delivery Detail"
       >
-        {detailLoading ? (
-          <LoadingState />
-        ) : !detailData ? (
-          <ErrorState message="Failed to load delivery detail" onRetry={() => selectedLog && getWebhookDeliveryDetailFn({ id: selectedLog.id }).then(r => setDetailData(r?.data ?? null))} />
-        ) : (
+        <AsyncContent isPending={detailLoading} isError={!detailData} onRetry={() => selectedLog && getWebhookDeliveryDetailFn({ id: selectedLog?.id ?? "" }).then(r => setDetailData(r?.data ?? null))} errorMessage="Failed to load delivery detail">
           <div className="space-y-4 pt-2">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground">Status</p>
-                <StatusBadge status={detailData?.status} size="sm" />
+                <StatusBadge status={detailData?.status ?? ""} size="sm" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Attempt</p>
@@ -689,7 +683,7 @@ function WebhookSection() {
               </div>
             )}
           </div>
-        )}
+        </AsyncContent>
       </ResponsiveSheet>
 
       <ResponsiveModal
