@@ -254,7 +254,7 @@ function APIKeysSection() {
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
     onSuccess: (res) => {
-      setNewKeys(res.data);
+      setNewKeys(res?.data ?? null);
       setCreating(false);
       refetch();
     },
