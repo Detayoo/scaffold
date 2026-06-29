@@ -29,7 +29,7 @@ function AdminRefundsContent() {
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
-  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detailRefund, setDetailRefund] = useState<Refund | null>(null);
   const [localStatus, setLocalStatus] = useState("");
 
   const { data, isPending, isError, refetch, isFetching } = useQuery({
@@ -116,10 +116,10 @@ function AdminRefundsContent() {
         isFetching={isFetching}
         emptyTitle="No refunds found"
         emptyDescription={searchInput ? "Try a different search term" : "No refunds across all merchants"}
-        onRowClick={(r) => setDetailId(r?.id)}
+        onRowClick={(r) => setDetailRefund(r)}
       />
 
-      <AdminRefundDetailSheet refundId={detailId} onOpenChange={(o) => { if (!o) setDetailId(null); }} onSuccess={() => refetch()} />
+      <AdminRefundDetailSheet refund={detailRefund} onOpenChange={(o) => { if (!o) setDetailRefund(null); }} onSuccess={() => refetch()} />
     </div>
   );
 }

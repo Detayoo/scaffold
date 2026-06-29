@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   CheckCircle2,
   XCircle,
@@ -11,60 +11,56 @@ import {
 } from "lucide-react";
 
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
-import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { getAdminRefundsFn, approveAdminRefundFn, rejectAdminRefundFn, processAdminRefundFn, markAdminRefundSucceededFn, markAdminRefundFailedFn } from "@/services";
+import { approveAdminRefundFn, rejectAdminRefundFn, processAdminRefundFn, markAdminRefundSucceededFn, markAdminRefundFailedFn } from "@/services";
 import { formatMoney, toastMessage, extractError } from "@/utils";
+import type { Refund } from "@/types";
 
 interface AdminRefundDetailSheetProps {
-  refundId: string | null;
+  refund: Refund | null;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-export function AdminRefundDetailSheet({ refundId, onOpenChange, onSuccess }: AdminRefundDetailSheetProps) {
+export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: AdminRefundDetailSheetProps) {
   const [confirmAction, setConfirmAction] = useState<string | null>(null);
-
-  const { data, isPending, isError, refetch } = useQuery({
-    queryKey: ["admin-refund-detail", refundId],
-    queryFn: () => getAdminRefundsFn({ reference: refundId ?? undefined }),
-    enabled: !!refundId,
-  });
-
-  const refund = data?.data?.[0];
 
   const { mutateAsync: approve, isPending: approving } = useMutation({
     mutationFn: approveAdminRefundFn,
-    onSuccess: () => { toastMessage("success", "Refund approved"); setConfirmAction(null); refetch(); onSuccess?.(); },
+    onSuccess: () => { toastMessage("success", "Refund approved"); setConfirmAction(null); refetchParent(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
   const { mutateAsync: reject, isPending: rejecting } = useMutation({
     mutationFn: rejectAdminRefundFn,
-    onSuccess: () => { toastMessage("success", "Refund rejected"); setConfirmAction(null); refetch(); onSuccess?.(); },
+    onSuccess: () => { toastMessage("success", "Refund rejected"); setConfirmAction(null); refetchParent(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
   const { mutateAsync: process, isPending: processing } = useMutation({
     mutationFn: processAdminRefundFn,
-    onSuccess: () => { toastMessage("success", "Refund processing started"); setConfirmAction(null); refetch(); onSuccess?.(); },
+    onSuccess: () => { toastMessage("success", "Refund processing started"); setConfirmAction(null); refetchParent(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
   const { mutateAsync: markSuccess, isPending: markingSuccess } = useMutation({
     mutationFn: markAdminRefundSucceededFn,
-    onSuccess: () => { toastMessage("success", "Refund marked as succeeded"); setConfirmAction(null); refetch(); onSuccess?.(); },
+    onSuccess: () => { toastMessage("success", "Refund marked as succeeded"); setConfirmAction(null); refetchParent(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
   const { mutateAsync: markFailed, isPending: markingFailed } = useMutation({
     mutationFn: markAdminRefundFailedFn,
-    onSuccess: () => { toastMessage("success", "Refund marked as failed"); setConfirmAction(null); refetch(); onSuccess?.(); },
+    onSuccess: () => { toastMessage("success", "Refund marked as failed"); setConfirmAction(null); refetchParent(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
+
+  function refetchParent() {
+    onSuccess?.();
+  }
 
   const handleConfirm = async () => {
     if (!refund?.id) return;
@@ -94,67 +90,65 @@ export function AdminRefundDetailSheet({ refundId, onOpenChange, onSuccess }: Ad
   return (
     <>
       <ResponsiveSheet
-        open={!!refundId}
+        open={!!refund}
         onOpenChange={(o) => { if (!o) onOpenChange(false); }}
         title="Refund Details"
       >
-        <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load refund details.">
-          {refund ? (
-            <div className="space-y-4 pt-2">
-              <div>
-                <p className="text-xs text-muted-foreground">Reference</p>
-                <p className="text-sm text-foreground">{refund?.reference}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Amount</p>
-                <p className="text-sm text-foreground">{formatMoney(refund?.amountMinor)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Status</p>
-                <StatusBadge status={refund?.status ?? ""} size="sm" />
-              </div>
-              {refund?.reason && (
-                <div>
-                  <p className="text-xs text-muted-foreground">Reason</p>
-                  <p className="text-sm text-foreground">{refund?.reason}</p>
-                </div>
-              )}
-
-              {status && ["requested", "approved", "processing"].includes(status) && (
-                <>
-                  <Separator />
-                  <div className="flex flex-col gap-2">
-                    {status === "requested" && (
-                      <>
-                        <Button className="gap-2 w-full" onClick={() => setConfirmAction("approve")} disabled={approving}>
-                          <CheckCircle2 className="size-4" /> Approve
-                        </Button>
-                        <Button variant="outline" className="gap-2 w-full" onClick={() => setConfirmAction("reject")} disabled={rejecting}>
-                          <XCircle className="size-4" /> Reject
-                        </Button>
-                      </>
-                    )}
-                    {status === "approved" && (
-                      <Button className="gap-2 w-full" onClick={() => setConfirmAction("process")} disabled={processing}>
-                        <Send className="size-4" /> Start Processing
-                      </Button>
-                    )}
-                    {status === "processing" && (
-                      <>
-                        <Button className="gap-2 w-full" onClick={() => setConfirmAction("mark-success")} disabled={markingSuccess}>
-                          <CheckCheck className="size-4" /> Mark Succeeded
-                        </Button>
-                        <Button variant="destructive" className="gap-2 w-full" onClick={() => setConfirmAction("mark-failed")} disabled={markingFailed}>
-                          <AlertTriangle className="size-4" /> Mark Failed
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
+        {refund ? (
+          <div className="space-y-4 pt-2">
+            <div>
+              <p className="text-xs text-muted-foreground">Reference</p>
+              <p className="text-sm text-foreground">{refund?.reference}</p>
             </div>
-          ) : null}
-        </AsyncContent>
+            <div>
+              <p className="text-xs text-muted-foreground">Amount</p>
+              <p className="text-sm text-foreground">{formatMoney(refund?.amountMinor)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Status</p>
+              <StatusBadge status={refund?.status ?? ""} size="sm" />
+            </div>
+            {refund?.reason && (
+              <div>
+                <p className="text-xs text-muted-foreground">Reason</p>
+                <p className="text-sm text-foreground">{refund?.reason}</p>
+              </div>
+            )}
+
+            {status && ["requested", "approved", "processing"].includes(status) && (
+              <>
+                <Separator />
+                <div className="flex flex-col gap-2">
+                  {status === "requested" && (
+                    <>
+                      <Button className="gap-2 w-full" onClick={() => setConfirmAction("approve")} disabled={approving}>
+                        <CheckCircle2 className="size-4" /> Approve
+                      </Button>
+                      <Button variant="outline" className="gap-2 w-full" onClick={() => setConfirmAction("reject")} disabled={rejecting}>
+                        <XCircle className="size-4" /> Reject
+                      </Button>
+                    </>
+                  )}
+                  {status === "approved" && (
+                    <Button className="gap-2 w-full" onClick={() => setConfirmAction("process")} disabled={processing}>
+                      <Send className="size-4" /> Start Processing
+                    </Button>
+                  )}
+                  {status === "processing" && (
+                    <>
+                      <Button className="gap-2 w-full" onClick={() => setConfirmAction("mark-success")} disabled={markingSuccess}>
+                        <CheckCheck className="size-4" /> Mark Succeeded
+                      </Button>
+                      <Button variant="destructive" className="gap-2 w-full" onClick={() => setConfirmAction("mark-failed")} disabled={markingFailed}>
+                        <AlertTriangle className="size-4" /> Mark Failed
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ) : null}
       </ResponsiveSheet>
 
       <ConfirmDialog
