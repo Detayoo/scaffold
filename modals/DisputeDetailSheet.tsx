@@ -55,14 +55,14 @@ export function DisputeDetailSheet({ disputeId, onOpenChange }: DisputeDetailShe
                 <p className="text-xs text-muted-foreground">Status</p>
                 <StatusBadge status={dispute.status ?? ""} size="sm" />
               </div>
-              {dispute.reason && (
+              {dispute?.reason && (
                 <div>
                   <p className="text-xs text-muted-foreground">Reason</p>
-                  <p className="text-sm">{dispute.reason}</p>
+                  <p className="text-sm">{dispute?.reason}</p>
                 </div>
               )}
 
-              {dispute.status === "evidence_required" && (
+              {dispute?.status === "evidence_required" && (
                 <>
                   <Separator />
                   <Button className="w-full gap-2" onClick={() => setEvidenceOpen(true)}>
@@ -120,7 +120,7 @@ export function DisputeDetailSheet({ disputeId, onOpenChange }: DisputeDetailShe
                       </div>
                       <div className="flex justify-between">
                         <p className="text-xs text-muted-foreground">Settlement Status</p>
-                        <p className="text-sm capitalize">{evidencePack.settlement_status}</p>
+                        <p className="text-sm capitalize">{evidencePack?.settlement_status}</p>
                       </div>
                       {evidencePack.split_liabilities?.map((sl: { amountMinor: number; currency: string }, i: number) => (
                         <div key={i} className="flex justify-between">

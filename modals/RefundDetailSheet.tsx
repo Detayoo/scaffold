@@ -36,20 +36,20 @@ export function RefundDetailSheet({ refundId, onOpenChange }: RefundDetailSheetP
           <div className="space-y-4 pt-2">
             <div>
               <p className="text-xs text-muted-foreground">Reference</p>
-              <p className="text-sm font-medium">{refund.reference}</p>
+              <p className="text-sm font-medium">{refund?.reference}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Amount</p>
-              <p className="text-sm font-medium">{formatMoney(refund.amountMinor)}</p>
+              <p className="text-sm font-medium">{formatMoney(refund?.amountMinor)}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Status</p>
-              <StatusBadge status={refund.status ?? ""} size="sm" />
+              <StatusBadge status={refund?.status ?? ""} size="sm" />
             </div>
-            {refund.reason && (
+            {refund?.reason && (
               <div>
                 <p className="text-xs text-muted-foreground">Reason</p>
-                <p className="text-sm">{refund.reason}</p>
+                <p className="text-sm">{refund?.reason}</p>
               </div>
             )}
 
