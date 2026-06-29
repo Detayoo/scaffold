@@ -888,45 +888,40 @@ function ChannelsSection() {
         description="Enable or disable payment collection channels"
       />
 
-      {isFetching ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
-      ) : isError ? (
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-destructive">Failed to load channels.</p>
-          <button type="button" onClick={() => refetch()} className="text-sm text-foreground underline cursor-pointer">Retry</button>
-        </div>
-      ) : !channels || channels.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No channels configured.</p>
-      ) : (
-        <div className="space-y-3">
-          {channels.map((ch: any) => (
-            <div key={ch?.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
-              <div>
-                <p className="text-sm font-medium text-foreground capitalize">{ch?.channel}</p>
-                <p className="text-xs text-muted-foreground capitalize">{ch?.environment}</p>
-              </div>
-              <button
-                type="button"
-                disabled={toggling}
-                onClick={async () => {
-                  try {
-                    await toggleChannel({ channel: ch.channel, enabled: !ch.enabled });
-                  } catch {}
-                }}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                  ch?.enabled ? "bg-foreground" : "bg-muted-foreground/30"
-                }`}
-              >
-                <span
-                  className={`inline-block size-5 rounded-full bg-background transition-transform ${
-                    ch?.enabled ? "translate-x-6" : "translate-x-0.5"
+      <AsyncContent isPending={isFetching} isError={isError} onRetry={refetch} errorMessage="Failed to load channels">
+        {channels && channels.length > 0 ? (
+          <div className="space-y-3">
+            {channels.map((ch: any) => (
+              <div key={ch?.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+                <div>
+                  <p className="text-sm font-medium text-foreground capitalize">{ch?.channel}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{ch?.environment}</p>
+                </div>
+                <button
+                  type="button"
+                  disabled={toggling}
+                  onClick={async () => {
+                    try {
+                      await toggleChannel({ channel: ch.channel, enabled: !ch.enabled });
+                    } catch {}
+                  }}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                    ch?.enabled ? "bg-foreground" : "bg-muted-foreground/30"
                   }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+                >
+                  <span
+                    className={`inline-block size-5 rounded-full bg-background transition-transform ${
+                      ch?.enabled ? "translate-x-6" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No channels configured.</p>
+        )}
+      </AsyncContent>
     </div>
   );
 }
