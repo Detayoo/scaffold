@@ -2,19 +2,18 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark } from "lucide-react";
+import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { CountUp } from "@/components/CountUp";
 import { useAuth } from "@/contexts/auth-context";
-import { getTransactionsFn } from "@/services";
-import { getDashboardHomeFn, getBalancesFn } from "@/services";
+import { getTransactionsFn, getDashboardHomeFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { AsyncContent } from "@/components/AsyncContent";
-import { formatDate, formatMoney, formatMoneyCompact } from "@/utils";
+import { formatDate, formatMoney } from "@/utils";
 
 export default function HomePage() {
   const { merchant } = useAuth();
@@ -25,18 +24,12 @@ export default function HomePage() {
     queryFn: getDashboardHomeFn,
   });
 
-  const { data: balData } = useQuery({
-    queryKey: ["dashboard-balances"],
-    queryFn: () => getBalancesFn({}),
-  });
-
   const { data: txData, isPending: txPending, isFetching: txLoading, isError: txError, refetch: refetchTx } = useQuery({
     queryKey: ["dashboard-transactions"],
     queryFn: () => getTransactionsFn({ page: 1, size: 5 }),
   });
 
   const home = homeData?.data;
-  const balances = balData?.data?.[0];
   const transactions = txData?.data?.transactions;
 
   const stats = [
@@ -64,14 +57,6 @@ export default function HomePage() {
       compact: true,
     },
   ];
-
-  const balanceItems = balances ? [
-    { label: "Pending", value: balances.pendingAmountMinor },
-    { label: "Available", value: balances.availableAmountMinor },
-    { label: "Held", value: balances.heldAmountMinor },
-    { label: "Settlement Payable", value: balances.settlementPayableAmountMinor },
-    { label: "Paid", value: balances.paidAmountMinor },
-  ] : [];
 
   const quickActions = [
     { label: "Create Payment Link", href: "/payment-links", icon: CreditCard },
@@ -111,26 +96,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      {balanceItems.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Landmark className="size-4 text-muted-foreground" />
-              Balance Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {balanceItems.map((b) => (
-                <div key={b.label}>
-                  <p className="text-xs text-muted-foreground">{b.label}</p>
-                  <p className="text-lg font-semibold mt-0.5">{formatMoneyCompact(b.value)}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      </div>
       </AsyncContent>
 
       <div>
