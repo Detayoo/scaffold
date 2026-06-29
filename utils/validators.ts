@@ -66,10 +66,7 @@ export const changePasswordSchema = z
   });
 
 export const createPaymentLinkSchema = z.object({
-  amount: z.preprocess(
-    (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
-    z.number().positive({ message: "Amount is required" })
-  ),
+  amount: z.string().nonempty({ message: "Amount is required" }),
   currency: z.string().nonempty({ message: "Currency is required" }),
   reason: z.string().optional(),
   isReusable: z.boolean().optional(),
@@ -147,10 +144,7 @@ export const acceptInviteSchema = z.object({
 
 export const createTaxSchema = z.object({
   name: z.string().nonempty({ message: "Tax name is required" }),
-  rate: z.preprocess(
-    (val) => (val === "" || val === undefined || val === null ? undefined : Number(val)),
-    z.number().min(0.01, "Rate is required").max(100, "Rate must not exceed 100%")
-  ),
+  rate: z.string().nonempty({ message: "Rate is required" }),
 });
 
 export const createCustomerSchema = z.object({

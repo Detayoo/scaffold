@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/select";
 import { useMerchant } from "@/hooks/use-merchant";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import {
+   import {
   getKeysFn,
   createKeyFn,
   revokeKeyFn,
@@ -57,6 +57,7 @@ import {
   pauseWebhookEndpointFn,
   resumeWebhookEndpointFn,
   getWebhookDeliveriesFn,
+  getWebhookDeliveryDetailFn,
   replayWebhookDeliveryFn,
   changePasswordFn,
 } from "@/services";
@@ -597,8 +598,15 @@ function WebhookSection() {
         ) : (
           <div className="space-y-2 pt-2">
             {logs.map((d) => (
-              <Card key={d.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => {
+              <Card key={d.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={async () => {
                 setSelectedLog(d);
+                setDetailLoading(true);
+                try {
+                  const res = await getWebhookDeliveryDetailFn({ id: d.id });
+                  setDetailData(res?.data ?? null);
+                } catch {} finally {
+                  setDetailLoading(false);
+                }
               }}>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
@@ -626,6 +634,72 @@ function WebhookSection() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+      </ResponsiveSheet>
+
+      <ResponsiveSheet
+        open={!!selectedLog}
+        onOpenChange={(open) => { if (!open) { setSelectedLog(null); setDetailData(null); } }}
+        title="Delivery Detail"
+      >
+        {detailLoading ? (
+          <LoadingState />
+        ) : !detailData ? (
+          <ErrorState message="Failed to load delivery detail" onRetry={() => selectedLog && getWebhookDeliveryDetailFn({ id: selectedLog.id }).then(r => setDetailData(r?.data ?? null))} />
+        ) : (
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground">Status</p>
+                <StatusBadge status={detailData.status} size="sm" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Attempt</p>
+                <p className="text-sm font-medium">#{detailData.attemptNo}</p>
+              </div>
+              {detailData.responseCode && (
+                <div>
+                  <p className="text-xs text-muted-foreground">Response</p>
+                  <p className="text-sm font-medium">HTTP {detailData.responseCode}</p>
+                </div>
+              )}
+              {detailData.lastAttemptAt && (
+                <div className="col-span-2">
+                  <p className="text-xs text-muted-foreground">Last Attempt</p>
+                  <p className="text-sm">{detailData.lastAttemptAt}</p>
+                </div>
+              )}
+              {detailData.nextRetryAt && (
+                <div className="col-span-2">
+                  <p className="text-xs text-muted-foreground">Next Retry</p>
+                  <p className="text-sm">{detailData.nextRetryAt}</p>
+                </div>
+              )}
+            </div>
+
+            {detailData.signatureHeaders && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Signature Headers</p>
+                <div className="rounded-lg bg-muted p-3 space-y-1">
+                  {Object.entries(detailData.signatureHeaders).map(([key, val]) => (
+                    <p key={key} className="text-xs font-mono break-all">
+                      <span className="text-muted-foreground">{key}: </span>
+                      {val}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailData.requestBody && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Request Body</p>
+                <pre className="rounded-lg bg-muted p-3 text-xs font-mono break-all whitespace-pre-wrap">
+                  {detailData.requestBody}
+                </pre>
+              </div>
+            )}
           </div>
         )}
       </ResponsiveSheet>
