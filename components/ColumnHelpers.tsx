@@ -36,7 +36,7 @@ export function dateColumn<T>(cell: (item: T) => string): Column<T> {
     key: "date",
     header: "Date",
     cell: (item: T) => (
-      <span className="text-xs text-muted-foreground">{formatDate(cell(item))}</span>
+      <span className="text-xs text-foreground">{formatDate(cell(item))}</span>
     ),
   };
 }

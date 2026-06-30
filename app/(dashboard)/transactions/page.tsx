@@ -18,6 +18,7 @@ import { FormField } from "@/components/FormField";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
+import { dateColumn } from "@/components/ColumnHelpers";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { ExportModal } from "@/components/ExportModal";
@@ -51,13 +52,7 @@ function TransactionsContent() {
   const transactions = data?.data;
 
   const columns: Column<Transaction>[] = [
-    {
-      key: "created_at",
-      header: "Date",
-      cell: (tx) => (
-        <span className="text-xs text-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
-      ),
-    },
+    dateColumn((tx) => tx?.created_at ?? ""),
     {
       key: "amount",
       header: "Amount",
