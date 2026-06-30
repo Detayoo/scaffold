@@ -137,7 +137,8 @@ These are non-negotiable. Every single file must follow these patterns.
 - Query keys: simple strings or arrays like `["merchant"]`, `["transactions", page, size]`
 - **Analytics cards/metrics displays have NO loading state** — no `isPending`/`isFetching` gating. Default to 0 or "—" as fallback until data arrives. These are decorative widgets, not primary content. The shimmer/empty loading pattern only applies to tables, lists, and detail views.`
 
-**Copy to clipboard:** Always use `useCopyToClipboard` from `@/hooks/use-copy-to-clipboard` for copying text. Import the hook, call it to get the `copy` function, then use `await copy(text)` which returns a boolean. Never use `navigator.clipboard` directly.
+**Copy to clipboard:** Always use `useCopyToClipboard` from `@/hooks/use-copy-to-clipboard` for copying text.
+- **Date columns in tables:** Always use the `dateColumn` helper from `@/components/ColumnHelpers`. It uses `text-foreground` for consistency — never use `text-muted-foreground` for date cells. Import the hook, call it to get the `copy` function, then use `await copy(text)` which returns a boolean. Never use `navigator.clipboard` directly.
 
 **Forms (react-hook-form + zod):**
 - Every form uses `zodResolver` with `@hookform/resolvers/zod`
