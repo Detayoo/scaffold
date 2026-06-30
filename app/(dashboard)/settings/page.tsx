@@ -5,6 +5,7 @@ import { useQueryState, parseAsInteger } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Eye,
   EyeOff,
@@ -440,7 +441,13 @@ function WebhookSection() {
   });
   const endpoints = endpointsData?.data ?? [];
 
+  const createSchema = z.object({
+    url: z.string().nonempty("URL is required"),
+    environment: z.string().nonempty("Environment is required"),
+  });
+
   const createForm = useForm({
+    resolver: zodResolver(createSchema),
     defaultValues: { url: "", environment: "" },
   });
 
@@ -739,13 +746,13 @@ function WebhookSection() {
           <FormField label="URL" isRequired>
             <Input {...createForm.register("url")} placeholder="https://example.com/webhooks/malimbe" />
           </FormField>
-          <FormField label="Environment" isRequired>
+          <FormField label="Environment" error={createForm.formState.errors.environment?.message} isRequired>
             <Select
               value={createForm.watch("environment")}
               onValueChange={(v: "test" | "live") => createForm.setValue("environment", v)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue placeholder="Select environment" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="test">Test</SelectItem>
