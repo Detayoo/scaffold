@@ -125,7 +125,7 @@ export default function SettingsPage() {
 function ProfileSection() {
   const { data, isPending, isError, refetch, error } = useMerchant();
   const merchant = data?.data?.merchant;
-  const owner = data?.data?.owner;
+  const user = data?.data?.user;
 
   return (
     <div className="space-y-5">
@@ -139,12 +139,12 @@ function ProfileSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
-          <DetailRow label="Business Name" value={merchant?.name} />
+          <DetailRow label="Business Name" value={merchant?.display_name} />
+          <DetailRow label="Legal Name" value={merchant?.legal_name} />
           <DetailRow label="Email" value={merchant?.email} />
-          <DetailRow label="Account Number" value={merchant?.accountNumber ?? "—"} mono />
-          <DetailRow label="Address" value={merchant?.address} />
           <DetailRow label="Status" value={<StatusBadge status={merchant?.status ?? ""} />} />
-          <DetailRow label="Slug" value={merchant?.slug} mono />
+          <DetailRow label="Risk Tier" value={merchant?.risk_tier} />
+          <DetailRow label="Default Currency" value={merchant?.default_currency} />
         </CardContent>
       </Card>
 
@@ -156,10 +156,10 @@ function ProfileSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
-          <DetailRow label="Name" value={owner?.name} />
-          <DetailRow label="Email" value={owner?.email} />
-          <DetailRow label="Role" value={owner?.role} capitalize />
-          <DetailRow label="Status" value={owner?.status} capitalize />
+          <DetailRow label="Name" value={user?.name} />
+          <DetailRow label="Email" value={user?.email} />
+          <DetailRow label="Role" value={user?.role} />
+          <DetailRow label="Status" value={<StatusBadge status={user?.status ?? ""} />} />
         </CardContent>
       </Card>
       </AsyncContent>
