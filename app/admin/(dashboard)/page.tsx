@@ -16,11 +16,11 @@ import { withSuspense } from "@/components/withSuspense";
 import type { AuditLogEntry } from "@/types";
 
 const MOCK_MERCHANTS = [
-  { id: "87fb27f1-...", name: "Alausa Mart", email: "ops@alausamart.ng", status: "ACTIVE" },
-  { id: "a2b3c4d5-...", name: "Balogun Rice Store", email: "hello@balogunrice.ng", status: "ACTIVE" },
-  { id: "e5f6a7b8-...", name: "Ikeja Tech Hub", email: "biz@ikejatech.ng", status: "PENDING" },
-  { id: "c9d0e1f2-...", name: "Lekki Fresh Foods", email: "info@lekkifresh.ng", status: "SUSPENDED" },
-  { id: "f0a1b2c3-...", name: "Kano Textiles Ltd", email: "sales@kanotextiles.ng", status: "ACTIVE" },
+  { id: "87fb27f1-...", display_name: "Alausa Mart", legal_name: "Alausa Mart", email: "ops@alausamart.ng", status: "ACTIVE", risk_tier: "standard", default_currency: "NGN", settlement_bank_account_id: null, created_at: "", updated_at: "" },
+  { id: "a2b3c4d5-...", display_name: "Balogun Rice Store", legal_name: "Balogun Rice Store", email: "hello@balogunrice.ng", status: "ACTIVE", risk_tier: "standard", default_currency: "NGN", settlement_bank_account_id: null, created_at: "", updated_at: "" },
+  { id: "e5f6a7b8-...", display_name: "Ikeja Tech Hub", legal_name: "Ikeja Tech Hub", email: "biz@ikejatech.ng", status: "PENDING", risk_tier: "standard", default_currency: "NGN", settlement_bank_account_id: null, created_at: "", updated_at: "" },
+  { id: "c9d0e1f2-...", display_name: "Lekki Fresh Foods", legal_name: "Lekki Fresh Foods", email: "info@lekkifresh.ng", status: "SUSPENDED", risk_tier: "standard", default_currency: "NGN", settlement_bank_account_id: null, created_at: "", updated_at: "" },
+  { id: "f0a1b2c3-...", display_name: "Kano Textiles Ltd", legal_name: "Kano Textiles Ltd", email: "sales@kanotextiles.ng", status: "ACTIVE", risk_tier: "standard", default_currency: "NGN", settlement_bank_account_id: null, created_at: "", updated_at: "" },
 ];
 
 const quickActions = [
@@ -51,7 +51,7 @@ function AdminHome() {
   ];
 
   const merchantColumns: Column<any>[] = [
-    { key: "name", header: "Name", cell: (m) => <span className="text-sm text-foreground">{m?.name}</span> },
+    { key: "display_name", header: "Name", cell: (m) => <span className="text-sm text-foreground">{m?.display_name}</span> },
     { key: "email", header: "Email", cell: (m) => <span className="text-sm text-foreground">{m?.email}</span> },
     { key: "status", header: "Status", cell: (m) => <StatusBadge status={m?.status} size="sm" /> },
   ];

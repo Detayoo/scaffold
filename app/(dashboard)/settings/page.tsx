@@ -143,7 +143,7 @@ function ProfileSection() {
           <DetailRow label="Legal Name" value={merchant?.legal_name} />
           <DetailRow label="Email" value={merchant?.email} />
           <DetailRow label="Status" value={<StatusBadge status={merchant?.status ?? ""} />} />
-          <DetailRow label="Risk Tier" value={merchant?.risk_tier} />
+          <DetailRow label="Risk Tier" value={merchant?.risk_tier ? merchant.risk_tier.charAt(0).toUpperCase() + merchant.risk_tier.slice(1) : "—"} />
           <DetailRow label="Default Currency" value={merchant?.default_currency} />
         </CardContent>
       </Card>
@@ -158,7 +158,7 @@ function ProfileSection() {
         <CardContent className="grid gap-5 sm:grid-cols-2">
           <DetailRow label="Name" value={user?.name} />
           <DetailRow label="Email" value={user?.email} />
-          <DetailRow label="Role" value={user?.role} />
+          <DetailRow label="Role" value={user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "—"} />
           <DetailRow label="Status" value={<StatusBadge status={user?.status ?? ""} />} />
         </CardContent>
       </Card>
