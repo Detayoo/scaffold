@@ -1,27 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { useQueryState } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Ban, CheckCircle, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { statusColumn, dateColumn, actionsColumn } from "@/components/ColumnHelpers";
 import { DataTable, type Column } from "@/components/DataTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageHeader } from "@/components/PageHeader";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { FormField } from "@/components/FormField";
 import { StatusBadge } from "@/components/StatusBadge";
-import { getMembersFn, suspendMemberFn, getInvitesFn, createInviteFn, deleteInviteFn } from "@/services";
+import { getMembersFn, getInvitesFn, createInviteFn, deleteInviteFn, resendInviteFn } from "@/services";
 import { toastMessage, extractError, formatDate } from "@/utils";
 import { inviteSchema } from "@/utils/validators";
 import { withSuspense } from "@/components/withSuspense";
-import type { Member, Invite } from "@/types";
+import type { TeamMember, Invite } from "@/types";
 
 type InviteForm = z.infer<typeof inviteSchema>;
 
@@ -33,26 +39,17 @@ const tabs = [
 function TeamContent() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useQueryState("tab", { defaultValue: "members" });
-  const [memberPage, setMemberPage] = useQueryState("mpage", parseAsInteger.withDefault(0));
-  const [memberSize, setMemberSize] = useQueryState("msize", parseAsInteger.withDefault(10));
-  const [invitePage, setInvitePage] = useQueryState("ipage", parseAsInteger.withDefault(0));
-  const [inviteSize, setInviteSize] = useQueryState("isize", parseAsInteger.withDefault(10));
-  const [suspendTarget, setSuspendTarget] = useState<Member | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Invite | null>(null);
 
   const memberQuery = useQuery({
-    queryKey: ["team-members", memberPage + 1, memberSize],
-    queryFn: () => getMembersFn({ page: memberPage + 1, size: memberSize }),
+    queryKey: ["team-members"],
+    queryFn: () => getMembersFn(),
   });
 
   const inviteQuery = useQuery({
-    queryKey: ["team-invites", invitePage + 1, inviteSize],
-    queryFn: () => getInvitesFn({ page: invitePage + 1, size: inviteSize }),
-  });
-
-  const { mutateAsync: toggleSuspend, isPending: suspending } = useMutation({
-    mutationFn: (payload: { id: string; status: "SUSPENDED" | "ENABLED" }) => suspendMemberFn(payload),
+    queryKey: ["team-invites"],
+    queryFn: () => getInvitesFn(),
   });
 
   const { mutateAsync: createInvite, isPending: isCreating } = useMutation({
@@ -63,27 +60,14 @@ function TeamContent() {
     mutationFn: (reference: string) => deleteInviteFn(reference),
   });
 
-  const handleToggleSuspend = async () => {
-    if (!suspendTarget) return;
-    const newStatus = suspendTarget.status === "SUSPENDED" ? "ENABLED" : "SUSPENDED";
-    try {
-      await toggleSuspend({ id: suspendTarget.id, status: newStatus });
-      toastMessage("success", newStatus === "SUSPENDED" ? "Member suspended" : "Member enabled");
-      setSuspendTarget(null);
-      queryClient.invalidateQueries({ queryKey: ["team-members"] });
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    }
-  };
-
   const form = useForm<InviteForm>({
     resolver: zodResolver(inviteSchema),
-    defaultValues: { email: "", firstName: "", lastName: "" },
+    defaultValues: { email: "", role: "" },
   });
 
   const handleCreateInvite = async (formData: InviteForm) => {
     try {
-      await createInvite(formData);
+      await createInvite({ email: formData.email, role: formData.role });
       toastMessage("success", "Invitation sent");
       setModalOpen(false);
       form.reset();
@@ -96,7 +80,7 @@ function TeamContent() {
   const handleDeleteInvite = async () => {
     if (!deleteTarget) return;
     try {
-      await removeInvite(deleteTarget.id);
+      await deleteInviteFn(deleteTarget.id);
       toastMessage("success", "Invitation cancelled");
       setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ["team-invites"] });
@@ -105,29 +89,20 @@ function TeamContent() {
     }
   };
 
-  const members = memberQuery.data?.data?.members;
-  const memberTotalRecords = memberQuery.data?.data?.totalRecords;
-  const memberTotalPages = memberQuery.data?.data?.totalPages;
-  const invites = inviteQuery.data?.data?.invites;
-  const inviteTotalRecords = inviteQuery.data?.data?.totalRecords;
-  const inviteTotalPages = inviteQuery.data?.data?.totalPages;
+  const members = memberQuery.data?.data;
+  const invites = inviteQuery.data?.data;
 
-  const memberColumns: Column<Member>[] = [
+  const memberColumns: Column<TeamMember>[] = [
     {
       key: "name", header: "Name",
-      cell: (m: Member) => <span className="text-sm text-foreground">{m.firstName} {m.lastName}</span>,
+      cell: (m: TeamMember) => <span className="text-sm text-foreground">{m.name}</span>,
     },
     {
       key: "email", header: "Email",
-      cell: (m: Member) => <span className="text-sm text-muted-foreground">{m.email}</span>,
+      cell: (m: TeamMember) => <span className="text-sm text-muted-foreground">{m.email}</span>,
     },
-    { key: "role", header: "Role", cell: (m: Member) => <span className="text-sm">{m.role}</span> },
-    statusColumn((m: Member) => m.status),
-    actionsColumn((m: Member) => (
-      <button type="button" onClick={(e) => { e.stopPropagation(); setSuspendTarget(m); }} className="cursor-pointer">
-        {m.status === "SUSPENDED" ? <CheckCircle className="size-3.5" /> : <Ban className="size-3.5 text-destructive" />}
-      </button>
-    )),
+    { key: "role", header: "Role", cell: (m: TeamMember) => <span className="text-sm capitalize">{m.role}</span> },
+    { key: "status", header: "Status", cell: (m: TeamMember) => <StatusBadge status={m.status} size="sm" /> },
   ];
 
   const inviteColumns: Column<Invite>[] = [
@@ -135,17 +110,20 @@ function TeamContent() {
       key: "email", header: "Email",
       cell: (i: Invite) => <span className="text-sm text-foreground">{i.email}</span>,
     },
+    { key: "role", header: "Role", cell: (i: Invite) => <span className="text-sm capitalize">{i.role}</span> },
+    { key: "status", header: "Status", cell: (i: Invite) => <StatusBadge status={i.status} size="sm" /> },
     {
-      key: "name", header: "Name",
-      cell: (i: Invite) => <span className="text-sm text-muted-foreground">{i.firstName} {i.lastName}</span>,
+      key: "created_at", header: "Date",
+      cell: (i: Invite) => <span className="text-xs text-muted-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
     },
-    statusColumn((i: Invite) => i.status),
-    dateColumn((i: Invite) => i.createdAt),
-    actionsColumn((i: Invite) => (
-      <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }} className="cursor-pointer">
-        <X className="size-3.5 text-destructive" />
-      </button>
-    )),
+    {
+      key: "actions", header: "", className: "w-10",
+      cell: (i: Invite) => (
+        <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }} className="cursor-pointer">
+          <X className="size-3.5 text-destructive" />
+        </button>
+      ),
+    },
   ];
 
   return (
@@ -177,23 +155,6 @@ function TeamContent() {
             emptyTitle="No team members"
             emptyDescription="Invite team members to collaborate"
             errorMessage="Failed to load members"
-            pageCount={memberTotalPages}
-            currentPage={memberPage}
-            perPage={memberSize}
-            totalRecords={memberTotalRecords}
-            itemOffset={memberPage * memberSize}
-            onPageChange={(selected) => setMemberPage(selected)}
-            onPerPageChange={(newSize) => { setMemberSize(newSize); setMemberPage(0); }}
-          />
-          <ConfirmDialog
-            open={!!suspendTarget}
-            onOpenChange={(o) => { if (!o) setSuspendTarget(null); }}
-            title={suspendTarget?.status === "SUSPENDED" ? "Enable Member" : "Suspend Member"}
-            description={`Are you sure you want to ${suspendTarget?.status === "SUSPENDED" ? "enable" : "suspend"} "${suspendTarget?.firstName} ${suspendTarget?.lastName}"?`}
-            confirmLabel={suspendTarget?.status === "SUSPENDED" ? "Enable" : "Suspend"}
-            variant={suspendTarget?.status === "SUSPENDED" ? "default" : "destructive"}
-            onConfirm={handleToggleSuspend}
-            loading={suspending}
           />
         </div>
       )}
@@ -210,20 +171,13 @@ function TeamContent() {
             emptyDescription="Invite team members to collaborate"
             emptyAction={{ label: "Invite Member", onClick: () => setModalOpen(true) }}
             errorMessage="Failed to load invitations"
-            pageCount={inviteTotalPages}
-            currentPage={invitePage}
-            perPage={inviteSize}
-            totalRecords={inviteTotalRecords}
-            itemOffset={invitePage * inviteSize}
-            onPageChange={(selected) => setInvitePage(selected)}
-            onPerPageChange={(newSize) => { setInviteSize(newSize); setInvitePage(0); }}
           />
           <ConfirmDialog
             open={!!deleteTarget}
             onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}
-            title="Cancel Invitation"
-            description={`Cancel invitation for "${deleteTarget?.email}"?`}
-            confirmLabel="Cancel Invitation"
+            title="Revoke Invitation"
+            description={`Are you sure you want to revoke the invitation for "${deleteTarget?.email}"? This cannot be undone.`}
+            confirmLabel="Revoke"
             variant="destructive"
             onConfirm={handleDeleteInvite}
             loading={isDeleting}
@@ -236,11 +190,16 @@ function TeamContent() {
           <FormField label="Email" error={form.formState.errors.email?.message} isRequired>
             <Input {...form.register("email")} placeholder="email@example.com" />
           </FormField>
-          <FormField label="First Name" error={form.formState.errors.firstName?.message} isRequired>
-            <Input {...form.register("firstName")} placeholder="John" />
-          </FormField>
-          <FormField label="Last Name" error={form.formState.errors.lastName?.message} isRequired>
-            <Input {...form.register("lastName")} placeholder="Doe" />
+          <FormField label="Role" error={form.formState.errors.role?.message} isRequired>
+            <Select value={form.watch("role")} onValueChange={(v) => form.setValue("role", v)}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Select role" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="owner">Owner</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="developer">Developer</SelectItem>
+                <SelectItem value="viewer">Viewer</SelectItem>
+              </SelectContent>
+            </Select>
           </FormField>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => { setModalOpen(false); form.reset(); }}>Cancel</Button>

@@ -375,45 +375,35 @@ export type CreateSplitRulePayload = {
   metadata?: Record<string, string>;
 };
 
-export type CreateInviteType = {
+export type CreateInvitePayload = {
   email: string;
-  firstName: string;
-  lastName: string;
+  role: string;
 };
 
 export type Invite = {
   id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  status: string;
-  createdAt: string;
-};
-
-export type Member = {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
+  merchant_id: string;
   email: string;
   role: string;
   status: string;
+  invited_by_user_id: string;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
 };
 
-export type Members = {
-  data: {
-    members: Member[];
-  } & PaginatedResponse;
-};
-
-export type Invites = {
-  data: {
-    invites: Invite[];
-  } & PaginatedResponse;
-};
-
-export type SingleInvite = {
-  data: Invite & { merchantName?: string };
+export type TeamMember = {
+  id: string;
+  merchant_id: string;
+  email: string;
+  name: string;
+  role: string;
+  status: string;
+  last_login_at: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type AcceptInvite = {

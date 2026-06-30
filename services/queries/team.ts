@@ -2,31 +2,33 @@ import { v1Api, v1AuthenticatedApi } from "../api";
 import type {
   AcceptInvite,
   BareResponse,
-  CreateInviteType,
-  Invites,
-  Members,
-  SingleInvite,
+  CreateInvitePayload,
+  Invite,
+  TeamMember,
 } from "@/types";
 
-export const getInvitesFn = async ({
-  page,
-  size,
-}: {
-  page: number;
-  size: number;
-}) => {
-  const { data } = await v1AuthenticatedApi().get<Invites>("/invite", { params: { page, size } });
+export const getMembersFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<{ status: boolean; data: TeamMember[] }>("/merchant/users");
   return data;
 };
 
-export const getMembersFn = async ({
-  page,
-  size,
-}: {
-  page: number;
-  size: number;
-}) => {
-  const { data } = await v1AuthenticatedApi().get<Members>("/merchant/team", { params: { page, size } });
+export const getInvitesFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<{ status: boolean; data: Invite[] }>("/merchant/invitations");
+  return data;
+};
+
+export const createInviteFn = async (payload: CreateInvitePayload) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/merchant/invitations", payload);
+  return data;
+};
+
+export const deleteInviteFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().delete<BareResponse>(`/merchant/invitations/${id}`);
+  return data;
+};
+
+export const resendInviteFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>(`/merchant/invitations/${id}/resend`);
   return data;
 };
 
@@ -35,18 +37,8 @@ export const acceptInviteFn = async (payload: AcceptInvite) => {
   return data;
 };
 
-export const createInviteFn = async (payload: CreateInviteType) => {
-  const { data } = await v1AuthenticatedApi().post<BareResponse>("/invite", payload);
-  return data;
-};
-
-export const deleteInviteFn = async (reference: string) => {
-  const { data } = await v1AuthenticatedApi().delete<BareResponse>("/invite", { data: { reference } });
-  return data;
-};
-
 export const getSingleInviteFn = async (reference: string) => {
-  const { data } = await v1Api.get<SingleInvite>("/invite/single", { params: { reference } });
+  const { data } = await v1Api.get<{ data: Invite & { merchantName?: string } }>("/invite/single", { params: { reference } });
   return data;
 };
 
@@ -55,7 +47,7 @@ export const suspendMemberFn = async ({
   status,
 }: {
   id: string;
-  status: "SUSPENDED" | "ENABLED";
+  status: string;
 }) => {
   const { data } = await v1AuthenticatedApi().patch<BareResponse>("/merchant/team", { userId: id, status });
   return data;

@@ -56,13 +56,14 @@ export default function AcceptInvitePage({
   useEffect(() => {
     if (invite) {
       reset({
-        email: invite.email ?? "",
-        firstName: invite.firstName ?? "",
-        lastName: invite.lastName ?? "",
+        email: (invite as any)?.email ?? "",
+        firstName: "",
+        lastName: "",
         password: "",
       });
     }
   }, [invite, reset]);
+
 
   const onSubmit = async (data: z.infer<typeof acceptInviteSchema>) => {
     try {
@@ -94,16 +95,12 @@ export default function AcceptInvitePage({
                 <Input
                   placeholder="John"
                   {...register("firstName")}
-                  readOnly
-                  className="bg-muted/50"
                 />
               </FormField>
               <FormField label="Last name" error={errors.lastName?.message} isRequired>
                 <Input
                   placeholder="Doe"
                   {...register("lastName")}
-                  readOnly
-                  className="bg-muted/50"
                 />
               </FormField>
             </div>

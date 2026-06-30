@@ -125,11 +125,8 @@ export const exportTransactionsSchema = z
   );
 
 export const inviteSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).nonempty({
-    message: "Email is required",
-  }),
-  firstName: z.string().nonempty({ message: "First name is required" }),
-  lastName: z.string().nonempty({ message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }).nonempty({ message: "Email is required" }),
+  role: z.string().nonempty({ message: "Role is required" }),
 });
 
 export const acceptInviteSchema = z.object({
