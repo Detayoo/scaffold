@@ -77,8 +77,8 @@ export function SearchableSelect({
                     setOpen(false);
                   }}
                 >
-                  <Check className={cn("mr-2 size-4", value === option.value ? "opacity-100" : "opacity-0")} />
-                  {option.label}
+                  <Check className={cn("mr-2 size-4 shrink-0", value === option.value ? "opacity-100" : "opacity-0")} />
+                  <span className="truncate">{option.label}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
