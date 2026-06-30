@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { CONFIG } from "@/config";
 import { decrypt } from "@/utils/encryption";
 
-const V1_URL = CONFIG.SERVER_URL;
+const V1_URL = `${CONFIG.SERVER_URL}/api`;
 
 export const baseApi = axios.create({
   baseURL: CONFIG.SERVER_URL,
