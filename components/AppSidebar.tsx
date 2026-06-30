@@ -38,22 +38,45 @@ import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { CONFIG } from "@/config";
+import { getEnvironmentFn, toggleEnvironmentFn } from "@/services";
+import { toastMessage } from "@/utils";
 
 function useEnvironment() {
   const [env, setEnvState] = useState<"test" | "live">("test");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("environment");
-      if (stored === "live" || stored === "test") setEnvState(stored);
-    } catch {}
+    const fetchEnv = async () => {
+      try {
+        const stored = localStorage.getItem("environment");
+        if (stored === "live" || stored === "test") {
+          setEnvState(stored);
+        } else {
+          const envFromApi = await getEnvironmentFn();
+          setEnvState(envFromApi);
+          localStorage.setItem("environment", envFromApi);
+        }
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEnv();
   }, []);
-  const setEnv = (val: "test" | "live") => {
+
+  const setEnv = async (val: "test" | "live") => {
     try {
+      await toggleEnvironmentFn(val);
       localStorage.setItem("environment", val);
-    } catch {}
-    setEnvState(val);
+      setEnvState(val);
+    } catch {
+      toastMessage("error", "Failed to switch environment");
+    }
   };
-  return [env, setEnv] as const;
+
+  return [env, setEnv, loading, error] as const;
 }
 
 const mainNav = [
@@ -122,7 +145,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { merchant, user, logout } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [environment, setEnvironment] = useEnvironment();
+  const [environment, setEnvironment, envLoading, envError] = useEnvironment();
 
   const initials = user
     ? `${user.name?.charAt(0) ?? "?"}`
@@ -192,10 +215,11 @@ export function AppSidebar() {
           </button>
           <button
             type="button"
-            onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
+            onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
+            disabled={envLoading}
             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
-              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
-            }`}
+              envLoading ? "opacity-50" : ""
+            } ${environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"}`}
             title={`Environment: ${environment}`}
           >
             <span
@@ -204,7 +228,7 @@ export function AppSidebar() {
               }`}
             />
           </button>
-          <span className="text-[11px] text-muted-foreground">{environment === "live" ? "Live" : "Test"}</span>
+          <span className="text-[11px] text-muted-foreground">{envLoading ? "..." : environment === "live" ? "Live" : "Test"}</span>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden" title="Documentation">
               <span>Documentation</span>
@@ -215,10 +239,11 @@ export function AppSidebar() {
         <div className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
           <button
             type="button"
-            onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
+            onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
+            disabled={envLoading}
             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors cursor-pointer ${
-              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
-            }`}
+              envLoading ? "opacity-50" : ""
+            } ${environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"}`}
             title={`Environment: ${environment}`}
           >
             <span

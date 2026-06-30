@@ -18,3 +18,13 @@ export const changePasswordFn = async (payload: {
   const { data } = await v1AuthenticatedApi().post<BareResponse>("/auth/change-password", payload);
   return data;
 };
+
+export const getEnvironmentFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<GetMerchantProfileResponse>("/merchant/profile");
+  return data?.data?.environment ?? "test";
+};
+
+export const toggleEnvironmentFn = async (environment: "test" | "live") => {
+  const { data } = await v1AuthenticatedApi().post("/merchant/environment", { environment });
+  return data;
+};
