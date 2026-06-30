@@ -60,9 +60,6 @@ export default function RegisterPage({
           <FormField label="Business name" error={errors.displayName?.message} isRequired>
             <Input placeholder="Your business name" {...register("displayName")} />
           </FormField>
-          <FormField label="Legal name" error={errors.legalName?.message} isRequired>
-            <Input placeholder="Your registered legal name" {...register("legalName")} />
-          </FormField>
           <FormField label="Owner name" error={errors.ownerName?.message} isRequired>
             <Input placeholder="Full name of the business owner" {...register("ownerName")} />
           </FormField>

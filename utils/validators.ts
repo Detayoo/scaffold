@@ -13,7 +13,6 @@ export const loginSchema = z.object({
 
 export const registrationSchema = z.object({
   displayName: z.string().nonempty({ message: "Business name is required" }),
-  legalName: z.string().nonempty({ message: "Legal name is required" }),
   email: z
     .string()
     .email({ message: "Invalid email" })
