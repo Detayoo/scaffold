@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark } from "lucide-react";
+import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark, ArrowLeftRight } from "lucide-react";
 import Link from "next/link";
 import { AnalyticsCard } from "@/components/AnalyticsCard";
 import { useAuth } from "@/contexts/auth-context";
@@ -53,7 +53,7 @@ export default function HomePage() {
   const quickActions = [
     { label: "Create Payment Link", href: "/payment-links", icon: CreditCard },
     // { label: "Send Invoice", href: "/invoices/create-invoice", icon: FileText },
-    { label: "View Transactions", href: "/transactions", icon: Receipt },
+    { label: "View Transactions", href: "/transactions", icon: ArrowLeftRight },
     { label: "View Refunds", href: "/refunds", icon: RefreshCw },
   ];
 
