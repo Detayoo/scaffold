@@ -360,12 +360,10 @@ function APIKeysSection() {
                         <div><p className="text-xs text-muted-foreground">Type</p><p className="capitalize">{k.type}</p></div>
                         <div><p className="text-xs text-muted-foreground">Created</p><p>{k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "—"}</p></div>
                       </div>
-                      {k.status === "active" && (
-                        <div className="flex gap-2 pt-1">
-                          <Button size="sm" variant="outline" onClick={async () => { try { await rotateKey({ id: k.id }); } catch {} }} disabled={rotating}>Rotate</Button>
-                          <Button size="sm" variant="destructive" onClick={() => setRevokeTarget(k.id)} disabled={revoking}>Revoke</Button>
-                        </div>
-                      )}
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" variant="outline" onClick={async () => { try { await rotateKey({ id: k.id }); } catch {} }} disabled={rotating}>Rotate</Button>
+                        <Button size="sm" variant="destructive" onClick={() => setRevokeTarget(k.id)} disabled={revoking}>Revoke</Button>
+                      </div>
                     </div>
                   )}
                 </div>
