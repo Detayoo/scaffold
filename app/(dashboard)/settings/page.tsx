@@ -269,16 +269,13 @@ function APIKeysSection() {
   });
   const errorCode = (error as any)?.status;
   const copy = useCopyToClipboard();
-  const [showPK, setShowPK] = useState(false);
-  const [showSK, setShowSK] = useState(false);
-  const [creating, setCreating] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
     onSuccess: (res) => {
       setNewKeys(res?.data ?? null);
-      setCreating(false);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -288,6 +285,7 @@ function APIKeysSection() {
     mutationFn: revokeKeyFn,
     onSuccess: () => {
       toastMessage("success", "Key revoked");
+      setSelectedKey(null);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -297,6 +295,7 @@ function APIKeysSection() {
     mutationFn: rotateKeyFn,
     onSuccess: () => {
       toastMessage("success", "Key rotated");
+      setSelectedKey(null);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -308,6 +307,7 @@ function APIKeysSection() {
   };
 
   const keys = data?.data ?? [];
+  const activeKey = keys.find((k) => k.id === selectedKey);
 
   return (
     <div className="space-y-5">
@@ -321,73 +321,55 @@ function APIKeysSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {keys.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
-          ) : (
-            <div className="space-y-3">
-              {(["test", "live"] as const).map((env) => {
-                const envKeys = keys.filter((k) => k.environment === env);
-                if (envKeys.length === 0) return null;
-                return (
-                  <div key={env} className="rounded-lg border bg-muted/30 p-3 space-y-3">
-                    {envKeys.map((k) => (
-                      <div key={k.id} className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
-                            <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
-                              data-status={k.status}
-                            >
-                              {k.status}
-                            </span>
-                          </div>
-                          {k.status === "active" && (
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => rotateKey({ id: k.id })}
-                                disabled={rotating}
-                                className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                              >
-                                Rotate
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => revokeKey({ id: k.id })}
-                                disabled={revoking}
-                                className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
-                              >
-                                Revoke
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="relative flex-1">
-                            <Input
-                              type={showPK ? "text" : "password"}
-                              value={k.maskedKey}
-                              readOnly
-                              className="pr-9 text-sm"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)}
-                            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                          >
-                            <Copy className="size-3.5" />
+          {keys.length > 0 && (
+            <div className="space-y-2">
+              {keys.map((k) => (
+                <div key={k.id} className="rounded-lg border bg-muted/30 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
+                      <p className="text-xs text-muted-foreground">{k.environment === "test" ? "Test" : "Live"}</p>
+                      <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize" data-status={k.status}>{k.status}</span>
+                    </div>
+                    <button type="button" onClick={() => setSelectedKey(selectedKey === k.id ? null : k.id)} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
+                      {selectedKey === k.id ? "Close" : "Details"}
+                    </button>
+                  </div>
+                  {k.maskedKey && (
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Input value={k.maskedKey} readOnly className="pr-9 text-sm" />
+                      </div>
+                      <button type="button" onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
+                        <Copy className="size-3.5" />
                       </button>
                     </div>
-                  </div>
+                  )}
                   {k.scopes && k.scopes.length > 0 && (
                     <p className="text-[10px] text-muted-foreground">{k.scopes.join(", ")}</p>
                   )}
-                    ))}
-                  </div>
-                );
-              })}
+                  {selectedKey === k.id && (
+                    <div className="border-t pt-3 space-y-3">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div><p className="text-xs text-muted-foreground">Status</p><p className="capitalize">{k.status}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Environment</p><p className="capitalize">{k.environment}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Type</p><p className="capitalize">{k.type}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Created</p><p>{k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "—"}</p></div>
+                      </div>
+                      {k.status === "active" && (
+                        <div className="flex gap-2 pt-1">
+                          <Button size="sm" variant="outline" onClick={async () => { try { await rotateKey({ id: k.id }); } catch {} }} disabled={rotating}>Rotate</Button>
+                          <Button size="sm" variant="destructive" onClick={async () => { try { await revokeKey({ id: k.id }); } catch {} }} disabled={revoking}>Revoke</Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
+          )}
+          {keys.length === 0 && (
+            <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
           )}
           {newKeys && (
             <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
@@ -401,13 +383,11 @@ function APIKeysSection() {
                     <div className="relative flex-1">
                       <Input value={nk.value} readOnly className="pr-9 text-sm" />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(nk.value, nk.label)}
-                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                    >
-                      <Copy className="size-3.5" />
-                    </button>
+                    {nk.value && (
+                      <button type="button" onClick={() => handleCopy(nk.value, nk.label)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
+                        <Copy className="size-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
