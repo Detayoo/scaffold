@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { createAdminDisputeFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
@@ -91,14 +92,13 @@ export function CreateAdminDisputeModal({ open, onOpenChange, onSuccess }: Creat
           <Textarea {...form.register("reason")} placeholder="Customer claims goods were not delivered" className="min-h-20" />
         </FormField>
         <FormField label="Owner" error={form.formState.errors.ownerId?.message} isRequired>
-          <Select value={form.watch("ownerId")} onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); form.setValue("ownerId", v); form.setValue("ownerName", o?.name ?? ""); }}>
-            <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
-            <SelectContent>
-              {MOCK_OWNERS.map((o) => (
-                <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            options={MOCK_OWNERS.map((o) => ({ value: o.id, label: o.name }))}
+            value={form.watch("ownerId")}
+            onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); form.setValue("ownerId", v); form.setValue("ownerName", o?.name ?? ""); }}
+            placeholder="Select owner"
+            searchPlaceholder="Search owners..."
+          />
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>

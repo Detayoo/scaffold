@@ -33,6 +33,7 @@ import {
   createManualAdjustmentFn,
 } from "@/services";
 import { DatePicker } from "@/components/DatePicker";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { toastMessage, extractError, formatMoney } from "@/utils";
 const MOCK_OWNERS = [
   { id: "ops_lagos_01", name: "Finance Ops Lagos" },
@@ -237,14 +238,13 @@ function ReconciliationContent() {
           {action === "assign" && (
             <div className="space-y-2 pt-2 border-t">
               <FormField label="Owner" isRequired>
-                <Select value={ownerId} onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}>
-                  <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
-                  <SelectContent>
-                    {MOCK_OWNERS.map((o) => (
-                      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  options={MOCK_OWNERS.map((o) => ({ value: o.id, label: o.name }))}
+                  value={ownerId}
+                  onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}
+                  placeholder="Select owner"
+                  searchPlaceholder="Search owners..."
+                />
               </FormField>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setAction(null)}>Cancel</Button>
@@ -328,14 +328,13 @@ function ReconciliationContent() {
       <ResponsiveModal open={adjustModal} onOpenChange={setAdjustModal} title="Manual Adjustment">
         <div className="space-y-4 pt-2">
           <FormField label="Merchant" isRequired>
-            <Select value={adjMerchantId} onValueChange={setAdjMerchantId}>
-              <SelectTrigger className="w-full"><SelectValue placeholder="Select merchant" /></SelectTrigger>
-              <SelectContent>
-                {MOCK_MERCHANTS_DD.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              options={MOCK_MERCHANTS_DD.map((m) => ({ value: m.id, label: m.name }))}
+              value={adjMerchantId}
+              onValueChange={setAdjMerchantId}
+              placeholder="Select merchant"
+              searchPlaceholder="Search merchants..."
+            />
           </FormField>
           <FormField label="Reason" isRequired>
             <Input value={adjReason} onChange={(e) => setAdjReason(e.target.value)} placeholder="Correct duplicate import" />

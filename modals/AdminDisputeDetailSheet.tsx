@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { FormField } from "@/components/FormField";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { assignAdminDisputeFn, holdAdminDisputeFn, outcomeAdminDisputeFn, closeAdminDisputeFn } from "@/services";
 import { formatMoney, toastMessage, extractError } from "@/utils";
@@ -134,14 +135,13 @@ export function AdminDisputeDetailSheet({ dispute, onOpenChange, onSuccess }: Ad
                   {assigning && (
                     <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
                       <FormField label="Owner" isRequired>
-                        <Select value={ownerId} onValueChange={(v) => { const o = [{ id: "ops_lagos_01", name: "Finance Ops Lagos" }, { id: "ops_abuja_02", name: "Finance Ops Abuja" }, { id: "ops_port_03", name: "Finance Ops Port Harcourt" }].find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}>
-                          <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
-                          <SelectContent>
-                            {[{ id: "ops_lagos_01", name: "Finance Ops Lagos" }, { id: "ops_abuja_02", name: "Finance Ops Abuja" }, { id: "ops_port_03", name: "Finance Ops Port Harcourt" }].map((o) => (
-                              <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <SearchableSelect
+                          options={[{ value: "ops_lagos_01", label: "Finance Ops Lagos" }, { value: "ops_abuja_02", label: "Finance Ops Abuja" }, { value: "ops_port_03", label: "Finance Ops Port Harcourt" }]}
+                          value={ownerId}
+                          onValueChange={(v) => { const o = [{ value: "ops_lagos_01", label: "Finance Ops Lagos" }, { value: "ops_abuja_02", label: "Finance Ops Abuja" }, { value: "ops_port_03", label: "Finance Ops Port Harcourt" }].find((x) => x.value === v); setOwnerId(v); setOwnerName(o?.label ?? ""); }}
+                          placeholder="Select owner"
+                          searchPlaceholder="Search owners..."
+                        />
                       </FormField>
                       <div className="flex gap-2">
                         <Button variant="outline" className="flex-1" onClick={() => setAssigning(false)}>Cancel</Button>

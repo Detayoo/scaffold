@@ -19,6 +19,7 @@ import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { SettlementDetailSheet } from "@/modals/SettlementDetailSheet";
 import { runSettlementFn, runSplitSettlementFn } from "@/services";
 import { formatMoney, toastMessage, extractError } from "@/utils";
@@ -100,16 +101,13 @@ function AdminSettlementsContent() {
       <ResponsiveModal open={settlementModal} onOpenChange={setSettlementModal} title="Run Settlement">
         <div className="space-y-4 pt-2">
           <FormField label="Merchant" isRequired>
-            <Select value={settleMerchantId} onValueChange={setSettleMerchantId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select merchant" />
-              </SelectTrigger>
-              <SelectContent>
-                {MOCK_MERCHANTS.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              options={MOCK_MERCHANTS.map((m) => ({ value: m.id, label: m.name }))}
+              value={settleMerchantId}
+              onValueChange={setSettleMerchantId}
+              placeholder="Select merchant"
+              searchPlaceholder="Search merchants..."
+            />
           </FormField>
           <FormField label="Environment" isRequired>
             <Select value={settleEnv} onValueChange={setSettleEnv}>
@@ -149,16 +147,13 @@ function AdminSettlementsContent() {
       <ResponsiveModal open={splitModal} onOpenChange={setSplitModal} title="Run Split Settlement">
         <div className="space-y-4 pt-2">
           <FormField label="Merchant" isRequired>
-            <Select value={splitMerchantId} onValueChange={setSplitMerchantId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select merchant" />
-              </SelectTrigger>
-              <SelectContent>
-                {MOCK_MERCHANTS.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              options={MOCK_MERCHANTS.map((m) => ({ value: m.id, label: m.name }))}
+              value={splitMerchantId}
+              onValueChange={setSplitMerchantId}
+              placeholder="Select merchant"
+              searchPlaceholder="Search merchants..."
+            />
           </FormField>
           <FormField label="Environment" isRequired>
             <Select value={splitEnv} onValueChange={setSplitEnv}>
