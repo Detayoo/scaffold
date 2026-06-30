@@ -1,13 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FormField } from "@/components/FormField";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { SettlementDetailSheet } from "@/modals/SettlementDetailSheet";
 import { runSettlementFn, runSplitSettlementFn } from "@/services";
 import { formatMoney, toastMessage, extractError } from "@/utils";
@@ -20,8 +30,17 @@ const MOCK_BATCHES: SettlementBatch[] = [
   { id: "c4d6f3e2-370c-6253-d8a5-1c3fg1f20f72", merchantId: "a2b3c4d5-6789-0123-4567-89abcdef012345", currency: "NGN", channel: "card", provider: "MPGS", status: "paid", netAmountMinor: 875000, itemCount: 2, approvedAt: "2026-06-29T10:00:00.000Z" },
 ];
 
+const MOCK_MERCHANTS = [
+  { id: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", name: "Alausa Mart" },
+  { id: "a2b3c4d5-6789-0123-4567-89abcdef012345", name: "Balogun Rice Store" },
+  { id: "e5f6a7b8-9012-3456-789a-bcdef012345678", name: "Ikeja Tech Hub" },
+];
+
 function AdminSettlementsContent() {
   const [selectedBatch, setSelectedBatch] = useState<SettlementBatch | null>(null);
+  const [splitModal, setSplitModal] = useState(false);
+  const [splitMerchantId, setSplitMerchantId] = useState("");
+  const [splitEnv, setSplitEnv] = useState("test");
 
   const { mutateAsync: runBatch, isPending: isRunning } = useMutation({
     mutationFn: runSettlementFn,
@@ -31,7 +50,7 @@ function AdminSettlementsContent() {
 
   const { mutateAsync: runSplit, isPending: isSplitting } = useMutation({
     mutationFn: runSplitSettlementFn,
-    onSuccess: () => toastMessage("success", "Split settlement generated"),
+    onSuccess: () => { toastMessage("success", "Split settlement generated"); setSplitModal(false); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
@@ -48,7 +67,7 @@ function AdminSettlementsContent() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader title="Settlements" description="Generate and manage merchant settlement batches" />
         <div className="flex items-center gap-2">
-          <Button variant="outline" disabled={isSplitting} onClick={async () => { try { await runSplit({ merchantId: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", environment: "test" }); } catch {} }}>
+          <Button variant="outline" onClick={() => setSplitModal(true)}>
             <Play className="size-4" />
             Run Split Settlement
           </Button>
@@ -70,6 +89,36 @@ function AdminSettlementsContent() {
       />
 
       <SettlementDetailSheet batch={selectedBatch} onOpenChange={(o) => { if (!o) setSelectedBatch(null); }} />
+
+      <ResponsiveModal open={splitModal} onOpenChange={setSplitModal} title="Run Split Settlement">
+        <div className="space-y-4 pt-2">
+          <FormField label="Merchant" isRequired>
+            <Select value={splitMerchantId} onValueChange={setSplitMerchantId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select merchant" />
+              </SelectTrigger>
+              <SelectContent>
+                {MOCK_MERCHANTS.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Environment" isRequired>
+            <Select value={splitEnv} onValueChange={setSplitEnv}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="test">Test</SelectItem>
+                <SelectItem value="live">Live</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <Button className="w-full" disabled={isSplitting || !splitMerchantId}
+            onClick={async () => { try { await runSplit({ merchantId: splitMerchantId, environment: splitEnv }); } catch {} }}>
+            {isSplitting ? "Running..." : "Run Split Settlement"}
+          </Button>
+        </div>
+      </ResponsiveModal>
     </div>
   );
 }
