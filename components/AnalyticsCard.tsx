@@ -15,7 +15,7 @@ interface AnalyticsCardProps {
 
 export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: AnalyticsCardProps) {
   const renderValue = () => {
-    if (value === undefined || value === null) return "—";
+    if (value === undefined || value === null) return "0";
     if (typeof value === "string") return value;
     if (compact) return <>{formatMoneyCompact(value)}</>;
     return <>{formatMoney(value)}</>;
