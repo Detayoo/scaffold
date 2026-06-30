@@ -60,6 +60,15 @@ function TeamContent() {
     mutationFn: (reference: string) => deleteInviteFn(reference),
   });
 
+  const { mutateAsync: resendInvite, isPending: isResending } = useMutation({
+    mutationFn: (id: string) => resendInviteFn(id),
+    onSuccess: () => {
+      toastMessage("success", "Invitation resent");
+      queryClient.invalidateQueries({ queryKey: ["team-invites"] });
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
+
   const form = useForm<InviteForm>({
     resolver: zodResolver(inviteSchema),
     defaultValues: { email: "", role: "" },
@@ -117,11 +126,18 @@ function TeamContent() {
       cell: (i: Invite) => <span className="text-xs text-muted-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
     },
     {
-      key: "actions", header: "", className: "w-10",
+      key: "actions", header: "", className: "w-20",
       cell: (i: Invite) => (
-        <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }} className="cursor-pointer">
-          <X className="size-3.5 text-destructive" />
-        </button>
+        <div className="flex gap-2">
+          {i.status === "pending" && (
+            <button type="button" onClick={async (e) => { e.stopPropagation(); try { await resendInvite(i.id); } catch {} }} disabled={isResending} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
+              Resend
+            </button>
+          )}
+          <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }} className="cursor-pointer">
+            <X className="size-3.5 text-destructive" />
+          </button>
+        </div>
       ),
     },
   ];
