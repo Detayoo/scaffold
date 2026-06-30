@@ -37,8 +37,8 @@ export default function HomePage() {
   const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
     { icon: CheckCircle2, label: "Successful", value: home?.today?.successful_payments },
     { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
-    { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
-    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
+    { icon: TrendingUp, label: "Gross Amount", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
+    { icon: TrendingUp, label: "Net Amount", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
     { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true },
   ];
 
