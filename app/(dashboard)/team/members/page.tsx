@@ -121,15 +121,15 @@ function TeamContent() {
 
   const inviteColumns: Column<Invite>[] = [
     {
+      key: "created_at", header: "Date",
+      cell: (i: Invite) => <span className="text-xs text-muted-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
+    },
+    {
       key: "email", header: "Email",
       cell: (i: Invite) => <span className="text-sm text-foreground">{i.email}</span>,
     },
     { key: "role", header: "Role", cell: (i: Invite) => <span className="text-sm capitalize">{i.role}</span> },
     { key: "status", header: "Status", cell: (i: Invite) => <StatusBadge status={i.status} size="sm" /> },
-    {
-      key: "created_at", header: "Date",
-      cell: (i: Invite) => <span className="text-xs text-muted-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
-    },
     {
       key: "actions", header: "", className: "w-28",
       cell: (i: Invite) => (
