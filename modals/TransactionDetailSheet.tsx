@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, ChevronDown, ChevronRight } from "lucide-react";
 
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
@@ -19,28 +19,36 @@ interface TransactionDetailSheetProps {
 }
 
 export function TransactionDetailSheet({ reference, onOpenChange }: TransactionDetailSheetProps) {
+  const copy = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+  const toggle = (key: string) => setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const SectionToggle = ({ sectionKey, label, count }: { sectionKey: string; label: string; count?: number }) => (
+    <button type="button" onClick={() => toggle(sectionKey)} className="flex items-center gap-2 text-sm font-medium text-foreground mb-2 cursor-pointer hover:text-muted-foreground transition-colors">
+      {openSections[sectionKey] ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+      {label}{count !== undefined ? ` (${count})` : ""}
+    </button>
+  );
+
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["transaction-detail", reference],
     queryFn: () => getTransactionDetailFn({ reference: reference! }),
     enabled: !!reference,
   });
 
-  const copy = useCopyToClipboard();
-  const [copied, setCopied] = useState(false);
+  const pi = data?.data?.intent;
+  const financials = data?.data?.financials;
+  const attempts = data?.data?.attempts;
+  const refunds = data?.data?.refunds;
+  const timelineEntries = data?.data?.timeline?.entries;
+  const splitAllocations = data?.data?.splitAllocations;
 
   const handleCopy = async (text: string) => {
     const ok = await copy(text);
     if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); }
   };
-
-  const pi = data?.data?.intent;
-  const financials = data?.data?.financials;
-  const attempts = data?.data?.attempts;
-  const refunds = data?.data?.refunds;
-  const disputes = data?.data?.disputes;
-  const credits = data?.data?.accountCredits;
-  const splitAllocations = data?.data?.splitAllocations;
-  const timelineEntries = data?.data?.timeline?.entries;
 
   return (
     <ResponsiveSheet
@@ -74,12 +82,6 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                 <p className="text-sm text-foreground capitalize">{pi?.channel}</p>
               </div>
             )}
-            {pi?.currency && (
-              <div>
-                <p className="text-xs text-muted-foreground">Currency</p>
-                <p className="text-sm text-foreground">{pi?.currency}</p>
-              </div>
-            )}
             {pi?.customer?.name && (
               <div>
                 <p className="text-xs text-muted-foreground">Customer</p>
@@ -91,12 +93,6 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <div>
                 <p className="text-xs text-muted-foreground">Environment</p>
                 <p className="text-sm text-foreground capitalize">{pi?.environment}</p>
-              </div>
-            )}
-            {pi?.settlementStatus && pi?.settlementStatus !== "none" && (
-              <div>
-                <p className="text-xs text-muted-foreground">Settlement</p>
-                <p className="text-sm text-foreground capitalize">{pi?.settlementStatus}</p>
               </div>
             )}
             {pi?.createdAt && (
@@ -116,25 +112,23 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Financials</p>
-                  <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
-                    <div className="flex justify-between">
-                      <p className="text-xs text-muted-foreground">Gross</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.gross_amount_minor)}</p>
+                  <SectionToggle sectionKey="financials" label="Financials" />
+                  {openSections["financials"] && (
+                    <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
+                      <div className="flex justify-between">
+                        <p className="text-xs text-muted-foreground">Gross</p>
+                        <p className="text-sm font-medium">{formatMoney(financials?.gross_amount_minor)}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-xs text-muted-foreground">Fee</p>
+                        <p className="text-sm font-medium">{formatMoney(financials?.fee_amount_minor)}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-xs text-muted-foreground">Net</p>
+                        <p className="text-sm font-medium">{formatMoney(financials?.net_amount_minor)}</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <p className="text-xs text-muted-foreground">Fee</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.fee_amount_minor)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="text-xs text-muted-foreground">Net</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.net_amount_minor)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="text-xs text-muted-foreground">Settlement Status</p>
-                      <p className="text-sm capitalize">{financials?.settlement_status}</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </>
             )}
@@ -143,45 +137,26 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Attempts ({attempts.length})</p>
-                  <div className="space-y-2">
-                    {attempts.map((a: any, i: number) => (
-                      <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground capitalize">{a?.channel}</p>
-                          <StatusBadge status={a?.status} size="sm" />
+                  <SectionToggle sectionKey="attempts" label="Attempts" count={attempts.length} />
+                  {openSections["attempts"] && (
+                    <div className="space-y-2">
+                      {attempts.map((a: any, i: number) => (
+                        <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground capitalize">{a?.channel}</p>
+                            <StatusBadge status={a?.status} size="sm" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">{a?.provider}</p>
+                            <p className="text-sm font-medium">{formatMoney(a?.amountMinor)}</p>
+                          </div>
+                          {a?.providerReference && <p className="text-xs text-muted-foreground">Ref: {a?.providerReference}</p>}
+                          {a?.providerData?.responseMessage && <p className="text-xs text-muted-foreground">{a?.providerData?.responseMessage}</p>}
+                          {a?.createdAt && <p className="text-xs text-muted-foreground">{formatDate(a?.createdAt)}</p>}
                         </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground">{a?.provider}</p>
-                          <p className="text-sm font-medium">{formatMoney(a?.amountMinor)}</p>
-                        </div>
-                        {a?.providerReference && (
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Provider Ref</p>
-                            <p className="text-xs">{a?.providerReference}</p>
-                          </div>
-                        )}
-                        {a?.actionRequired?.type && a?.actionRequired?.type !== "none" && (
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Action Required</p>
-                            <p className="text-xs capitalize">{a?.actionRequired?.type}</p>
-                          </div>
-                        )}
-                        {a?.providerData?.responseMessage && (
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Response</p>
-                            <p className="text-xs text-right max-w-[60%]">{a?.providerData?.responseMessage}</p>
-                          </div>
-                        )}
-                        {a?.createdAt && (
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Attempted</p>
-                            <p className="text-xs">{formatDate(a?.createdAt)}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -190,18 +165,20 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Refunds ({refunds.length})</p>
-                  <div className="space-y-2">
-                    {refunds.map((r: any, i: number) => (
-                      <div key={r?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground">{r?.reference}</p>
-                          <StatusBadge status={r?.status} size="sm" />
+                  <SectionToggle sectionKey="refunds" label="Refunds" count={refunds.length} />
+                  {openSections["refunds"] && (
+                    <div className="space-y-2">
+                      {refunds.map((r: any, i: number) => (
+                        <div key={r?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">{r?.reference}</p>
+                            <StatusBadge status={r?.status} size="sm" />
+                          </div>
+                          <p className="text-sm font-medium">{formatMoney(r?.amountMinor)}</p>
                         </div>
-                        <p className="text-sm font-medium">{formatMoney(r?.amountMinor)}</p>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -210,44 +187,39 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-4">Timeline</p>
-                  <div className="relative">
-                    <div className="absolute left-[11px] top-[18px] bottom-[10px] w-[2px] bg-border" />
-                    <div className="space-y-0">
-                      {timelineEntries.map((t: TimelineEntry, i: number) => (
-                        <div key={t?.source_id ?? i} className="relative flex gap-4 pb-5 last:pb-0">
-                          <div className="flex flex-col items-center shrink-0">
-                            <div className={`size-[24px] rounded-full flex items-center justify-center ${
-                              i === 0
-                                ? "bg-foreground"
-                                : "bg-background border-2 border-border"
-                            }`}>
-                              <div className={`size-[8px] rounded-full ${
-                                i === 0 ? "bg-background" : "bg-muted-foreground/40"
-                              }`} />
+                  <SectionToggle sectionKey="timeline" label="Timeline" />
+                  {openSections["timeline"] && (
+                    <div className="relative">
+                      <div className="absolute left-[11px] top-[18px] bottom-[10px] w-[2px] bg-border" />
+                      <div className="space-y-0">
+                        {timelineEntries.map((t: TimelineEntry, i: number) => (
+                          <div key={t?.source_id ?? i} className="relative flex gap-4 pb-5 last:pb-0">
+                            <div className="flex flex-col items-center shrink-0">
+                              <div className={`size-[24px] rounded-full flex items-center justify-center ${i === 0 ? "bg-foreground" : "bg-background border-2 border-border"}`}>
+                                <div className={`size-[8px] rounded-full ${i === 0 ? "bg-background" : "bg-muted-foreground/40"}`} />
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0 pt-[3px]">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-xs text-muted-foreground">
+                                  {t?.occurred_at
+                                    ? new Date(t.occurred_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) +
+                                      " " + new Date(t.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                                    : "—"}
+                                </p>
+                                {t?.source && (
+                                  <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 rounded bg-muted shrink-0">
+                                    {t.source.replace(/_/g, " ")}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-foreground mt-0.5">{t?.type}</p>
                             </div>
                           </div>
-                          <div className="flex-1 min-w-0 pt-[3px]">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="text-xs text-muted-foreground">
-                                {t?.occurred_at
-                                  ? new Date(t.occurred_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) +
-                                    " " +
-                                    new Date(t.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-                                  : "—"}
-                              </p>
-                              {t?.source && (
-                                <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 rounded bg-muted shrink-0">
-                                  {t.source.replace(/_/g, " ")}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-sm text-foreground mt-0.5">{t?.type}</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </>
             )}
@@ -256,21 +228,23 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Split Allocations</p>
-                  <div className="space-y-2">
-                    {splitAllocations.map((s: any, i: number) => (
-                      <div key={s?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                        <div className="flex justify-between">
-                          <p className="text-xs text-muted-foreground">Subaccount</p>
-                          <p className="text-sm">{s?.subaccountId}</p>
+                  <SectionToggle sectionKey="splits" label="Split Allocations" count={splitAllocations.length} />
+                  {openSections["splits"] && (
+                    <div className="space-y-2">
+                      {splitAllocations.map((s: any, i: number) => (
+                        <div key={s?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Subaccount</p>
+                            <p className="text-sm">{s?.subaccountId}</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Amount</p>
+                            <p className="text-sm font-medium">{formatMoney(s?.amountMinor)}</p>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <p className="text-xs text-muted-foreground">Amount</p>
-                          <p className="text-sm font-medium">{formatMoney(s?.amountMinor)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
