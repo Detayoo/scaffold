@@ -286,7 +286,8 @@ function APIKeysSection() {
     toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
   };
 
-  const keys = data?.data ?? [];
+  const keysData = data?.data;
+  const keys = Array.isArray(keysData) ? keysData : [];
 
   return (
     <div className="space-y-5">
