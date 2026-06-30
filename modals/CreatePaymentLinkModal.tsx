@@ -45,7 +45,7 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
 
   const form = useForm<CreateForm>({
     resolver: zodResolver(createSchema),
-    defaultValues: { reference: "", amount: "", currency: "NGN", cardChannel: true, transferChannel: false },
+    defaultValues: { reference: "", amount: "", currency: "NGN", cardChannel: true, transferChannel: true },
   });
 
   const cardChannel = form.watch("cardChannel");
