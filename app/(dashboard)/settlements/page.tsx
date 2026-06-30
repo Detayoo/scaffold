@@ -102,7 +102,7 @@ function SettlementsContent() {
         isError={isError}
         onRetry={refetch}
         emptyTitle="No settlements yet"
-        emptyDescription="Settlement batches will appear here once payments are processed"
+        emptyDescription="No settlement batches yet"
         onRowClick={(s) => router.push(`/settlements/${s?.id}`)}
       />
     </div>
