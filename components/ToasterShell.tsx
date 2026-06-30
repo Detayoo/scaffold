@@ -15,9 +15,9 @@ export function ToasterShell() {
   return (
     <div ref={containerRef}>
       <SonnerToaster
-        position="bottom-left"
+        position="bottom-right"
         richColors
-        className="md:bottom-4 md:left-4 bottom-4 left-1/2 -translate-x-1/2 md:translate-x-0"
+        className="md:bottom-4 md:right-4 bottom-4 right-4"
       />
     </div>
   );
