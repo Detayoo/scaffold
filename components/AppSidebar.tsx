@@ -207,13 +207,13 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
+            className={`relative inline-flex h-5 w-9 items-center rounded-full cursor-pointer ${
               environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
             }`}
             title={`Environment: ${environment}`}
           >
             <span
-              className={`inline-block size-3.5 rounded-full bg-background transition-transform ${
+              className={`inline-block size-3.5 rounded-full bg-background ${
                 environment === "live" ? "translate-x-4.5" : "translate-x-0.5"
               }`}
             />
@@ -230,13 +230,13 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
-            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors cursor-pointer ${
+            className={`relative inline-flex h-4 w-7 items-center rounded-full cursor-pointer ${
               environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
             }`}
             title={`Environment: ${environment}`}
           >
             <span
-              className={`inline-block size-3 rounded-full bg-background transition-transform ${
+              className={`inline-block size-3 rounded-full bg-background ${
                 environment === "live" ? "translate-x-3.5" : "translate-x-0.5"
               }`}
             />
