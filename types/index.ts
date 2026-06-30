@@ -133,15 +133,18 @@ export type TimelineEntry = {
 export type TransactionDetail = {
   status: boolean;
   data: {
-    paymentIntent: Record<string, any>;
+    intent: Record<string, any>;
     attempts: any[];
     refunds: any[];
     disputes: any[];
-    credits: any[];
+    accountCredits: any[];
     splitAllocations: any[];
     splitLiabilities: any[];
     financials: Record<string, any>;
-    timeline: TimelineEntry[];
+    timeline: {
+      reference: string;
+      entries: TimelineEntry[];
+    };
   };
 };
 

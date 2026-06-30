@@ -22,14 +22,14 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
     enabled: !!reference,
   });
 
-  const pi = data?.data?.paymentIntent;
+  const pi = data?.data?.intent;
   const financials = data?.data?.financials;
   const attempts = data?.data?.attempts;
   const refunds = data?.data?.refunds;
   const disputes = data?.data?.disputes;
-  const credits = data?.data?.credits;
+  const credits = data?.data?.accountCredits;
   const splitAllocations = data?.data?.splitAllocations;
-  const timeline = data?.data?.timeline;
+  const timelineEntries = data?.data?.timeline?.entries;
 
   return (
     <ResponsiveSheet
@@ -124,13 +124,13 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               </>
             )}
 
-            {timeline && timeline.length > 0 && (
+            {timelineEntries && timelineEntries.length > 0 && (
               <>
                 <Separator />
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2">Timeline</p>
                   <div className="space-y-2">
-                    {timeline.map((t: TimelineEntry, i: number) => (
+                    {timelineEntries.map((t: TimelineEntry, i: number) => (
                       <div key={t?.source_id ?? i} className="flex items-start gap-3">
                         <div className="mt-1.5 size-2 rounded-full bg-muted-foreground/30 shrink-0" />
                         <div className="flex-1 min-w-0">
