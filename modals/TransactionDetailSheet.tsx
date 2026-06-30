@@ -99,16 +99,16 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                 <p className="text-sm text-foreground capitalize">{pi?.settlementStatus}</p>
               </div>
             )}
-            {pi?.expiresAt && (
-              <div>
-                <p className="text-xs text-muted-foreground">Expires</p>
-                <p className="text-sm text-foreground">{formatDate(pi?.expiresAt)}</p>
-              </div>
-            )}
             {pi?.createdAt && (
               <div>
                 <p className="text-xs text-muted-foreground">Created</p>
                 <p className="text-sm text-foreground">{formatDate(pi?.createdAt)}</p>
+              </div>
+            )}
+            {pi?.expiresAt && (
+              <div>
+                <p className="text-xs text-muted-foreground">Expires</p>
+                <p className="text-sm text-foreground">{formatDate(pi?.expiresAt)}</p>
               </div>
             )}
 
