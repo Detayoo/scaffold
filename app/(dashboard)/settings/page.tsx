@@ -333,8 +333,11 @@ function APIKeysSection() {
                     {envKeys.map((k) => (
                       <div key={k.id} className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
+                          {k.scopes && k.scopes.length > 0 && (
+                            <p className="text-[10px] text-muted-foreground">{k.scopes.join(", ")}</p>
+                          )}
                             <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
                               data-status={k.status}
                             >

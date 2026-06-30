@@ -632,6 +632,7 @@ export type ApiKey = {
   maskedKey: string;
   status: "active" | "revoked";
   createdAt: string;
+  scopes: string[];
 };
 
 export type ApiKeysListResponse = {
