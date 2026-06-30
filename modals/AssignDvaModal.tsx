@@ -128,6 +128,7 @@ export function AssignDvaModal({ open, onOpenChange, customerId, onSuccess }: As
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="NGN">NGN</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
             </SelectContent>
           </Select>
         </FormField>

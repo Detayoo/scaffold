@@ -46,6 +46,7 @@ function AdminSettlementsContent() {
   const [settleMerchantId, setSettleMerchantId] = useState("");
   const [settleEnv, setSettleEnv] = useState("test");
   const [settleChannel, setSettleChannel] = useState("bank_transfer");
+  const [settleCurrency, setSettleCurrency] = useState("NGN");
   const [settleAsOf, setSettleAsOf] = useState("");
 
   const { mutateAsync: runBatch, isPending: isRunning } = useMutation({
@@ -128,9 +129,18 @@ function AdminSettlementsContent() {
               </SelectContent>
             </Select>
           </FormField>
+          <FormField label="Currency" isRequired>
+            <Select value={settleCurrency} onValueChange={setSettleCurrency}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NGN">NGN</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
           <DatePicker label="As Of" value={settleAsOf ? new Date(settleAsOf) : undefined} onChange={(d) => setSettleAsOf(d ? d.toISOString() : "")} />
           <Button className="w-full" disabled={isRunning || !settleMerchantId}
-            onClick={async () => { try { await runBatch({ merchantId: settleMerchantId, environment: settleEnv, currency: "NGN", channel: settleChannel, asOf: settleAsOf || undefined }); } catch {} }}>
+            onClick={async () => { try { await runBatch({ merchantId: settleMerchantId, environment: settleEnv, currency: settleCurrency, channel: settleChannel, asOf: settleAsOf || undefined }); } catch {} }}>
             {isRunning ? "Running..." : "Run Settlement"}
           </Button>
         </div>

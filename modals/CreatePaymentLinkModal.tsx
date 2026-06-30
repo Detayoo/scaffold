@@ -125,6 +125,7 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
               <SelectContent>
                 <SelectItem value="NGN">NGN</SelectItem>
                 <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
           </FormField>

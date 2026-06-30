@@ -88,6 +88,7 @@ export function CreateAdminRefundModal({ open, onOpenChange, onSuccess }: Create
             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="NGN">NGN</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
             </SelectContent>
           </Select>
         </FormField>

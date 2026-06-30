@@ -111,6 +111,7 @@ export function CreateRefundModal({ open, onOpenChange, onSuccess }: CreateRefun
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="NGN">NGN</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
