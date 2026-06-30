@@ -380,7 +380,7 @@ function APIKeysSection() {
           )}
           {newKeys && (
             <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
-              <p className="text-xs font-medium">Keys generated — copy them now. You won't see them again.</p>
+              <p className="text-xs font-medium">Latest generated keys</p>
               {[
                 { label: "Public Key", value: newKeys.publicKey },
                 { label: "Secret Key", value: newKeys.secretKey },
@@ -401,12 +401,9 @@ function APIKeysSection() {
                   </div>
                 </div>
               ))}
-              <Button variant="outline" onClick={() => setNewKeys(null)}>
-                Done
-              </Button>
             </div>
           )}
-          {!newKeys && (
+          {
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setCreating(true)} disabled={generating}>
                 <Key className="size-3.5" />
