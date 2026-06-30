@@ -287,7 +287,6 @@ function APIKeysSection() {
   };
 
   const keys = data?.data ?? [];
-  const activeKey = keys.find((k) => k.id === selectedKey);
 
   return (
     <div className="space-y-5">
