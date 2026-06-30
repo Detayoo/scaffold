@@ -44,21 +44,25 @@ export default function AcceptInvitePage({
   });
 
   useEffect(() => {
-    if (!token) {
-      setError(true);
-      setLoading(false);
-      return;
-    }
-    previewInviteFn(token).then((res) => {
-      const d = res?.data;
-      if (d?.invitation) {
-        setPreview({ email: d.invitation.email, role: d.invitation.role, merchant: d.merchant?.display_name ?? "" });
+    const fetchPreview = async () => {
+      try {
+        if (!token) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        const res = await previewInviteFn(token);
+        const d = res?.data;
+        if (d?.invitation) {
+          setPreview({ email: d.invitation.email, role: d.invitation.role, merchant: d.merchant?.display_name ?? "" });
+        }
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }).catch(() => {
-      setError(true);
-      setLoading(false);
-    });
+    };
+    fetchPreview();
   }, [token]);
 
   const { mutateAsync: acceptInvite, isPending: accepting } = useMutation({
