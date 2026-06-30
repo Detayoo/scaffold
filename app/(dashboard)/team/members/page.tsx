@@ -227,10 +227,10 @@ function TeamContent() {
             <Select value={form.watch("role")} onValueChange={(v) => form.setValue("role", v)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Select role" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="owner">Owner</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="developer">Developer</SelectItem>
-                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="support">Support</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
