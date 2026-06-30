@@ -259,7 +259,7 @@ function ReconciliationContent() {
         <div className="space-y-4 pt-2">
           <FormField label="Type" isRequired>
             <Select value={reconType} onValueChange={setReconType}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="payment">Payment</SelectItem>
                 <SelectItem value="settlement">Settlement</SelectItem>
@@ -269,7 +269,7 @@ function ReconciliationContent() {
           </FormField>
           <FormField label="Provider" isRequired>
             <Select value={reconProvider} onValueChange={setReconProvider}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="VPS">VPS</SelectItem>
                 <SelectItem value="INTERSWITCH">INTERSWITCH</SelectItem>
@@ -296,7 +296,7 @@ function ReconciliationContent() {
         <div className="space-y-4 pt-2">
           <FormField label="Provider" isRequired>
             <Select value={importProvider} onValueChange={setImportProvider}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="VPS">VPS</SelectItem>
                 <SelectItem value="INTERSWITCH">INTERSWITCH</SelectItem>
