@@ -65,15 +65,15 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                   <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Gross</p>
-                      <p className="text-sm font-medium">NGN {formatMoney(financials?.gross_amount_minor)}</p>
+                      <p className="text-sm font-medium">{formatMoney(financials?.gross_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Fee</p>
-                      <p className="text-sm font-medium">NGN {formatMoney(financials?.fee_amount_minor)}</p>
+                      <p className="text-sm font-medium">{formatMoney(financials?.fee_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Net</p>
-                      <p className="text-sm font-medium">NGN {formatMoney(financials?.net_amount_minor)}</p>
+                      <p className="text-sm font-medium">{formatMoney(financials?.net_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Settlement Status</p>
