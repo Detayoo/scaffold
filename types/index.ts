@@ -620,9 +620,11 @@ export type DownloadInvoiceTemplateResponse = {
 };
 
 export type GetMerchantProfileResponse = {
+  status: boolean;
   data: {
+    environment: string;
     merchant: Merchant;
-    owner: User;
+    user: User;
   };
 };
 

@@ -2,7 +2,7 @@ import { v1AuthenticatedApi } from "../api";
 import type { BareResponse, GetMerchantProfileResponse } from "@/types";
 
 export const getMerchantProfileFn = async () => {
-  const { data } = await v1AuthenticatedApi().get<GetMerchantProfileResponse>("/merchant");
+  const { data } = await v1AuthenticatedApi().get<GetMerchantProfileResponse>("/merchant/profile");
   return data;
 };
 
