@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
-import { Filter } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { AdminRefundDetailSheet } from "@/modals/AdminRefundDetailSheet";
+import { CreateAdminRefundModal } from "@/modals/CreateAdminRefundModal";
 import { getAdminRefundsFn } from "@/services";
 import { formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
@@ -30,6 +31,7 @@ function AdminRefundsContent() {
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [detailRefund, setDetailRefund] = useState<Refund | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
 
   const { data, isPending, isError, refetch, isFetching } = useQuery({
@@ -66,6 +68,12 @@ function AdminRefundsContent() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader title="Refunds" description="Manage refunds across all merchants" />
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus />
+            Create Refund
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -119,6 +127,7 @@ function AdminRefundsContent() {
         onRowClick={(r) => setDetailRefund(r)}
       />
 
+      <CreateAdminRefundModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
       <AdminRefundDetailSheet refund={detailRefund} onOpenChange={(o) => { if (!o) setDetailRefund(null); }} onSuccess={() => refetch()} />
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
-import { Filter } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { AdminDisputeDetailSheet } from "@/modals/AdminDisputeDetailSheet";
+import { CreateAdminDisputeModal } from "@/modals/CreateAdminDisputeModal";
 import { getAdminDisputesFn } from "@/services";
 import { formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
@@ -30,6 +31,7 @@ function AdminDisputesContent() {
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [detailDispute, setDetailDispute] = useState<DisputeCase | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
 
   const { data, isPending, isError, refetch, isFetching } = useQuery({
@@ -66,6 +68,12 @@ function AdminDisputesContent() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader title="Disputes" description="Manage disputes across all merchants" />
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus />
+            Open Dispute
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -121,6 +129,7 @@ function AdminDisputesContent() {
         onRowClick={(d) => setDetailDispute(d)}
       />
 
+      <CreateAdminDisputeModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
       <AdminDisputeDetailSheet dispute={detailDispute} onOpenChange={(o) => { if (!o) setDetailDispute(null); }} onSuccess={() => refetch()} />
     </div>
   );

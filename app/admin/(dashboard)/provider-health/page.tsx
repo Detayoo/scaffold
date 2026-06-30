@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
-import { Filter } from "lucide-react";
+import { Filter, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
-import { getProviderHealthFn } from "@/services";
+import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { Input } from "@/components/ui/input";
+import { getProviderHealthFn, updateProviderHealthFn } from "@/services";
+import { toastMessage, extractError } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 import type { ProviderHealthEntry } from "@/types";
 
@@ -32,6 +35,15 @@ function ProviderHealthContent() {
   const [localProvider, setLocalProvider] = useState("");
   const [localChannel, setLocalChannel] = useState("");
   const [localEnv, setLocalEnv] = useState("");
+  const [editEntry, setEditEntry] = useState<ProviderHealthEntry | null>(null);
+  const [editStatus, setEditStatus] = useState("");
+  const [editReason, setEditReason] = useState("");
+
+  const { mutateAsync: updateHealth, isPending: updating } = useMutation({
+    mutationFn: updateProviderHealthFn,
+    onSuccess: () => { toastMessage("success", "Provider health updated"); setEditEntry(null); refetch(); },
+    onError: (err) => toastMessage("error", extractError(err)),
+  });
 
   const { data, isPending, isError, refetch, isFetching } = useQuery({
     queryKey: ["provider-health", providerFilter, channelFilter, envFilter],
@@ -70,6 +82,14 @@ function ProviderHealthContent() {
       key: "reason",
       header: "Reason",
       cell: (e) => <span className="text-sm text-muted-foreground">{e?.reason ?? "—"}</span>,
+    },
+    {
+      key: "actions", header: "", className: "w-10",
+      cell: (e) => (
+        <button type="button" onClick={(ev) => { ev.stopPropagation(); setEditEntry(e); setEditStatus(e?.status ?? ""); setEditReason(e?.reason ?? ""); }} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          <Settings2 className="size-4" />
+        </button>
+      ),
     },
   ];
 
@@ -151,6 +171,32 @@ function ProviderHealthContent() {
         emptyTitle="No provider health entries"
         emptyDescription={providerFilter || channelFilter || envFilter ? "Try different filters" : "No providers configured"}
       />
+      <ResponsiveModal open={!!editEntry} onOpenChange={(o) => { if (!o) setEditEntry(null); }} title="Update Provider Health">
+        {editEntry && (
+          <div className="space-y-4 pt-2">
+            <div className="text-sm">
+              <p className="text-muted-foreground">{editEntry?.provider} — {editEntry?.channel} ({editEntry?.environment})</p>
+            </div>
+            <FormField label="Status" isRequired>
+              <Select value={editStatus} onValueChange={setEditStatus}>
+                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="degraded">Degraded</SelectItem>
+                  <SelectItem value="down">Down</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormField>
+            <FormField label="Reason">
+              <Input value={editReason} onChange={(e) => setEditReason(e.target.value)} placeholder="Reason for status change" />
+            </FormField>
+            <Button className="w-full" disabled={updating}
+              onClick={async () => { try { await updateHealth({ provider: editEntry.provider, channel: editEntry.channel, environment: editEntry.environment, status: editStatus, reason: editReason || undefined, metadata: {} }); } catch {} }}>
+              {updating ? "Updating..." : "Update"}
+            </Button>
+          </div>
+        )}
+      </ResponsiveModal>
     </div>
   );
 }
