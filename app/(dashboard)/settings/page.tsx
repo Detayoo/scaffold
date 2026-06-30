@@ -271,11 +271,14 @@ function APIKeysSection() {
   const copy = useCopyToClipboard();
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
+  const [newKeysOpen, setNewKeysOpen] = useState(false);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
     onSuccess: (res) => {
-      setNewKeys(res?.data ?? null);
+      const k = res?.data?.keys;
+      if (k) setNewKeys({ publicKey: k.public, secretKey: k.secret });
+      setNewKeysOpen(true);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -371,17 +374,18 @@ function APIKeysSection() {
           {keys.length === 0 && (
             <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
           )}
-          {newKeys && (
-            <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+          <ResponsiveModal open={newKeysOpen} onOpenChange={setNewKeysOpen} title="API Keys Generated">
+            <p className="text-sm text-muted-foreground pt-2">Copy these keys now. You won&apos;t be able to see them again.</p>
+            <div className="space-y-4 pt-3">
               {[
-                { label: "Public Key", value: newKeys.publicKey },
-                { label: "Secret Key", value: newKeys.secretKey },
+                { label: "Public Key", value: newKeys?.publicKey },
+                { label: "Secret Key", value: newKeys?.secretKey },
               ].map((nk) => (
                 <div key={nk.label} className="space-y-1.5">
                   <p className="text-xs text-muted-foreground">{nk.label}</p>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
-                      <Input value={nk.value} readOnly className="pr-9 text-sm" />
+                      <Input value={nk.value ?? ""} readOnly className="pr-9 text-sm" />
                     </div>
                     {nk.value && (
                       <button type="button" onClick={() => handleCopy(nk.value, nk.label)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
@@ -392,7 +396,7 @@ function APIKeysSection() {
                 </div>
               ))}
             </div>
-          )}
+          </ResponsiveModal>
           <div>
             <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
               <Key className="size-3.5" />
