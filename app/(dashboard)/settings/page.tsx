@@ -64,7 +64,7 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
   changePasswordFn,
 } from "@/services";
 import { getTaxesFn, createTaxFn, deleteTaxFn, getCollectionOptionsFn, toggleCollectionChannelFn } from "@/services";
-import { toastMessage, extractError } from "@/utils";
+import { toastMessage, extractError, formatDate } from "@/utils";
 import { changePasswordSchema, createTaxSchema } from "@/utils/validators";
 import type { Column } from "@/components/DataTable";
 import type { Tax, WebhookEndpoint, WebhookDelivery, WebhookDeliveryDetail } from "@/types";
@@ -914,8 +914,9 @@ function ChannelsSection() {
             {channels.map((ch: any) => (
               <div key={ch?.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
                 <div>
-                  <p className="text-sm font-medium text-foreground capitalize">{ch?.channel}</p>
+                  <p className="text-sm font-medium text-foreground capitalize">{ch?.channel?.replace(/_/g, " ")}</p>
                   <p className="text-xs text-muted-foreground capitalize">{ch?.environment}</p>
+                  <p className="text-xs text-muted-foreground">{ch?.createdAt ? formatDate(ch?.createdAt) : ""}</p>
                 </div>
                 <button
                   type="button"

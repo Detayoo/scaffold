@@ -220,6 +220,7 @@ export type CollectionOption = {
   routingPolicyId?: string;
   settlementPolicyId?: string;
   riskPolicyId?: string;
+  createdAt?: string;
 };
 
 export type Refund = {
