@@ -36,12 +36,12 @@ export const createWebhookEndpointFn = async ({
 };
 
 export const pauseWebhookEndpointFn = async ({ id }: { id: string }) => {
-  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/pause`);
+  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/webhook-endpoints/${id}/pause`);
   return data;
 };
 
 export const resumeWebhookEndpointFn = async ({ id }: { id: string }) => {
-  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/v1/webhook-endpoints/${id}/resume`);
+  const { data } = await v1AuthenticatedApi().post<WebhookEndpointResponse>(`/webhook-endpoints/${id}/resume`);
   return data;
 };
 
@@ -63,7 +63,7 @@ export const getWebhookDeliveriesFn = async ({
 };
 
 export const getWebhookDeliveryDetailFn = async ({ id }: { id: string }) => {
-  const { data } = await v1AuthenticatedApi().get<WebhookDeliveryDetailResponse>(`/v1/webhook-deliveries/${id}`);
+  const { data } = await v1AuthenticatedApi().get<WebhookDeliveryDetailResponse>(`/webhook-deliveries/${id}`);
   return data;
 };
 
@@ -74,13 +74,13 @@ export const replayWebhookDeliveryFn = async ({
   id: string;
   forceResend?: boolean;
 }) => {
-  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/v1/webhook-deliveries/${id}/replay`, {
+  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/webhook-deliveries/${id}/replay`, {
     forceResend,
   });
   return data;
 };
 
 export const replayWebhookEventFn = async ({ id }: { id: string }) => {
-  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/v1/webhook-events/${id}/replay`);
+  const { data } = await v1AuthenticatedApi().post<ReplayResponse>(`/webhook-events/${id}/replay`);
   return data;
 };

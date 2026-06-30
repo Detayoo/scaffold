@@ -11,9 +11,10 @@ interface AnalyticsCardProps {
   value?: number | string | null;
   compact?: boolean;
   mono?: boolean;
+  currency?: string;
 }
 
-export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: AnalyticsCardProps) {
+export function AnalyticsCard({ icon: Icon, label, value, compact, mono, currency }: AnalyticsCardProps) {
   const renderValue = () => {
     if (value === undefined || value === null) return "0";
     if (typeof value === "string") return value;
@@ -33,6 +34,9 @@ export function AnalyticsCard({ icon: Icon, label, value, compact, mono }: Analy
         <p className={mono ? "text-2xl font-semibold font-mono" : "text-2xl font-semibold"}>
           {renderValue()}
         </p>
+        {currency && (
+          <p className="text-xs text-muted-foreground mt-0.5">{currency}</p>
+        )}
       </CardContent>
     </Card>
   );

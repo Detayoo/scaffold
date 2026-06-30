@@ -37,17 +37,17 @@ export default function HomePage() {
   const todayStats = [
     { icon: Receipt, label: "Successful", value: home?.today?.successful_payments },
     { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
-    { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true },
-    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true },
+    { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
+    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
     { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true },
   ];
 
   const balanceStats = [
-    { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true },
-    { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true },
-    { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true },
-    { icon: Landmark, label: "Settlement Payable", value: ngnBalance?.settlement_payable_amount_minor, compact: true },
-    { icon: Landmark, label: "Paid", value: ngnBalance?.paid_amount_minor, compact: true },
+    { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true, currency: "NGN" },
+    { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true, currency: "NGN" },
+    { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true, currency: "NGN" },
+    { icon: Landmark, label: "Settlement Payable", value: ngnBalance?.settlement_payable_amount_minor, compact: true, currency: "NGN" },
+    { icon: Landmark, label: "Paid", value: ngnBalance?.paid_amount_minor, compact: true, currency: "NGN" },
   ];
 
   const quickActions = [
@@ -67,7 +67,7 @@ export default function HomePage() {
         <p className="text-sm font-medium text-foreground">Today</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {todayStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
           ))}
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function HomePage() {
         <p className="text-sm font-medium text-foreground">Balances</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {balanceStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
           ))}
         </div>
       </div>
