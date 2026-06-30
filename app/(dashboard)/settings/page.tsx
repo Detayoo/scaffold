@@ -272,6 +272,7 @@ function APIKeysSection() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
   const [newKeysOpen, setNewKeysOpen] = useState(false);
+  const [revokeTarget, setRevokeTarget] = useState<string | null>(null);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
@@ -362,7 +363,7 @@ function APIKeysSection() {
                       {k.status === "active" && (
                         <div className="flex gap-2 pt-1">
                           <Button size="sm" variant="outline" onClick={async () => { try { await rotateKey({ id: k.id }); } catch {} }} disabled={rotating}>Rotate</Button>
-                          <Button size="sm" variant="destructive" onClick={async () => { try { await revokeKey({ id: k.id }); } catch {} }} disabled={revoking}>Revoke</Button>
+                          <Button size="sm" variant="destructive" onClick={() => setRevokeTarget(k.id)} disabled={revoking}>Revoke</Button>
                         </div>
                       )}
                     </div>
@@ -409,6 +410,19 @@ function APIKeysSection() {
         </CardContent>
       </Card>
       </AsyncContent>
+
+      <ConfirmDialog
+        open={!!revokeTarget}
+        onOpenChange={(o) => { if (!o) setRevokeTarget(null); }}
+        title="Revoke API Key"
+        description="Are you sure you want to revoke this API key? This action cannot be undone."
+        confirmLabel="Revoke"
+        variant="destructive"
+        onConfirm={async () => {
+          try { if (revokeTarget) await revokeKey({ id: revokeTarget }); } catch {}
+        }}
+        loading={revoking}
+      />
     </div>
   );
 }

@@ -70,7 +70,7 @@ function useEnvironment() {
     try {
       await toggleEnvironmentFn(val);
       localStorage.setItem("environment", val);
-      setEnvState(val);
+      window.location.reload();
     } catch {
       toastMessage("error", "Failed to switch environment");
     }
