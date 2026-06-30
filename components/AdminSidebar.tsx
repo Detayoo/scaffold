@@ -43,15 +43,14 @@ const mainNav = [
   { name: "Merchants", url: "/admin/merchants", icon: Users },
   { name: "Settlements", url: "/admin/settlements", icon: Landmark },
   { name: "Reconciliation", url: "/admin/reconciliation", icon: FileSearch },
+];
+
+const opsNav = [
   { name: "Refunds", url: "/admin/refunds", icon: Undo2 },
   { name: "Disputes", url: "/admin/disputes", icon: Scale },
   { name: "Audit Logs", url: "/admin/audit-logs", icon: FileText },
   { name: "Provider Health", url: "/admin/provider-health", icon: Activity },
   { name: "Dedicated Accounts", url: "/admin/dedicated-accounts", icon: Landmark },
-];
-
-const bottomNav = [
-  { name: "Settings", url: "/admin/settings", icon: Settings },
 ];
 
 function NavItem({
@@ -113,6 +112,16 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {mainNav.map((item) => (
+                <NavItem key={item.url} {...item} pathname={pathname} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup className="border-t border-sidebar-border group-data-[collapsible=icon]:border-t-0">
+          <SidebarGroupLabel className="px-3 pt-3 group-data-[collapsible=icon]:hidden">Operations</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+              {opsNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}
             </SidebarMenu>
