@@ -39,8 +39,12 @@ const MOCK_MERCHANTS = [
 function AdminSettlementsContent() {
   const [selectedBatch, setSelectedBatch] = useState<SettlementBatch | null>(null);
   const [splitModal, setSplitModal] = useState(false);
+  const [settlementModal, setSettlementModal] = useState(false);
   const [splitMerchantId, setSplitMerchantId] = useState("");
   const [splitEnv, setSplitEnv] = useState("test");
+  const [settleMerchantId, setSettleMerchantId] = useState("");
+  const [settleEnv, setSettleEnv] = useState("test");
+  const [settleChannel, setSettleChannel] = useState("bank_transfer");
 
   const { mutateAsync: runBatch, isPending: isRunning } = useMutation({
     mutationFn: runSettlementFn,
@@ -71,7 +75,7 @@ function AdminSettlementsContent() {
             <Play className="size-4" />
             Run Split Settlement
           </Button>
-          <Button disabled={isRunning} onClick={async () => { try { await runBatch({}); } catch {} }}>
+          <Button onClick={() => setSettlementModal(true)}>
             <Play className="size-4" />
             Run Settlement
           </Button>
@@ -89,6 +93,45 @@ function AdminSettlementsContent() {
       />
 
       <SettlementDetailSheet batch={selectedBatch} onOpenChange={(o) => { if (!o) setSelectedBatch(null); }} />
+
+      <ResponsiveModal open={settlementModal} onOpenChange={setSettlementModal} title="Run Settlement">
+        <div className="space-y-4 pt-2">
+          <FormField label="Merchant" isRequired>
+            <Select value={settleMerchantId} onValueChange={setSettleMerchantId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select merchant" />
+              </SelectTrigger>
+              <SelectContent>
+                {MOCK_MERCHANTS.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Environment" isRequired>
+            <Select value={settleEnv} onValueChange={setSettleEnv}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="test">Test</SelectItem>
+                <SelectItem value="live">Live</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Channel" isRequired>
+            <Select value={settleChannel} onValueChange={setSettleChannel}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                <SelectItem value="card">Card</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+          <Button className="w-full" disabled={isRunning || !settleMerchantId}
+            onClick={async () => { try { await runBatch({ merchantId: settleMerchantId, environment: settleEnv, currency: "NGN", channel: settleChannel }); } catch {} }}>
+            {isRunning ? "Running..." : "Run Settlement"}
+          </Button>
+        </div>
+      </ResponsiveModal>
 
       <ResponsiveModal open={splitModal} onOpenChange={setSplitModal} title="Run Split Settlement">
         <div className="space-y-4 pt-2">
