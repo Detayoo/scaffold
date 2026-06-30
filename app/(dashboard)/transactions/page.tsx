@@ -66,11 +66,6 @@ function TransactionsContent() {
       cell: (tx) => <StatusBadge status={tx?.status} size="sm" />,
     },
     {
-      key: "channel",
-      header: "Channel",
-      cell: (tx) => <span className="text-sm text-foreground capitalize">{tx?.channel}</span>,
-    },
-    {
       key: "customer",
       header: "Customer",
       cell: (tx) => (

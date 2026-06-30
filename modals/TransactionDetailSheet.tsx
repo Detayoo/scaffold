@@ -129,22 +129,34 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                 <Separator />
                 <div>
                   <p className="text-sm font-medium text-foreground mb-4">Timeline</p>
-                  <div className="relative pl-5">
-                    <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
-                    <div className="space-y-5">
+                  <div className="relative">
+                    <div className="absolute left-[11px] top-[18px] bottom-[10px] w-[2px] bg-border" />
+                    <div className="space-y-0">
                       {timelineEntries.map((t: TimelineEntry, i: number) => (
-                        <div key={t?.source_id ?? i} className="relative">
-                          <div className={`absolute -left-[17px] mt-1.5 size-3 rounded-full border-2 ${
-                            i === 0 ? "bg-foreground border-foreground" : "bg-background border-muted-foreground/40"
-                          }`} />
-                          <div className="flex flex-col gap-0.5">
-                            <p className="text-xs text-muted-foreground">
-                              {t?.occurred_at ? formatDate(t.occurred_at) : "—"}
-                            </p>
-                            <p className="text-sm text-foreground font-medium">{t?.type}</p>
-                            {t?.source && (
-                              <p className="text-xs text-muted-foreground capitalize">{t.source.replace(/_/g, " ")}</p>
-                            )}
+                        <div key={t?.source_id ?? i} className="relative flex gap-4 pb-5 last:pb-0">
+                          <div className="flex flex-col items-center shrink-0">
+                            <div className={`size-[24px] rounded-full flex items-center justify-center ${
+                              i === 0
+                                ? "bg-foreground"
+                                : "bg-background border-2 border-border"
+                            }`}>
+                              <div className={`size-[8px] rounded-full ${
+                                i === 0 ? "bg-background" : "bg-muted-foreground/40"
+                              }`} />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0 pt-[3px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-xs text-muted-foreground">
+                                {t?.occurred_at ? formatDate(t.occurred_at) : "—"}
+                              </p>
+                              {t?.source && (
+                                <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 rounded bg-muted shrink-0">
+                                  {t.source.replace(/_/g, " ")}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-foreground mt-0.5">{t?.type}</p>
                           </div>
                         </div>
                       ))}
