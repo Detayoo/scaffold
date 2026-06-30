@@ -58,7 +58,7 @@ function TransactionsContent() {
     {
       key: "amount",
       header: "Amount",
-      cell: (tx) => <span className="text-sm text-foreground">{formatMoney(tx?.amount)}</span>,
+      cell: (tx) => <span className="text-sm text-foreground">{tx?.currency} {formatMoney(tx?.amount)}</span>,
     },
     {
       key: "status",

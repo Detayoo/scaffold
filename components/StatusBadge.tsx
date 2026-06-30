@@ -48,10 +48,14 @@ const statusConfig: Record<
   "partially-paid": { variant: "pending", label: "Partially Paid" },
   "payment-pending": { variant: "pending", label: "Payment Pending" },
   initiated: { variant: "pending", label: "Initiated" },
+  created: { variant: "pending", label: "Created" },
   draft: { variant: "neutral", label: "Draft" },
   overdue: { variant: "warning", label: "Overdue" },
   cancelled: { variant: "neutral", label: "Cancelled" },
   inactive: { variant: "neutral", label: "Inactive" },
+  accepted: { variant: "success", label: "Accepted" },
+  revoked: { variant: "error", label: "Revoked" },
+  queued: { variant: "pending", label: "Queued" },
 };
 
 const variantStyles: Record<StatusVariant, string> = {
