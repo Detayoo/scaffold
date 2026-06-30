@@ -923,13 +923,13 @@ function ChannelsSection() {
                       await toggleChannel({ channel: ch.channel, enabled: !ch.enabled });
                     } catch {}
                   }}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                  className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors cursor-pointer ${
                     ch?.enabled ? "bg-foreground" : "bg-muted-foreground/30"
                   }`}
                 >
                   <span
                     className={`inline-block size-5 rounded-full bg-background transition-transform ${
-                      ch?.enabled ? "translate-x-6" : "translate-x-0.5"
+                      ch?.enabled ? "translate-x-6.5" : "translate-x-0.5"
                     }`}
                   />
                 </button>
