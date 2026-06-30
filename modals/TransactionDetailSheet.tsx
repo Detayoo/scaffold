@@ -146,12 +146,39 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                   <p className="text-sm font-medium text-foreground mb-2">Attempts ({attempts.length})</p>
                   <div className="space-y-2">
                     {attempts.map((a: any, i: number) => (
-                      <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
+                      <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <p className="text-xs text-muted-foreground capitalize">{a?.channel}</p>
                           <StatusBadge status={a?.status} size="sm" />
                         </div>
-                        <p className="text-xs text-muted-foreground">{a?.provider}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground">{a?.provider}</p>
+                          <p className="text-sm font-medium">{formatMoney(a?.amountMinor)}</p>
+                        </div>
+                        {a?.providerReference && (
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Provider Ref</p>
+                            <p className="text-xs">{a?.providerReference}</p>
+                          </div>
+                        )}
+                        {a?.actionRequired?.type && a?.actionRequired?.type !== "none" && (
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Action Required</p>
+                            <p className="text-xs capitalize">{a?.actionRequired?.type}</p>
+                          </div>
+                        )}
+                        {a?.providerData?.responseMessage && (
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Response</p>
+                            <p className="text-xs text-right max-w-[60%]">{a?.providerData?.responseMessage}</p>
+                          </div>
+                        )}
+                        {a?.createdAt && (
+                          <div className="flex justify-between">
+                            <p className="text-xs text-muted-foreground">Attempted</p>
+                            <p className="text-xs">{formatDate(a?.createdAt)}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
