@@ -34,9 +34,9 @@ export default function HomePage() {
 
   const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
 
-  const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
-    { icon: CheckCircle2, label: "Successful", value: home?.today?.successful_payments },
-    { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
+  const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; plain?: boolean; currency?: string }> = [
+    { icon: CheckCircle2, label: "Successful", value: home?.today?.successful_payments, plain: true },
+    { icon: TrendingUp, label: "Total", value: home?.today?.total_payments, plain: true },
     { icon: TrendingUp, label: "Gross Amount", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
     { icon: TrendingUp, label: "Net Amount", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
     { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true },
@@ -68,7 +68,7 @@ export default function HomePage() {
         <p className="text-xs text-muted-foreground">Payment activity for today</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {todayStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} plain={s.plain} />
           ))}
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function HomePage() {
         <p className="text-xs text-muted-foreground">Current account balances in NGN</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {balanceStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} plain={s.plain} />
           ))}
         </div>
       </div>

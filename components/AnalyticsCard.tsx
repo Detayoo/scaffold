@@ -11,13 +11,15 @@ interface AnalyticsCardProps {
   value?: number | string | null;
   compact?: boolean;
   mono?: boolean;
+  plain?: boolean;
   currency?: string;
 }
 
-export function AnalyticsCard({ icon: Icon, label, value, compact, mono, currency }: AnalyticsCardProps) {
+export function AnalyticsCard({ icon: Icon, label, value, compact, mono, plain, currency }: AnalyticsCardProps) {
   const renderValue = () => {
     if (value === undefined || value === null) return "0";
     if (typeof value === "string") return value;
+    if (plain) return <>{value}</>;
     if (compact) return <>{formatMoneyCompact(value)}</>;
     return <>{formatMoney(value)}</>;
   };
