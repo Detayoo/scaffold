@@ -182,7 +182,7 @@ function SecuritySection() {
 
   const onSubmit = async (data: any) => {
     try {
-      await changePassword({ oldPassword: data.oldPassword, password: data.password });
+      await changePassword({ currentPassword: data.oldPassword, newPassword: data.newPassword });
       toastMessage("success", "Password changed");
       form.reset();
     } catch (error) {

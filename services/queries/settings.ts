@@ -12,9 +12,9 @@ export const setupWebhookFn = async (url: string) => {
 };
 
 export const changePasswordFn = async (payload: {
-  oldPassword: string;
-  password: string;
+  currentPassword: string;
+  newPassword: string;
 }) => {
-  const { data } = await v1AuthenticatedApi().post<BareResponse>("/user/change-password", payload);
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/auth/change-password", payload);
   return data;
 };
