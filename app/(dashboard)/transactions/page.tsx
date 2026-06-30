@@ -34,6 +34,7 @@ function TransactionsContent() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [detailRef, setDetailRef] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
   const [localChannel, setLocalChannel] = useState("");
 
@@ -159,12 +160,12 @@ function TransactionsContent() {
         isFetching={isFetching}
         emptyTitle="No transactions found"
         emptyDescription={searchInput ? "Try a different search term" : "No transactions yet"}
-        onRowClick={(tx) => setDetailRef(tx?.reference)}
+        onRowClick={(tx) => { setDetailRef(tx?.reference); setDetailOpen(true); }}
       />
 
       <ExportModal open={exportOpen} onOpenChange={setExportOpen} exportType="transactions" label="Transactions" />
 
-      <TransactionDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
+      <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} />
     </div>
   );
 }

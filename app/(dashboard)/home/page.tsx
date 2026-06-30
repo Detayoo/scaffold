@@ -22,6 +22,7 @@ export default function HomePage() {
   const today = format(new Date(), "EEEE, MMMM do, yyyy");
 
   const [detailRef, setDetailRef] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const { data: homeData } = useQuery({
     queryKey: ["dashboard-home"],
@@ -46,7 +47,7 @@ export default function HomePage() {
     { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, plain: true },
   ];
 
-  const balanceStats: Array<{ icon: any; label: string; value: any; compact?: boolean; currency?: string }> = [
+  const balanceStats: Array<{ icon: any; label: string; value: any; compact?: boolean; plain?: boolean; currency?: string }> = [
     { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true, currency: "NGN" },
     { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true, currency: "NGN" },
     { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true, currency: "NGN" },
@@ -137,7 +138,7 @@ export default function HomePage() {
                     </thead>
                     <tbody>
 {transactions.map((tx: any) => (
-                        <tr key={tx?.reference} className="border-b last:border-0 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setDetailRef(tx?.reference)}>
+                        <tr key={tx?.reference} className="border-b last:border-0 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => { setDetailRef(tx?.reference); setDetailOpen(true); }}>
                           <td className="px-4 py-3 text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx?.created_at) : "—"}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
                           <td className="px-4 py-3">
@@ -158,7 +159,7 @@ export default function HomePage() {
         </Card>
       </div>
 
-      <TransactionDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
+      <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} />
     </div>
   );
 }

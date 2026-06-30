@@ -36,6 +36,7 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
     queryKey: ["transaction-detail", reference],
     queryFn: () => getTransactionDetailFn({ reference: reference! }),
     enabled: !!reference,
+    staleTime: Infinity,
   });
 
   const pi = data?.data?.intent;
