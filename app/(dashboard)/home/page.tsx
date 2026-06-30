@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CreditCard, FileText, CheckCircle2, RefreshCw, TrendingUp, Landmark, ArrowLeftRight } from "lucide-react";
@@ -12,12 +13,15 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
+import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
 import { AsyncContent } from "@/components/AsyncContent";
 import { formatDate, formatMoney } from "@/utils";
 
 export default function HomePage() {
   const { merchant, user } = useAuth();
   const today = format(new Date(), "EEEE, MMMM do, yyyy");
+
+  const [detailRef, setDetailRef] = useState<string | null>(null);
 
   const { data: homeData } = useQuery({
     queryKey: ["dashboard-home"],
@@ -124,27 +128,25 @@ export default function HomePage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b">
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Reference</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Date</th>
                         <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Amount</th>
                         <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Status</th>
                         <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-foreground md:table-cell">Customer</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-foreground">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-foreground">Reference</th>
                       </tr>
                     </thead>
                     <tbody>
 {transactions.map((tx: any) => (
-                        <tr key={tx?.reference} className="border-b last:border-0">
-                          <td className="px-4 py-3 text-sm text-foreground">{tx?.reference}</td>
+                        <tr key={tx?.reference} className="border-b last:border-0 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setDetailRef(tx?.reference)}>
+                          <td className="px-4 py-3 text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx?.created_at) : "—"}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
                           <td className="px-4 py-3">
                             <StatusBadge status={tx?.status} />
                           </td>
-                          <td className="hidden px-4 py-3 text-sm text-muted-foreground md:table-cell">
+                          <td className="hidden px-4 py-3 text-sm text-foreground md:table-cell">
                             {tx?.customer?.name ?? tx?.customer?.email ?? "—"}
                           </td>
-                          <td className="px-4 py-3 text-right text-sm text-muted-foreground">
-                            {tx?.created_at ? formatDate(tx?.created_at) : "—"}
-                          </td>
+                          <td className="px-4 py-3 text-right text-sm text-foreground">{tx?.reference}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -155,6 +157,8 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </div>
+
+      <TransactionDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
     </div>
   );
 }

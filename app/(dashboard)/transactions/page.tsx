@@ -51,9 +51,11 @@ function TransactionsContent() {
 
   const columns: Column<Transaction>[] = [
     {
-      key: "reference",
-      header: "Reference",
-      cell: (tx) => <span className="text-sm text-foreground">{tx?.reference}</span>,
+      key: "created_at",
+      header: "Date",
+      cell: (tx) => (
+        <span className="text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
+      ),
     },
     {
       key: "amount",
@@ -75,11 +77,9 @@ function TransactionsContent() {
       ),
     },
     {
-      key: "created_at",
-      header: "Date",
-      cell: (tx) => (
-        <span className="text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
-      ),
+      key: "reference",
+      header: "Reference",
+      cell: (tx) => <span className="text-sm text-foreground">{tx?.reference}</span>,
     },
   ];
 
