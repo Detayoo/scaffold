@@ -39,7 +39,7 @@ export function EmptyState({
         )}
       </div>
       {action && (
-        <Button variant="default" size="sm" onClick={action.onClick}>
+        <Button variant="default" onClick={action.onClick}>
           {action.label}
         </Button>
       )}
