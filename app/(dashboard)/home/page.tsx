@@ -34,7 +34,7 @@ export default function HomePage() {
 
   const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
 
-  const todayStats = [
+  const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
     { icon: Receipt, label: "Successful", value: home?.today?.successful_payments },
     { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
     { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
@@ -42,7 +42,7 @@ export default function HomePage() {
     { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true },
   ];
 
-  const balanceStats = [
+  const balanceStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
     { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true, currency: "NGN" },
     { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true, currency: "NGN" },
     { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true, currency: "NGN" },

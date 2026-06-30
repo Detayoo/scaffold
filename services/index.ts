@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { authenticatedApi, baseApi } from "./api";
+import { v1Api, v1AuthenticatedApi } from "./api";
 
 export * from "./api";
 export * from "./queries";
@@ -20,12 +20,10 @@ export const extractError = (error: unknown): string => {
 export const getData = async <T = any>(
   endpoint: string,
   params?: Record<string, any> | null,
-  authenticated: boolean = true,
-  versioned: boolean = true
+  authenticated: boolean = true
 ): Promise<T> => {
-  const path = versioned ? `/api/v1${endpoint}` : endpoint;
-  const api = authenticated ? authenticatedApi() : baseApi;
-  const { data } = await api.get<T>(path, { params });
+  const api = authenticated ? v1AuthenticatedApi() : v1Api;
+  const { data } = await api.get<T>(endpoint, { params });
   return data;
 };
 
@@ -33,43 +31,35 @@ export const postData = async <T = any>(
   endpoint: string,
   payload?: Record<string, any> | null,
   authenticated: boolean = true,
-  config?: AxiosRequestConfig,
-  versioned: boolean = true
+  config?: AxiosRequestConfig
 ): Promise<T> => {
-  const path = versioned ? `/api/v1${endpoint}` : endpoint;
-  const api = authenticated ? authenticatedApi() : baseApi;
-  const { data } = await api.post<T>(path, payload ?? undefined, config);
+  const api = authenticated ? v1AuthenticatedApi() : v1Api;
+  const { data } = await api.post<T>(endpoint, payload ?? undefined, config);
   return data;
 };
 
 export const patchData = async <T = any>(
   endpoint: string,
-  payload?: Record<string, any> | null,
-  versioned: boolean = true
+  payload?: Record<string, any> | null
 ): Promise<T> => {
-  const path = versioned ? `/api/v1${endpoint}` : endpoint;
-  const { data } = await authenticatedApi().patch<T>(path, payload);
+  const { data } = await v1AuthenticatedApi().patch<T>(endpoint, payload);
   return data;
 };
 
 export const putData = async <T = any>(
   endpoint: string,
-  payload?: Record<string, any> | null,
-  versioned: boolean = true
+  payload?: Record<string, any> | null
 ): Promise<T> => {
-  const path = versioned ? `/api/v1${endpoint}` : endpoint;
-  const { data } = await authenticatedApi().put<T>(path, payload);
+  const { data } = await v1AuthenticatedApi().put<T>(endpoint, payload);
   return data;
 };
 
 export const deleteData = async <T = any>(
   endpoint: string,
   payload?: Record<string, any> | null,
-  authenticated: boolean = true,
-  versioned: boolean = true
+  authenticated: boolean = true
 ): Promise<T> => {
-  const path = versioned ? `/api/v1${endpoint}` : endpoint;
-  const api = authenticated ? authenticatedApi() : baseApi;
-  const { data } = await api.delete<T>(path, { data: payload });
+  const api = authenticated ? v1AuthenticatedApi() : v1Api;
+  const { data } = await api.delete<T>(endpoint, { data: payload });
   return data;
 };
