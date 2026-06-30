@@ -388,7 +388,7 @@ function APIKeysSection() {
                       <Input value={nk.value ?? ""} readOnly className="pr-9 text-sm" />
                     </div>
                     {nk.value && (
-                      <button type="button" onClick={() => handleCopy(nk.value, nk.label)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
+                      <button type="button" onClick={() => handleCopy(nk.value ?? "", nk.label)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
                         <Copy className="size-3.5" />
                       </button>
                     )}
