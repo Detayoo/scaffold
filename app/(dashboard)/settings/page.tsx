@@ -286,8 +286,7 @@ function APIKeysSection() {
     toastMessage(ok ? "success" : "error", ok ? `${label} copied` : "Copy failed");
   };
 
-  const keysData = data?.data;
-  const keys = Array.isArray(keysData) ? keysData : [];
+  const keyPairs = data?.data?.keys;
 
   return (
     <div className="space-y-5">
@@ -301,21 +300,23 @@ function APIKeysSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {keys.length > 0 && (
+          {keyPairs?.secret || keyPairs?.public ? (
             <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
               <p className="text-xs text-muted-foreground">Last generated</p>
-              {keys.map((k) => (
-                <div key={k.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs capitalize">{k.type}</p>
-                    <p className="text-xs text-muted-foreground">({k.environment === "test" ? "Test" : "Live"})</p>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "—"}</p>
+              {keyPairs?.secret && (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs capitalize">Secret</p>
+                  <p className="text-xs text-muted-foreground">{keyPairs.secret.created_at ? new Date(keyPairs.secret.created_at).toLocaleDateString() : "—"}</p>
                 </div>
-              ))}
+              )}
+              {keyPairs?.public && (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs capitalize">Public</p>
+                  <p className="text-xs text-muted-foreground">{keyPairs.public.created_at ? new Date(keyPairs.public.created_at).toLocaleDateString() : "—"}</p>
+                </div>
+              )}
             </div>
-          )}
-          {keys.length === 0 && (
+          ) : (
             <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
           )}
           <ResponsiveModal open={newKeysOpen} onOpenChange={setNewKeysOpen} title="API Keys Generated">
@@ -347,7 +348,7 @@ function APIKeysSection() {
           <div>
             <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
               <Key className="size-3.5" />
-              {generating ? "Generating..." : keys.length > 0 ? "Regenerate API Keys" : "Generate API Keys"}
+              {generating ? "Generating..." : keyPairs?.secret ? "Regenerate API Keys" : "Generate API Keys"}
             </Button>
           </div>
         </CardContent>

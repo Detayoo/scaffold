@@ -622,21 +622,19 @@ export type GetMerchantProfileResponse = {
   };
 };
 
-export type ApiKey = {
+export type ApiKeyItem = {
   id: string;
-  merchantId: string;
-  environment: "test" | "live";
-  type: "public" | "secret";
-  keyPrefix: string;
-  maskedKey: string;
-  status: "active" | "revoked";
-  createdAt: string;
-  scopes: string[];
+  created_at: string;
 };
 
 export type ApiKeysListResponse = {
   status: boolean;
-  data: ApiKey[];
+  data: {
+    keys: {
+      secret: ApiKeyItem;
+      public: ApiKeyItem;
+    };
+  };
 };
 
 export type APIKeyResponse = {
