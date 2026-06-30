@@ -55,7 +55,7 @@ function TransactionsContent() {
       key: "created_at",
       header: "Date",
       cell: (tx) => (
-        <span className="text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
+        <span className="text-xs text-foreground">{tx?.created_at ? formatDate(tx.created_at) : "—"}</span>
       ),
     },
     {

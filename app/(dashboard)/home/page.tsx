@@ -139,7 +139,7 @@ export default function HomePage() {
                     <tbody>
 {transactions.map((tx: any) => (
                         <tr key={tx?.reference} className="border-b last:border-0 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => { setDetailRef(tx?.reference); setDetailOpen(true); }}>
-                          <td className="px-4 py-3 text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx?.created_at) : "—"}</td>
+                          <td className="px-4 py-3 text-xs text-foreground">{tx?.created_at ? formatDate(tx?.created_at) : "—"}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
                           <td className="hidden px-4 py-3 text-sm text-foreground md:table-cell">
                             {tx?.customer?.name ?? tx?.customer?.email ?? "—"}
