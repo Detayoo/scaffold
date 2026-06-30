@@ -16,7 +16,7 @@ import { AsyncContent } from "@/components/AsyncContent";
 import { formatDate, formatMoney } from "@/utils";
 
 export default function HomePage() {
-  const { merchant } = useAuth();
+  const { merchant, user } = useAuth();
   const today = format(new Date(), "EEEE, MMMM do, yyyy");
 
   const { data: homeData } = useQuery({
@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <PageHeader title={`Welcome back, ${merchant?.display_name ?? "Merchant"}`} description={today} />
+        <PageHeader title={`Welcome back, ${user?.name ?? "User"}`} description={today} />
       </div>
 
       <div className="space-y-2">
