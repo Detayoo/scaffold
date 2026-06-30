@@ -34,20 +34,20 @@ export default function HomePage() {
 
   const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
 
-  const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
-    { icon: Receipt, label: "Successful", value: home?.today?.successful_payments },
-    { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
-    { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
-    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
-    { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true },
+  const todayStats: Array<{ icon: any; label: string; value: any; description?: string; compact?: boolean; mono?: boolean; currency?: string }> = [
+    { icon: Receipt, label: "Successful", value: home?.today?.successful_payments, description: "Payments succeeded today" },
+    { icon: TrendingUp, label: "Total", value: home?.today?.total_payments, description: "Total payments today" },
+    { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN", description: "Total amount before fees" },
+    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true, currency: "NGN", description: "Amount after fees" },
+    { icon: TrendingUp, label: "Success Rate", value: home?.today?.success_rate, mono: true, description: "Percentage succeeded" },
   ];
 
-  const balanceStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
-    { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true, currency: "NGN" },
-    { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true, currency: "NGN" },
-    { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true, currency: "NGN" },
-    { icon: Landmark, label: "Settlement Payable", value: ngnBalance?.settlement_payable_amount_minor, compact: true, currency: "NGN" },
-    { icon: Landmark, label: "Paid", value: ngnBalance?.paid_amount_minor, compact: true, currency: "NGN" },
+  const balanceStats: Array<{ icon: any; label: string; value: any; description?: string; compact?: boolean; mono?: boolean; currency?: string }> = [
+    { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true, currency: "NGN", description: "Balance ready to use" },
+    { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true, currency: "NGN", description: "Awaiting settlement" },
+    { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true, currency: "NGN", description: "Temporarily held" },
+    { icon: Landmark, label: "Settlement Payable", value: ngnBalance?.settlement_payable_amount_minor, compact: true, currency: "NGN", description: "Due for payout" },
+    { icon: Landmark, label: "Paid", value: ngnBalance?.paid_amount_minor, compact: true, currency: "NGN", description: "Already settled" },
   ];
 
   const quickActions = [
@@ -67,7 +67,7 @@ export default function HomePage() {
         <p className="text-sm font-medium text-foreground">Today</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {todayStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} description={s.description} />
           ))}
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function HomePage() {
         <p className="text-sm font-medium text-foreground">Balances</p>
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {balanceStats.map((s) => (
-            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} />
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} currency={s.currency} mono={s.mono} description={s.description} />
           ))}
         </div>
       </div>
