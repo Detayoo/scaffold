@@ -1,18 +1,20 @@
-import { BareResponse } from "@/types";
-import { getData, postData } from "..";
-import type { GetMerchantProfileResponse } from "@/types";
+import { v1AuthenticatedApi } from "../api";
+import type { BareResponse, GetMerchantProfileResponse } from "@/types";
 
-export const getMerchantProfileFn = () => {
-  return getData<GetMerchantProfileResponse>("/merchant");
+export const getMerchantProfileFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<GetMerchantProfileResponse>("/merchant");
+  return data;
 };
 
-export const setupWebhookFn = (url: string) => {
-  return postData<BareResponse>("/merchant/webhook", { url });
+export const setupWebhookFn = async (url: string) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/merchant/webhook", { url });
+  return data;
 };
 
-export const changePasswordFn = (payload: {
+export const changePasswordFn = async (payload: {
   oldPassword: string;
   password: string;
 }) => {
-  return postData<BareResponse>("/user/change-password", payload);
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/user/change-password", payload);
+  return data;
 };

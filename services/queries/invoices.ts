@@ -1,4 +1,5 @@
-import {
+import { v1AuthenticatedApi } from "../api";
+import type {
   BareResponse,
   CreateCustomer,
   CreateInvoiceDTO,
@@ -11,37 +12,43 @@ import {
   UpdateCustomer,
   UpdateInvoice,
 } from "@/types";
-import { deleteData, getData, patchData, postData } from "..";
 
-export const createCustomerFn = (payload: CreateCustomer) => {
-  return postData("/customer", payload);
+export const createCustomerFn = async (payload: CreateCustomer) => {
+  const { data } = await v1AuthenticatedApi().post("/customer", payload);
+  return data;
 };
 
-export const getCustomersFn = () => {
-  return getData<Customers>("/customer");
+export const getCustomersFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<Customers>("/customer");
+  return data;
 };
 
-export const updateCustomerFn = (payload: UpdateCustomer) => {
-  return patchData<BareResponse>("/customer", payload);
+export const updateCustomerFn = async (payload: UpdateCustomer) => {
+  const { data } = await v1AuthenticatedApi().patch<BareResponse>("/customer", payload);
+  return data;
 };
 
-export const getCustomerDetailsFn = (id: string) => {
-  return getData<CustomerDetails>("/customer", { id });
+export const getCustomerDetailsFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().get<CustomerDetails>("/customer", { params: { id } });
+  return data;
 };
 
-export const deleteCustomerFn = (id: string) => {
-  return deleteData<BareResponse>("/customer", { id });
+export const deleteCustomerFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().delete<BareResponse>("/customer", { data: { id } });
+  return data;
 };
 
-export const createInvoiceFn = (payload: CreateInvoiceDTO) => {
-  return postData("/invoice", payload);
+export const createInvoiceFn = async (payload: CreateInvoiceDTO) => {
+  const { data } = await v1AuthenticatedApi().post("/invoice", payload);
+  return data;
 };
 
-export const updateInvoiceFn = (payload: UpdateInvoice) => {
-  return patchData<BareResponse>("/invoice", payload);
+export const updateInvoiceFn = async (payload: UpdateInvoice) => {
+  const { data } = await v1AuthenticatedApi().patch<BareResponse>("/invoice", payload);
+  return data;
 };
 
-export const getInvoicesFn = ({
+export const getInvoicesFn = async ({
   page,
   size,
   invoiceNumber,
@@ -61,27 +68,33 @@ export const getInvoicesFn = ({
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
   if (status) params.status = status;
-  return getData<Invoices>("/invoice", params);
+  const { data } = await v1AuthenticatedApi().get<Invoices>("/invoice", { params });
+  return data;
 };
 
-export const getSingleInvoiceFn = (id: string) => {
-  return getData<InvoiceDetails>("/invoice/single", { id });
+export const getSingleInvoiceFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().get<InvoiceDetails>("/invoice/single", { params: { id } });
+  return data;
 };
 
-export const deleteInvoiceFn = (id: string) => {
-  return deleteData<BareResponse>("/invoice", { id });
+export const deleteInvoiceFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().delete<BareResponse>("/invoice", { data: { id } });
+  return data;
 };
 
-export const downloadInvoiceFn = (id: string) => {
-  return getData<DownloadInvoiceResponse>("/invoice/download", { id });
+export const downloadInvoiceFn = async (id: string) => {
+  const { data } = await v1AuthenticatedApi().get<DownloadInvoiceResponse>("/invoice/download", { params: { id } });
+  return data;
 };
 
-export const downloadInvoiceTemplateFn = () => {
-  return getData<DownloadInvoiceTemplateResponse>("/invoice/template");
+export const downloadInvoiceTemplateFn = async () => {
+  const { data } = await v1AuthenticatedApi().get<DownloadInvoiceTemplateResponse>("/invoice/template");
+  return data;
 };
 
-export const uploadInvoiceFn = (payload: FormData) => {
-  return postData<BareResponse>("/invoice/upload", payload as any, true, {
+export const uploadInvoiceFn = async (payload: FormData) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/invoice/upload", payload, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+  return data;
 };

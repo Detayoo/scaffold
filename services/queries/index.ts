@@ -4,7 +4,6 @@ export * from "./webhooks";
 export * from "./finance";
 export * from "./operations";
 export * from "./transactions";
-export * from "./collections";
 export * from "./settings";
 export * from "./payment-links";
 export * from "./invoices";

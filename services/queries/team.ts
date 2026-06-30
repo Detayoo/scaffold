@@ -1,5 +1,5 @@
-import { deleteData, getData, patchData, postData } from "..";
-import {
+import { v1Api, v1AuthenticatedApi } from "../api";
+import type {
   AcceptInvite,
   BareResponse,
   CreateInviteType,
@@ -8,48 +8,55 @@ import {
   SingleInvite,
 } from "@/types";
 
-export const getInvitesFn = ({
+export const getInvitesFn = async ({
   page,
   size,
 }: {
   page: number;
   size: number;
 }) => {
-  return getData<Invites>("/invite", { page, size });
+  const { data } = await v1AuthenticatedApi().get<Invites>("/invite", { params: { page, size } });
+  return data;
 };
 
-export const getMembersFn = ({
+export const getMembersFn = async ({
   page,
   size,
 }: {
   page: number;
   size: number;
 }) => {
-  return getData<Members>("/merchant/team", { page, size });
+  const { data } = await v1AuthenticatedApi().get<Members>("/merchant/team", { params: { page, size } });
+  return data;
 };
 
-export const acceptInviteFn = (payload: AcceptInvite) => {
-  return postData<BareResponse>("/invite/create-account", payload);
+export const acceptInviteFn = async (payload: AcceptInvite) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/invite/create-account", payload);
+  return data;
 };
 
-export const createInviteFn = (payload: CreateInviteType) => {
-  return postData<BareResponse>("/invite", payload);
+export const createInviteFn = async (payload: CreateInviteType) => {
+  const { data } = await v1AuthenticatedApi().post<BareResponse>("/invite", payload);
+  return data;
 };
 
-export const deleteInviteFn = (reference: string) => {
-  return deleteData<BareResponse>("/invite", { reference });
+export const deleteInviteFn = async (reference: string) => {
+  const { data } = await v1AuthenticatedApi().delete<BareResponse>("/invite", { data: { reference } });
+  return data;
 };
 
-export const getSingleInviteFn = (reference: string) => {
-  return getData<SingleInvite>("/invite/single", { reference }, false);
+export const getSingleInviteFn = async (reference: string) => {
+  const { data } = await v1Api.get<SingleInvite>("/invite/single", { params: { reference } });
+  return data;
 };
 
-export const suspendMemberFn = ({
+export const suspendMemberFn = async ({
   id,
   status,
 }: {
   id: string;
   status: "SUSPENDED" | "ENABLED";
 }) => {
-  return patchData<BareResponse>("/merchant/team", { userId: id, status });
+  const { data } = await v1AuthenticatedApi().patch<BareResponse>("/merchant/team", { userId: id, status });
+  return data;
 };
