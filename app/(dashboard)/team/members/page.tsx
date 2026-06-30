@@ -59,12 +59,19 @@ function TeamContent() {
 
   const { mutateAsync: removeInvite, isPending: isDeleting } = useMutation({
     mutationFn: (reference: string) => deleteInviteFn(reference),
+    onSuccess: () => {
+      toastMessage("success", "Invitation revoked");
+      setDeleteTarget(null);
+      queryClient.invalidateQueries({ queryKey: ["team-invites"] });
+    },
+    onError: (err) => toastMessage("error", extractError(err)),
   });
 
   const { mutateAsync: resendInvite, isPending: isResending } = useMutation({
     mutationFn: (id: string) => resendInviteFn(id),
     onSuccess: () => {
       toastMessage("success", "Invitation resent");
+      setResendTarget(null);
       queryClient.invalidateQueries({ queryKey: ["team-invites"] });
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -90,13 +97,8 @@ function TeamContent() {
   const handleDeleteInvite = async () => {
     if (!deleteTarget) return;
     try {
-      await deleteInviteFn(deleteTarget.id);
-      toastMessage("success", "Invitation cancelled");
-      setDeleteTarget(null);
-      queryClient.invalidateQueries({ queryKey: ["team-invites"] });
-    } catch (error) {
-      toastMessage("error", extractError(error));
-    }
+      await removeInvite(deleteTarget.id);
+    } catch {}
   };
 
   const members = memberQuery.data?.data;
@@ -208,7 +210,6 @@ function TeamContent() {
             variant="default"
             onConfirm={async () => {
               try { if (resendTarget) await resendInvite(resendTarget.id); } catch {}
-              setResendTarget(null);
             }}
             loading={isResending}
           />
