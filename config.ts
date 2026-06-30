@@ -1,4 +1,7 @@
+export const APP_NAME = "Malimbe";
+
 export const CONFIG = {
+  APP_NAME,
   SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
   SECRET_KEY: process.env.NEXT_PUBLIC_SECRET_KEY,
   DOCUMENTATION_URL: process.env.NEXT_PUBLIC_DOCUMENTATION_URL,

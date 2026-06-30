@@ -37,7 +37,7 @@ import { Logo } from "@/components/Logo";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
-import { CONFIG } from "@/config";
+import { CONFIG, APP_NAME } from "@/config";
 import { getEnvironmentFn, toggleEnvironmentFn } from "@/services";
 import { toastMessage } from "@/utils";
 
@@ -158,7 +158,7 @@ export function AppSidebar() {
         <div className="flex items-center justify-start group-data-[collapsible=icon]:justify-center">
           <Link href="/home" className="flex items-center gap-2.5">
             <Logo size={28} />
-            <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">Malimbe</span>
+            <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">{APP_NAME}</span>
           </Link>
         </div>
       </SidebarHeader>

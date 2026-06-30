@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/components/theme-provider";
+import { APP_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -22,7 +23,7 @@ export function Logo({ className, size = 32 }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn("shrink-0", className)}
-      aria-label="Malimbe logo"
+      aria-label={`${APP_NAME} logo`}
     >
       <rect x="2" y="2" width="28" height="28" rx="7" fill={boxFill} />
       <path

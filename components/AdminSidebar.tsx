@@ -36,7 +36,7 @@ import { Logo } from "@/components/Logo";
 import { useTheme } from "@/components/theme-provider";
 import { useAdminAuth } from "@/contexts/admin-auth-context";
 import { cn } from "@/lib/utils";
-import { CONFIG } from "@/config";
+import { CONFIG, APP_NAME } from "@/config";
 
 const mainNav = [
   { name: "Home", url: "/admin", icon: LayoutDashboard },
@@ -102,7 +102,7 @@ export function AdminSidebar() {
         <div className="flex items-center justify-start group-data-[collapsible=icon]:justify-center">
           <Link href="/admin" className="flex items-center gap-2.5">
             <Logo size={28} />
-            <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">Malimbe</span>
+            <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">{APP_NAME}</span>
           </Link>
         </div>
       </SidebarHeader>

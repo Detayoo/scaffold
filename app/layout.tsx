@@ -2,6 +2,7 @@ import { Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { APP_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 
 const fontMono = Geist_Mono({
@@ -10,7 +11,7 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Malimbe — Merchant Portal",
+  title: `${APP_NAME} — Merchant Portal`,
   description: "Manage payments, transactions, invoices, and your team.",
 };
 
