@@ -389,8 +389,8 @@ export const resolveReconciliationExceptionFn = async ({
   evidence?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/reconciliation-exceptions/${id}/resolve`, {
-    resolutionReason: reason,
-    resolutionEvidence: evidence ?? {},
+    reason,
+    evidence: evidence ?? {},
   });
   return data;
 };

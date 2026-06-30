@@ -53,6 +53,8 @@ function DedicatedAccountsContent() {
   const [creditRef, setCreditRef] = useState("");
   const [holdReason, setHoldReason] = useState("");
   const [refundReason, setRefundReason] = useState("");
+  const [refundBank, setRefundBank] = useState("");
+  const [refundAccount, setRefundAccount] = useState("");
 
   const { data: creditsData, isPending: creditsPending, refetch: refetchCredits } = useQuery({
     queryKey: ["account-credits", statusFilter],
@@ -190,7 +192,7 @@ function DedicatedAccountsContent() {
                   <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
                     <Lock className="size-3.5" /> Hold
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); }}>
+                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); setRefundBank(""); setRefundAccount(""); }}>
                     <Undo2 className="size-3.5" /> Refund
                   </Button>
                 </div>
@@ -224,11 +226,17 @@ function DedicatedAccountsContent() {
               {creditAction === "refund" && (
                 <div className="space-y-2 pt-2 border-t">
                   <FormField label="Reason" isRequired>
-                    <Input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Customer requested return" />
+                    <Input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Customer transferred to inactive account" />
+                  </FormField>
+                  <FormField label="Refund Bank">
+                    <Input value={refundBank} onChange={(e) => setRefundBank(e.target.value)} placeholder="Access Bank" />
+                  </FormField>
+                  <FormField label="Refund Account">
+                    <Input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="0123456789" />
                   </FormField>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: {} }); } catch {} }} disabled={refunding || !refundReason}>
+                    <Button size="sm" onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: { refund_bank: refundBank, refund_account: refundAccount } }); } catch {} }} disabled={refunding || !refundReason}>
                       {refunding ? "Refunding..." : "Refund"}
                     </Button>
                   </div>

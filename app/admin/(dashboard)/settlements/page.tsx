@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
+import { DatePicker } from "@/components/DatePicker";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -45,6 +46,7 @@ function AdminSettlementsContent() {
   const [settleMerchantId, setSettleMerchantId] = useState("");
   const [settleEnv, setSettleEnv] = useState("test");
   const [settleChannel, setSettleChannel] = useState("bank_transfer");
+  const [settleAsOf, setSettleAsOf] = useState("");
 
   const { mutateAsync: runBatch, isPending: isRunning } = useMutation({
     mutationFn: runSettlementFn,
@@ -126,8 +128,9 @@ function AdminSettlementsContent() {
               </SelectContent>
             </Select>
           </FormField>
+          <DatePicker label="As Of" value={settleAsOf ? new Date(settleAsOf) : undefined} onChange={(d) => setSettleAsOf(d ? d.toISOString() : "")} />
           <Button className="w-full" disabled={isRunning || !settleMerchantId}
-            onClick={async () => { try { await runBatch({ merchantId: settleMerchantId, environment: settleEnv, currency: "NGN", channel: settleChannel }); } catch {} }}>
+            onClick={async () => { try { await runBatch({ merchantId: settleMerchantId, environment: settleEnv, currency: "NGN", channel: settleChannel, asOf: settleAsOf || undefined }); } catch {} }}>
             {isRunning ? "Running..." : "Run Settlement"}
           </Button>
         </div>
