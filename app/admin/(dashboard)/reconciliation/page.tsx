@@ -258,7 +258,7 @@ function ReconciliationContent() {
       <ResponsiveModal open={reconModal} onOpenChange={setReconModal} title="Run Reconciliation">
         <div className="space-y-4 pt-2">
           <FormField label="Import ID" isRequired>
-            <Input value={reconImportId} onChange={(e) => setReconImportId(e.target.value)} placeholder="uuid" />
+            <Input value={reconImportId} onChange={(e) => setReconImportId(e.target.value)} placeholder="Import ID from provider statements" />
           </FormField>
           <FormField label="Job Type" isRequired>
             <Select value={reconJobType} onValueChange={setReconJobType}>
@@ -313,7 +313,7 @@ function ReconciliationContent() {
       <ResponsiveModal open={adjustModal} onOpenChange={setAdjustModal} title="Manual Adjustment">
         <div className="space-y-4 pt-2">
           <FormField label="Merchant ID" isRequired>
-            <Input value={adjMerchantId} onChange={(e) => setAdjMerchantId(e.target.value)} placeholder="uuid" />
+            <Input value={adjMerchantId} onChange={(e) => setAdjMerchantId(e.target.value)} placeholder="Merchant ID (87fb27f1-...)" />
           </FormField>
           <FormField label="Reason" isRequired>
             <Input value={adjReason} onChange={(e) => setAdjReason(e.target.value)} placeholder="Correct duplicate import" />

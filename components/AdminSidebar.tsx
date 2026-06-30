@@ -110,7 +110,7 @@ export function AdminSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 group-data-[collapsible=icon]:hidden">Main</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+            <SidebarMenu className="gap-1 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {mainNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}
@@ -120,7 +120,7 @@ export function AdminSidebar() {
         <SidebarGroup className="border-t border-sidebar-border group-data-[collapsible=icon]:border-t-0">
           <SidebarGroupLabel className="px-3 pt-3 group-data-[collapsible=icon]:hidden">Operations</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+            <SidebarMenu className="gap-1 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               {opsNav.map((item) => (
                 <NavItem key={item.url} {...item} pathname={pathname} />
               ))}

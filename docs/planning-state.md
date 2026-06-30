@@ -335,6 +335,12 @@ Rules:
 - **Reuse before create — CRITICAL** — always check if an existing component can be extended with props before building a new one. Only create new if existing truly cannot work. This is not a suggestion, it is a hard rule. Duplicated components create inconsistent UI, more bugs, and maintenance overhead
 - **Never break existing consumers** — when extending a component with new props, ensure all existing usages continue to work without changes. Default values for new props must preserve current behavior
 
+### Sidebar spacing
+- All `SidebarMenu` groups in both merchant and admin sidebars must use `gap-1` for proper spacing between items.
+
+### Placeholder text
+- Never use literal `"uuid"` as a placeholder. Always describe what the user should enter (e.g. `"Merchant ID (87fb27f1-...)"`, `"Import ID from provider statements"`).
+
 ### Consistent sizing
 - All buttons: default size is `h-10` — no `size="sm"` anywhere
 - All inputs: `h-10` — matches button height
