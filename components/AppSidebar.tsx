@@ -64,7 +64,7 @@ const mainNav = [
 
 const businessNav = [
   { name: "Payment Links", url: "/payment-links", icon: CreditCard },
-  { name: "Invoices", url: "/invoices", icon: FileText },
+  // { name: "Invoices", url: "/invoices", icon: FileText },
   { name: "Subaccounts", url: "/subaccounts", icon: Receipt },
 ];
 

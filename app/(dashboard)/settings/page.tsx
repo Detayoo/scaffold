@@ -73,7 +73,7 @@ const tabs = [
   { id: "security", label: "Security", icon: Lock },
   { id: "keys", label: "API Keys", icon: Key },
   { id: "webhook", label: "Webhook", icon: Webhook },
-  { id: "taxes", label: "Taxes", icon: Percent },
+  // { id: "taxes", label: "Taxes", icon: Percent },
   { id: "channels", label: "Channels", icon: List },
 ];
 
@@ -113,7 +113,7 @@ export default function SettingsPage() {
           {tab === "security" && <SecuritySection />}
           {tab === "keys" && <APIKeysSection />}
           {tab === "webhook" && <WebhookSection />}
-          {tab === "taxes" && <TaxesSection />}
+          {/* {tab === "taxes" && <TaxesSection />} */}
           {tab === "channels" && <ChannelsSection />}
         </div>
       </div>
@@ -425,6 +425,7 @@ function APIKeysSection() {
 }
 
 function WebhookSection() {
+  const copy = useCopyToClipboard();
   const [showCreate, setShowCreate] = useState(false);
   const [logsEndpoint, setLogsEndpoint] = useState<WebhookEndpoint | null>(null);
   const [logs, setLogs] = useState<WebhookDelivery[]>([]);
@@ -543,15 +544,27 @@ function WebhookSection() {
                       <StatusBadge status={ep?.status} size="sm" />
                       <span className="text-xs text-muted-foreground capitalize">{ep?.environment}</span>
                     </div>
-                    <p className="text-sm truncate">{ep?.url}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm truncate">{ep?.url}</p>
+                      <button type="button" onClick={async () => { const ok = await copy(ep?.url ?? ""); toastMessage(ok ? "success" : "error", ok ? "URL copied" : "Copy failed"); }} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                        <Copy className="size-3.5" />
+                      </button>
+                    </div>
                     {ep?.eventFilter && ep.eventFilter.length > 0 && (
                       <p className="text-xs text-muted-foreground">
                         Filter: {ep.eventFilter.join(", ")}
                       </p>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                      Secret: {ep?.secretRef ?? "—"}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-muted-foreground">
+                        Secret: {ep?.secretRef ?? "—"}
+                      </p>
+                      {ep?.secretRef && (
+                        <button type="button" onClick={async () => { const ok = await copy(ep?.secretRef ?? ""); toastMessage(ok ? "success" : "error", ok ? "Secret copied" : "Copy failed"); }} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                          <Copy className="size-3" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <Button
