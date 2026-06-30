@@ -57,8 +57,8 @@ export default function RegisterPage({
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField label="Business name" error={errors.displayName?.message} isRequired>
-            <Input placeholder="Your business name" {...register("displayName")} />
+          <FormField label="Business name" error={errors.businessName?.message} isRequired>
+            <Input placeholder="Your business name" {...register("businessName")} />
           </FormField>
           <FormField label="Owner name" error={errors.ownerName?.message} isRequired>
             <Input placeholder="Full name of the business owner" {...register("ownerName")} />

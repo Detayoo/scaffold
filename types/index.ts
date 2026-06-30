@@ -73,7 +73,7 @@ export type State = {
 };
 
 export type RegistrationDTO = {
-  displayName: string;
+  businessName: string;
   email: string;
   password: string;
   ownerName: string;

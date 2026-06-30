@@ -12,7 +12,7 @@ export const loginSchema = z.object({
 });
 
 export const registrationSchema = z.object({
-  displayName: z.string().nonempty({ message: "Business name is required" }),
+  businessName: z.string().nonempty({ message: "Business name is required" }),
   email: z
     .string()
     .email({ message: "Invalid email" })
