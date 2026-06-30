@@ -190,7 +190,7 @@ function DedicatedAccountsContent() {
                   <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
                     <Lock className="size-3.5" /> Hold
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundAccount(""); setRefundBankCode(""); setRefundReason(""); }}>
+                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); }}>
                     <Undo2 className="size-3.5" /> Refund
                   </Button>
                 </div>
