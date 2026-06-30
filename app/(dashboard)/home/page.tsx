@@ -32,11 +32,13 @@ export default function HomePage() {
   const home = homeData?.data;
   const transactions = txData?.data;
 
+  const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
+
   const stats = [
-    { icon: Receipt, label: "Today", value: home?.today?.transactionCount },
-    { icon: TrendingUp, label: "Volume", value: home?.today?.successVolumeMinor, compact: true },
-    { icon: Landmark, label: "Pending Settlement", value: home?.pendingSettlementMinor, compact: true },
-    { icon: RefreshCw, label: "Available", value: home?.availableBalanceMinor, compact: true },
+    { icon: Receipt, label: "Payments", value: home?.today?.successful_payments },
+    { icon: TrendingUp, label: "Volume", value: home?.today?.net_amount_minor, compact: true },
+    { icon: Landmark, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true },
+    { icon: RefreshCw, label: "Available", value: ngnBalance?.available_amount_minor, compact: true },
   ];
 
   const quickActions = [

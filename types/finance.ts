@@ -1,14 +1,22 @@
 export type DashboardHomeData = {
   today: {
-    transactionCount: number;
-    successCount: number;
-    totalVolumeMinor: number;
-    successVolumeMinor: number;
+    gross_amount_minor: number;
+    net_amount_minor: number;
+    successful_payments: number;
+    total_payments: number;
+    success_rate: number;
+    by_channel: Record<string, any>;
   };
-  pendingSettlementMinor: number;
-  availableBalanceMinor: number;
-  openDisputeCount: number;
-  pendingRefundCount: number;
+  pending_transfer_count: number;
+  balances: Array<{
+    currency: string;
+    pending_amount_minor: number;
+    available_amount_minor: number;
+    held_amount_minor: number;
+    settlement_payable_amount_minor: number;
+    paid_amount_minor: number;
+  }>;
+  next_settlement: string | null;
 };
 
 export type DashboardHomeResponse = {
