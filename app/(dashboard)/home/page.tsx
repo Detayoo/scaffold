@@ -40,8 +40,11 @@ export default function HomePage() {
   ];
 
   const balanceStats = [
-    { icon: Landmark, label: "Pending Settlement", value: ngnBalance?.pending_amount_minor, compact: true },
-    { icon: RefreshCw, label: "Available Balance", value: ngnBalance?.available_amount_minor, compact: true },
+    { icon: Landmark, label: "Available", value: ngnBalance?.available_amount_minor, compact: true },
+    { icon: RefreshCw, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true },
+    { icon: RefreshCw, label: "Held", value: ngnBalance?.held_amount_minor, compact: true },
+    { icon: Landmark, label: "Settlement Payable", value: ngnBalance?.settlement_payable_amount_minor, compact: true },
+    { icon: Landmark, label: "Paid", value: ngnBalance?.paid_amount_minor, compact: true },
   ];
 
   const quickActions = [
@@ -68,7 +71,7 @@ export default function HomePage() {
 
       <div className="space-y-2">
         <p className="text-sm font-medium text-foreground">Balances</p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {balanceStats.map((s) => (
             <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
           ))}
