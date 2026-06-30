@@ -98,7 +98,7 @@ function DedicatedAccountsContent() {
 
       {tab === "dvas" && (
         <div className="space-y-4">
-          <DataTable columns={dvasColumns} data={undefined} isPending={false} isError={false}
+          <DataTable columns={dvasColumns} data={[]} isPending={false} isError={false}
             emptyTitle="No virtual accounts"
             emptyDescription="No dedicated accounts found."
           />
