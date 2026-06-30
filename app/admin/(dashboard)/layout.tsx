@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 
@@ -8,6 +9,10 @@ export default function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    document.title = "x-noname — Admin";
+  }, []);
+
   return (
     <SidebarProvider>
       <AdminSidebar />
