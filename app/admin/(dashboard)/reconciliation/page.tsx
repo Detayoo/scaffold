@@ -227,12 +227,12 @@ function ReconciliationContent() {
           </div>
           {selectedExc?.status === "open" && (
             <div className="flex gap-2 pt-1">
-              <Button size="sm" variant="outline" onClick={() => { setAction("assign"); setOwnerId(""); setOwnerName(""); }}>Assign</Button>
+              <Button variant="outline" onClick={() => { setAction("assign"); setOwnerId(""); setOwnerName(""); }}>Assign</Button>
             </div>
           )}
           {selectedExc?.status === "assigned" && (
             <div className="flex gap-2 pt-1">
-              <Button size="sm" onClick={() => { setAction("resolve"); setResolveReason(""); }}>Resolve</Button>
+              <Button onClick={() => { setAction("resolve"); setResolveReason(""); }}>Resolve</Button>
             </div>
           )}
           {action === "assign" && (
@@ -247,8 +247,8 @@ function ReconciliationContent() {
                 />
               </FormField>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setAction(null)}>Cancel</Button>
-                <Button size="sm" onClick={async () => { try { await assignExc({ id: selectedExc.id, ownerId, ownerName }); } catch {} }} disabled={isAssigning || !ownerId || !ownerName}>
+                <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
+                <Button onClick={async () => { try { await assignExc({ id: selectedExc.id, ownerId, ownerName }); } catch {} }} disabled={isAssigning || !ownerId || !ownerName}>
                   {isAssigning ? "Assigning..." : "Assign"}
                 </Button>
               </div>
@@ -260,8 +260,8 @@ function ReconciliationContent() {
                 <Input value={resolveReason} onChange={(e) => setResolveReason(e.target.value)} placeholder="Provider confirmed correct amount" />
               </FormField>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setAction(null)}>Cancel</Button>
-                <Button size="sm" onClick={async () => { try { await resolveExc({ id: selectedExc.id, reason: resolveReason, evidence: {} }); } catch {} }} disabled={isResolving || !resolveReason}>
+                <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
+                <Button onClick={async () => { try { await resolveExc({ id: selectedExc.id, reason: resolveReason, evidence: {} }); } catch {} }} disabled={isResolving || !resolveReason}>
                   {isResolving ? "Resolving..." : "Resolve"}
                 </Button>
               </div>

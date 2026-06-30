@@ -186,13 +186,13 @@ function DedicatedAccountsContent() {
               <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
               {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
                 <div className="flex flex-wrap gap-2 pt-1">
-                  <Button size="sm" className="gap-2" onClick={() => { setCreditAction("apply"); setCreditRef(""); }}>
+                  <Button className="gap-2" onClick={() => { setCreditAction("apply"); setCreditRef(""); }}>
                     <Send className="size-3.5" /> Apply
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
+                  <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
                     <Lock className="size-3.5" /> Hold
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); setRefundBank(""); setRefundAccount(""); }}>
+                  <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); setRefundBank(""); setRefundAccount(""); }}>
                     <Undo2 className="size-3.5" /> Refund
                   </Button>
                 </div>
@@ -203,8 +203,8 @@ function DedicatedAccountsContent() {
                     <Input value={creditRef} onChange={(e) => setCreditRef(e.target.value)} placeholder="ord_lagos_..." />
                   </FormField>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await applyCredit({ id: selectedCredit.id, reference: creditRef }); } catch {} }} disabled={applying || !creditRef}>
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await applyCredit({ id: selectedCredit.id, reference: creditRef }); } catch {} }} disabled={applying || !creditRef}>
                       {applying ? "Applying..." : "Apply"}
                     </Button>
                   </div>
@@ -216,8 +216,8 @@ function DedicatedAccountsContent() {
                     <Input value={holdReason} onChange={(e) => setHoldReason(e.target.value)} placeholder="Suspected duplicate" />
                   </FormField>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await holdCredit({ id: selectedCredit.id, reason: holdReason }); } catch {} }} disabled={holding || !holdReason}>
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await holdCredit({ id: selectedCredit.id, reason: holdReason }); } catch {} }} disabled={holding || !holdReason}>
                       {holding ? "Holding..." : "Hold"}
                     </Button>
                   </div>
@@ -235,8 +235,8 @@ function DedicatedAccountsContent() {
                     <Input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="0123456789" />
                   </FormField>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: { refund_bank: refundBank, refund_account: refundAccount } }); } catch {} }} disabled={refunding || !refundReason}>
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: { refund_bank: refundBank, refund_account: refundAccount } }); } catch {} }} disabled={refunding || !refundReason}>
                       {refunding ? "Refunding..." : "Refund"}
                     </Button>
                   </div>

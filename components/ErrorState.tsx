@@ -32,7 +32,7 @@ export function ErrorState({
         <p className="text-sm text-muted-foreground">{message}</p>
       </div>
       {errorCode !== 403 && onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry}>
+        <Button variant="outline" onClick={onRetry}>
           <RefreshCw />
           Retry
         </Button>
