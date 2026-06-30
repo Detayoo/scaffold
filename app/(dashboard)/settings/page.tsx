@@ -301,23 +301,26 @@ function APIKeysSection() {
         </CardHeader>
         <CardContent className="space-y-4">
           {keyPairs?.secret || keyPairs?.public ? (
-            <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-              <p className="text-xs text-muted-foreground">Last generated</p>
-              {keyPairs?.secret && (
-                <div className="flex items-center justify-between">
-                  <p className="text-xs capitalize">Secret</p>
-                  <p className="text-xs text-muted-foreground">{keyPairs.secret.created_at ? new Date(keyPairs.secret.created_at).toLocaleDateString() : "—"}</p>
-                </div>
-              )}
-              {keyPairs?.public && (
-                <div className="flex items-center justify-between">
-                  <p className="text-xs capitalize">Public</p>
-                  <p className="text-xs text-muted-foreground">{keyPairs.public.created_at ? new Date(keyPairs.public.created_at).toLocaleDateString() : "—"}</p>
-                </div>
-              )}
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-foreground">API Keys</p>
+                <p className="text-xs text-muted-foreground">Your API keys were last generated on the date below. Generate new keys to replace them.</p>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Last generated:</span>
+                <span className="font-medium text-foreground">
+                  {keyPairs?.secret?.created_at
+                    ? new Date(keyPairs.secret.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) +
+                      " at " +
+                      new Date(keyPairs.secret.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                    : "—"}
+                </span>
+              </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <p className="text-sm text-muted-foreground">No API keys yet. Generate your first set to get started.</p>
+            </div>
           )}
           <ResponsiveModal open={newKeysOpen} onOpenChange={setNewKeysOpen} title="API Keys Generated">
             <p className="text-sm text-muted-foreground pt-2">Copy these keys now. You won&apos;t be able to see them again.</p>
