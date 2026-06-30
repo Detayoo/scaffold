@@ -129,7 +129,7 @@ function TeamContent() {
       cell: (i: Invite) => <span className="text-sm text-foreground">{i.email}</span>,
     },
     { key: "role", header: "Role", cell: (i: Invite) => <span className="text-sm capitalize">{i.role}</span> },
-    { key: "status", header: "Status", cell: (i: Invite) => <StatusBadge status={i.status} size="sm" /> },
+    { key: "status", header: "Status", cell: (i: Invite) => <span className="text-sm capitalize">{i.status}</span> },
     {
       key: "actions", header: "", className: "w-28",
       cell: (i: Invite) => (
