@@ -140,8 +140,8 @@ export function AdminSidebar() {
             {resolvedTheme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
           </button>
           {CONFIG.DOCUMENTATION_URL && (
-            <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors">
-              <ExternalLink className="size-3.5" />
+            <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden">
+              <span>Documentation</span>
             </Link>
           )}
         </div>

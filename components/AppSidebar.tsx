@@ -202,8 +202,8 @@ export function AppSidebar() {
           </button>
           <span className="text-[11px] text-muted-foreground">{environment === "live" ? "Live" : "Test"}</span>
           {CONFIG.DOCUMENTATION_URL && (
-            <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
-              <ExternalLink className="size-3.5" />
+            <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden" title="Documentation">
+              <span>Documentation</span>
             </Link>
           )}
         </div>
