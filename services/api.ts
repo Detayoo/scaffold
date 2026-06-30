@@ -6,6 +6,19 @@ import { decrypt } from "@/utils/encryption";
 
 const V1_URL = `${CONFIG.SERVER_URL}/api/v1`;
 
+function createErrorHandler(redirectPath: string, clearKeys: string[]) {
+  return async (err: any) => {
+    try {
+      if (err?.response?.status === 401 && typeof window !== "undefined") {
+        toast.error("Session expired. Please login again.");
+        clearKeys.forEach((key) => localStorage.removeItem(key));
+        window.location.replace(redirectPath);
+      }
+    } catch {}
+    return Promise.reject(err);
+  };
+}
+
 export const baseApi = axios.create({
   baseURL: CONFIG.SERVER_URL,
   headers: {
@@ -35,14 +48,7 @@ export const authenticatedApi = () => {
 
   instance.interceptors.response.use(
     (res) => res,
-    async (err) => {
-      if (err?.response?.status === 401 && typeof window !== "undefined") {
-        toast.error("Session expired. Please login again.");
-        localStorage.clear();
-        window.location.replace("/");
-      }
-      return Promise.reject(err);
-    }
+    createErrorHandler("/", ["TOKEN", "USER"])
   );
 
   return instance;
@@ -61,14 +67,7 @@ export const v1AuthenticatedApi = () => {
 
   instance.interceptors.response.use(
     (res) => res,
-    async (err) => {
-      if (err?.response?.status === 401 && typeof window !== "undefined") {
-        toast.error("Session expired. Please login again.");
-        localStorage.clear();
-        window.location.replace("/");
-      }
-      return Promise.reject(err);
-    }
+    createErrorHandler("/", ["TOKEN", "USER"])
   );
 
   return instance;
@@ -87,15 +86,7 @@ export const v1AdminAuthenticatedApi = () => {
 
   instance.interceptors.response.use(
     (res) => res,
-    async (err) => {
-      if (err?.response?.status === 401 && typeof window !== "undefined") {
-        toast.error("Admin session expired. Please login again.");
-        localStorage.removeItem("admin_token");
-        localStorage.removeItem("admin_user");
-        window.location.replace("/admin/login");
-      }
-      return Promise.reject(err);
-    }
+    createErrorHandler("/admin/login", ["admin_token", "admin_user"])
   );
 
   return instance;
