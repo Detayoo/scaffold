@@ -15,12 +15,8 @@ export const getKeysFn = async ({
   return data;
 };
 
-export const createKeyFn = async ({
-  environment,
-}: {
-  environment: string;
-}) => {
-  const { data } = await v1AuthenticatedApi().post<APIKeyResponse>("/keys", { environment });
+export const createKeyFn = async () => {
+  const { data } = await v1AuthenticatedApi().post<APIKeyResponse>("/keys");
   return data;
 };
 

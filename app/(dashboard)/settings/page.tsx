@@ -403,14 +403,10 @@ function APIKeysSection() {
               ))}
             </div>
           )}
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setCreating(true)} disabled={generating}>
+          <div>
+            <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
               <Key className="size-3.5" />
-              Create Test Key
-            </Button>
-            <Button variant="outline" onClick={() => generateKeys({ environment: "live" })} disabled={generating}>
-              <Key className="size-3.5" />
-              Create Live Key
+              {generating ? "Generating..." : "Generate API Keys"}
             </Button>
           </div>
         </CardContent>
