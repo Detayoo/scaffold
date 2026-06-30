@@ -99,7 +99,7 @@ export function AdminSidebar() {
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader className="px-5 py-4">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-start">
           <Link href="/admin" className="flex items-center gap-2.5">
             <Logo size={28} />
             <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">Malimbe</span>
