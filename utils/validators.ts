@@ -21,7 +21,7 @@ export const registrationSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .nonempty({ message: "Password is required" }),
-  name: z.string().nonempty({ message: "Owner name is required" }),
+  name: z.string().nonempty({ message: "Full name is required" }),
 });
 
 export const forgotPasswordSchema = z.object({
