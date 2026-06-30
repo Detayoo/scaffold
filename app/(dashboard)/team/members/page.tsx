@@ -150,7 +150,12 @@ function TeamContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Team" description="Manage team members and invitations" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader title="Team" description="Manage team members and invitations" />
+        <Button onClick={() => setModalOpen(true)}>
+          <Plus /> Invite Member
+        </Button>
+      </div>
 
       <div className="flex gap-1 border-b">
         {tabs.map((t) => (
@@ -195,11 +200,6 @@ function TeamContent() {
 
       {tab === "invites" && (
         <div className="space-y-4">
-          <div className="flex justify-end">
-            <Button onClick={() => setModalOpen(true)}>
-              <Plus /> Invite Member
-            </Button>
-          </div>
           <DataTable
             columns={inviteColumns}
             data={invites}
