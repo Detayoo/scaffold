@@ -110,6 +110,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             : latest;
           dispatch({ type: "SET-MERCHANT", payload: merged });
         }
+      } catch {
+        // merchant profile fetch failed — user can retry on page load
       } finally {
         hasFetchedMerchant.current = true;
         setIsFetchingMerchant(false);
