@@ -34,20 +34,15 @@ export type User = {
 
 export type Merchant = {
   id: string;
-  name: string;
+  display_name: string;
+  legal_name: string;
   email: string;
-  accountNumber: string;
-  status: MerchantStatus;
-  address: string;
-  slug: string;
-  webhookURL: string | null;
-  collectionOptions: Array<string>;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  isPaylinkEnabled: boolean;
-  isInvoiceEnabled: boolean;
-  isReusablePaylinkEnabled: boolean;
+  status: string;
+  risk_tier: string;
+  default_currency: string;
+  settlement_bank_account_id: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type PaginatedResponse = {

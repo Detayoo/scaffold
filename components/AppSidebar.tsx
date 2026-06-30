@@ -245,8 +245,8 @@ export function AppSidebar() {
               {initials}
             </div>
             <div className="flex flex-col truncate">
-              <span className="truncate text-xs font-medium">{merchant?.name ?? "x-noname"}</span>
-              <span className="truncate text-[11px] text-muted-foreground">{merchant?.slug ?? user?.email ?? ""}</span>
+              <span className="truncate text-xs font-medium">{merchant?.display_name ?? "x-noname"}</span>
+              <span className="truncate text-[11px] text-muted-foreground">{user?.email ?? ""}</span>
             </div>
           </div>
           <button

@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
+        <PageHeader title={`Welcome back, ${merchant?.display_name ?? "Merchant"}`} description={today} />
       </div>
 
       <div className="space-y-2">
