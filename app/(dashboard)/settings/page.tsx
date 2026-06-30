@@ -330,7 +330,6 @@ function APIKeysSection() {
                 if (envKeys.length === 0) return null;
                 return (
                   <div key={env} className="rounded-lg border bg-muted/30 p-3 space-y-3">
-                    <p className="text-xs font-medium text-foreground capitalize">{env} Keys</p>
                     {envKeys.map((k) => (
                       <div key={k.id} className="space-y-1.5">
                         <div className="flex items-center justify-between">
@@ -389,7 +388,6 @@ function APIKeysSection() {
           )}
           {newKeys && (
             <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
-              <p className="text-xs font-medium text-foreground">Generated Keys</p>
               {[
                 { label: "Public Key", value: newKeys.publicKey },
                 { label: "Secret Key", value: newKeys.secretKey },
