@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Copy, Check } from "lucide-react";
 
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -21,6 +24,14 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
     queryFn: () => getTransactionDetailFn({ reference: reference! }),
     enabled: !!reference,
   });
+
+  const copy = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (text: string) => {
+    const ok = await copy(text);
+    if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); }
+  };
 
   const pi = data?.data?.intent;
   const financials = data?.data?.financials;
@@ -42,7 +53,12 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
           <div className="space-y-4 pt-2">
             <div>
               <p className="text-xs text-muted-foreground">Reference</p>
-              <p className="text-sm text-foreground">{pi?.reference}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-foreground">{pi?.reference}</p>
+                <button type="button" onClick={() => handleCopy(pi?.reference ?? "")} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                  {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                </button>
+              </div>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Amount</p>
