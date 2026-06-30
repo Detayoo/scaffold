@@ -347,7 +347,7 @@ function APIKeysSection() {
           <div>
             <Button variant="outline" onClick={() => generateKeys()} disabled={generating}>
               <Key className="size-3.5" />
-              {generating ? "Generating..." : "Generate API Keys"}
+              {generating ? "Generating..." : keys.length > 0 ? "Regenerate API Keys" : "Generate API Keys"}
             </Button>
           </div>
         </CardContent>
