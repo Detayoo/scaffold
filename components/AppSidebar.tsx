@@ -187,13 +187,18 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
-            className={`inline-flex h-6 items-center rounded-md px-2 text-[11px] font-medium transition-colors cursor-pointer ${
-              environment === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
+              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
             }`}
             title={`Environment: ${environment}`}
           >
-            {environment === "live" ? "LIVE" : "TEST"}
+            <span
+              className={`inline-block size-3.5 rounded-full bg-background transition-transform ${
+                environment === "live" ? "translate-x-4.5" : "translate-x-0.5"
+              }`}
+            />
           </button>
+          <span className="text-[11px] text-muted-foreground">{environment === "live" ? "Live" : "Test"}</span>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
               <ExternalLink className="size-3.5" />
@@ -205,12 +210,16 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
-            className={`flex size-6 items-center justify-center rounded-md text-[10px] font-bold transition-colors ${
-              environment === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors cursor-pointer ${
+              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
             }`}
             title={`Environment: ${environment}`}
           >
-            {environment === "live" ? "L" : "T"}
+            <span
+              className={`inline-block size-3 rounded-full bg-background transition-transform ${
+                environment === "live" ? "translate-x-3.5" : "translate-x-0.5"
+              }`}
+            />
           </button>
           <button
             type="button"
