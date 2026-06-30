@@ -309,11 +309,9 @@ Rules:
 - Settings sections: icon + text is fine for navigation
 - Never repeat the same meaning with both an icon and redundant text decoration
 
-### Icon usage rules
-- `Receipt` icon should only be used for invoices, not for transactions, subaccounts, or generic list actions.
-
 ### Icon blacklist
 - Never use: `Shield`, `ShieldCheck`, `ShieldAlert`, `ShieldX`, `ShieldOff`, `ShieldHalf`, or any shield variant
+- Never use: `Receipt`
 - Never use: `Banknote` (looks like a dollar bill)
 - In formatted amounts (via `formatMoney`/`formatMoneyWithCurrency`), the ₦ symbol is acceptable as part of standard currency formatting
 - Never use a standalone naira or dollar symbol outside of formatted amounts — no `<span>₦</span>`, no `naira` JSX variable

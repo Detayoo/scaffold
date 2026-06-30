@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CreditCard, FileText, Receipt, RefreshCw, TrendingUp, Landmark, ArrowLeftRight } from "lucide-react";
+import { CreditCard, FileText, CheckCircle2, RefreshCw, TrendingUp, Landmark, ArrowLeftRight } from "lucide-react";
 import Link from "next/link";
 import { AnalyticsCard } from "@/components/AnalyticsCard";
 import { useAuth } from "@/contexts/auth-context";
@@ -35,7 +35,7 @@ export default function HomePage() {
   const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
 
   const todayStats: Array<{ icon: any; label: string; value: any; compact?: boolean; mono?: boolean; currency?: string }> = [
-    { icon: Receipt, label: "Successful", value: home?.today?.successful_payments },
+    { icon: CheckCircle2, label: "Successful", value: home?.today?.successful_payments },
     { icon: TrendingUp, label: "Total", value: home?.today?.total_payments },
     { icon: TrendingUp, label: "Gross Volume", value: home?.today?.gross_amount_minor, compact: true, currency: "NGN" },
     { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true, currency: "NGN" },
