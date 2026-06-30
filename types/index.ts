@@ -633,6 +633,7 @@ export type ApiKeyItem = {
 export type ApiKeysListResponse = {
   status: boolean;
   data: {
+    environment: string;
     keys: {
       secret: ApiKeyItem;
       public: ApiKeyItem;

@@ -288,6 +288,7 @@ function APIKeysSection() {
   };
 
   const keyPairs = data?.data?.keys;
+  const keyEnv = data?.data?.environment;
 
   return (
     <div className="space-y-5">
@@ -304,7 +305,14 @@ function APIKeysSection() {
           {keyPairs?.secret || keyPairs?.public ? (
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium text-foreground">API Keys</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground">API Keys</p>
+                  {keyEnv && (
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase ${keyEnv === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"}`}>
+                      {keyEnv}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">Your API keys were last generated on the date below. Generate new keys to replace them.</p>
               </div>
               <div className="flex items-center gap-2 text-sm">
