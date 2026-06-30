@@ -335,9 +335,6 @@ function APIKeysSection() {
                         <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
-                          {k.scopes && k.scopes.length > 0 && (
-                            <p className="text-[10px] text-muted-foreground">{k.scopes.join(", ")}</p>
-                          )}
                             <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
                               data-status={k.status}
                             >
@@ -380,9 +377,12 @@ function APIKeysSection() {
                             className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
                           >
                             <Copy className="size-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                      </button>
+                    </div>
+                  </div>
+                  {k.scopes && k.scopes.length > 0 && (
+                    <p className="text-[10px] text-muted-foreground">{k.scopes.join(", ")}</p>
+                  )}
                     ))}
                   </div>
                 );
