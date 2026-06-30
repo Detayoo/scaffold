@@ -52,7 +52,7 @@ export default function HomePage() {
 
   const quickActions = [
     { label: "Create Payment Link", href: "/payment-links", icon: CreditCard },
-    { label: "Send Invoice", href: "/invoices/create-invoice", icon: FileText },
+    // { label: "Send Invoice", href: "/invoices/create-invoice", icon: FileText },
     { label: "View Transactions", href: "/transactions", icon: Receipt },
     { label: "View Refunds", href: "/refunds", icon: RefreshCw },
   ];
