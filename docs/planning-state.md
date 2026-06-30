@@ -312,6 +312,7 @@ Rules:
 ### Icon blacklist
 - Never use: `Shield`, `ShieldCheck`, `ShieldAlert`, `ShieldX`, `ShieldOff`, `ShieldHalf`, or any shield variant
 - Never use: `Receipt`
+- Always add new status values to `StatusBadge` component's `statusConfig` as they appear in the app (accepted, revoked, queued, created, etc.)
 - Never use: `Banknote` (looks like a dollar bill)
 - In formatted amounts (via `formatMoney`/`formatMoneyWithCurrency`), the ₦ symbol is acceptable as part of standard currency formatting
 - Never use a standalone naira or dollar symbol outside of formatted amounts — no `<span>₦</span>`, no `naira` JSX variable

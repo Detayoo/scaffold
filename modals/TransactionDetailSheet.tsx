@@ -65,15 +65,15 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                   <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Gross</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.gross_amount_minor)}</p>
+                      <p className="text-sm font-medium">NGN {formatMoney(financials?.gross_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Fee</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.fee_amount_minor)}</p>
+                      <p className="text-sm font-medium">NGN {formatMoney(financials?.fee_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Net</p>
-                      <p className="text-sm font-medium">{formatMoney(financials?.net_amount_minor)}</p>
+                      <p className="text-sm font-medium">NGN {formatMoney(financials?.net_amount_minor)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-xs text-muted-foreground">Settlement Status</p>
@@ -128,19 +128,27 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Timeline</p>
-                  <div className="space-y-2">
-                    {timelineEntries.map((t: TimelineEntry, i: number) => (
-                      <div key={t?.source_id ?? i} className="flex items-start gap-3">
-                        <div className="mt-1.5 size-2 rounded-full bg-muted-foreground/30 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground">
-                            {t?.occurred_at ? formatDate(t.occurred_at) : "—"}
-                          </p>
-                          <p className="text-sm text-foreground">{t?.type}</p>
+                  <p className="text-sm font-medium text-foreground mb-4">Timeline</p>
+                  <div className="relative pl-5">
+                    <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
+                    <div className="space-y-5">
+                      {timelineEntries.map((t: TimelineEntry, i: number) => (
+                        <div key={t?.source_id ?? i} className="relative">
+                          <div className={`absolute -left-[17px] mt-1.5 size-3 rounded-full border-2 ${
+                            i === 0 ? "bg-foreground border-foreground" : "bg-background border-muted-foreground/40"
+                          }`} />
+                          <div className="flex flex-col gap-0.5">
+                            <p className="text-xs text-muted-foreground">
+                              {t?.occurred_at ? formatDate(t.occurred_at) : "—"}
+                            </p>
+                            <p className="text-sm text-foreground font-medium">{t?.type}</p>
+                            {t?.source && (
+                              <p className="text-xs text-muted-foreground capitalize">{t.source.replace(/_/g, " ")}</p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </>
