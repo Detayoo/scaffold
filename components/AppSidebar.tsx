@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -37,6 +38,19 @@ import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { CONFIG } from "@/config";
+
+function useEnvironment() {
+  const [env, setEnvState] = useState<"test" | "live">("test");
+  useEffect(() => {
+    const stored = localStorage.getItem("environment");
+    if (stored === "live" || stored === "test") setEnvState(stored);
+  }, []);
+  const setEnv = (val: "test" | "live") => {
+    localStorage.setItem("environment", val);
+    setEnvState(val);
+  };
+  return [env, setEnv] as const;
+}
 
 const mainNav = [
   { name: "Home", url: "/home", icon: LayoutDashboard },
@@ -103,6 +117,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { merchant, user, logout } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const [environment, setEnvironment] = useEnvironment();
 
   const initials = user
     ? `${user.name?.charAt(0) ?? "?"}`
@@ -159,7 +174,7 @@ export function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter className="border-t px-3 py-4 space-y-2">
-        {/* Theme + docs row */}
+        {/* Theme + env + docs row */}
         <div className="flex items-center gap-1 px-1 group-data-[collapsible=icon]:hidden">
           <button
             type="button"
@@ -169,14 +184,34 @@ export function AppSidebar() {
           >
             {resolvedTheme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
+            className={`inline-flex h-6 items-center rounded-md px-2 text-[11px] font-medium transition-colors cursor-pointer ${
+              environment === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+            }`}
+            title={`Environment: ${environment}`}
+          >
+            {environment === "live" ? "LIVE" : "TEST"}
+          </button>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Documentation">
               <ExternalLink className="size-3.5" />
             </Link>
           )}
         </div>
-        {/* Collapsed: theme + logout */}
+        {/* Collapsed: env + theme + logout */}
         <div className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
+          <button
+            type="button"
+            onClick={() => setEnvironment(environment === "test" ? "live" : "test")}
+            className={`flex size-6 items-center justify-center rounded-md text-[10px] font-bold transition-colors ${
+              environment === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+            }`}
+            title={`Environment: ${environment}`}
+          >
+            {environment === "live" ? "L" : "T"}
+          </button>
           <button
             type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
