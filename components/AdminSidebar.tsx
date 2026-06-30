@@ -80,7 +80,7 @@ function NavItem({
         asChild
         isActive={isActive}
         tooltip={name}
-        className={cn(isActive && "font-medium")}
+        className={cn("h-11", isActive && "font-medium")}
       >
         <Link href={url} onClick={handleClick}>
           <Icon className={cn("size-4 shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />

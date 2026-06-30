@@ -101,6 +101,7 @@ function NavItem({
         isActive={isActive}
         tooltip={name}
         className={cn(
+          "h-11",
           isActive && "font-medium"
         )}
       >
