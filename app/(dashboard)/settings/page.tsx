@@ -325,66 +325,76 @@ function APIKeysSection() {
             <p className="text-sm text-muted-foreground">No API keys yet. Create one to get started.</p>
           ) : (
             <div className="space-y-3">
-              {keys.map((k) => (
-                <div key={k.id} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">
-                      {k.environment === "test" ? "Test" : "Live"} — {k.type === "public" ? "Public" : "Secret"}
-                      <span className="ml-2 inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
-                        data-status={k.status}
-                      >
-                        {k.status}
-                      </span>
-                    </p>
-                    {k.status === "active" && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => rotateKey({ id: k.id })}
-                          disabled={rotating}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        >
-                          Rotate
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => revokeKey({ id: k.id })}
-                          disabled={revoking}
-                          className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
-                        >
-                          Revoke
-                        </button>
+              {(["test", "live"] as const).map((env) => {
+                const envKeys = keys.filter((k) => k.environment === env);
+                if (envKeys.length === 0) return null;
+                return (
+                  <div key={env} className="rounded-lg border bg-muted/30 p-3 space-y-3">
+                    <p className="text-xs font-medium text-foreground capitalize">{env} Keys</p>
+                    {envKeys.map((k) => (
+                      <div key={k.id} className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
+                            <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize"
+                              data-status={k.status}
+                            >
+                              {k.status}
+                            </span>
+                          </div>
+                          {k.status === "active" && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => rotateKey({ id: k.id })}
+                                disabled={rotating}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                              >
+                                Rotate
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => revokeKey({ id: k.id })}
+                                disabled={revoking}
+                                className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                              >
+                                Revoke
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <Input
+                              type={showPK ? "text" : "password"}
+                              value={k.maskedKey}
+                              readOnly
+                              className="pr-9 text-sm"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)}
+                            className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                          >
+                            <Copy className="size-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Input
-                        type={showPK ? "text" : "password"}
-                        value={k.maskedKey}
-                        readOnly
-                        className="pr-9 text-sm"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)}
-                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                    >
-                      <Copy className="size-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
           {newKeys && (
-            <div className="space-y-1.5">
+            <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+              <p className="text-xs font-medium text-foreground">Generated Keys</p>
               {[
                 { label: "Public Key", value: newKeys.publicKey },
                 { label: "Secret Key", value: newKeys.secretKey },
               ].map((nk) => (
-                <div key={nk.label} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
+                <div key={nk.label} className="space-y-1.5">
                   <p className="text-xs text-muted-foreground">{nk.label}</p>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
