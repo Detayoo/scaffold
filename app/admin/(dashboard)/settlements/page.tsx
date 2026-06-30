@@ -48,7 +48,7 @@ function AdminSettlementsContent() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader title="Settlements" description="Generate and manage merchant settlement batches" />
         <div className="flex items-center gap-2">
-          <Button variant="outline" disabled={isSplitting} onClick={async () => { try { await runSplit({}); } catch {} }}>
+          <Button variant="outline" disabled={isSplitting} onClick={async () => { try { await runSplit({ merchantId: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", environment: "test" }); } catch {} }}>
             <Play className="size-4" />
             Run Split Settlement
           </Button>
