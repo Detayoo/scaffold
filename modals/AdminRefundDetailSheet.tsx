@@ -67,19 +67,19 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
     try {
       switch (confirmAction) {
         case "approve":
-          await approve({ id: refund.id });
+          await approve({ id: refund.id, reason: "Approved by admin", evidence: { operator: "Admin" } });
           break;
         case "reject":
           await reject({ id: refund.id, reason: "Rejected by admin" });
           break;
         case "process":
-          await process({ id: refund.id, executionMode: "manual", provider: "VPS" });
+          await process({ id: refund.id, executionMode: "manual", providerReference: `rf_admin_${Date.now()}`, evidence: { destination_bank: "N/A", destination_account: "N/A" } });
           break;
         case "mark-success":
-          await markSuccess({ id: refund.id, providerReference: `rf_admin_${Date.now()}`, succeededAt: new Date().toISOString() });
+          await markSuccess({ id: refund.id, evidence: { bank: "N/A", nibss_reference: `NIP/ADM/${Date.now()}`, paid_to: "Customer" } });
           break;
         case "mark-failed":
-          await markFailed({ id: refund.id, reason: "Processing failed" });
+          await markFailed({ id: refund.id, reason: "Processing failed", evidence: { bank_response: "Processing error" } });
           break;
       }
     } catch {}

@@ -28,6 +28,8 @@ import {
   applyAccountCreditFn,
   holdAccountCreditFn,
   refundAccountCreditFn,
+  suspendDvaFn,
+  deactivateDvaFn,
 } from "@/services";
 import { formatMoney, toastMessage, extractError } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
@@ -48,10 +50,8 @@ function DedicatedAccountsContent() {
   const [confirmAction, setConfirmAction] = useState<{ type: string; id: string } | null>(null);
   const [selectedCredit, setSelectedCredit] = useState<AccountCreditEntry | null>(null);
   const [creditAction, setCreditAction] = useState<string | null>(null);
-  const [paymentIntentId, setPaymentIntentId] = useState("");
+  const [creditRef, setCreditRef] = useState("");
   const [holdReason, setHoldReason] = useState("");
-  const [refundAccount, setRefundAccount] = useState("");
-  const [refundBankCode, setRefundBankCode] = useState("");
   const [refundReason, setRefundReason] = useState("");
 
   const { data: creditsData, isPending: creditsPending, refetch: refetchCredits } = useQuery({
@@ -61,18 +61,14 @@ function DedicatedAccountsContent() {
 
   const credits = creditsData?.data;
 
-  const { mutateAsync: suspendDva, isPending: suspending } = useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
-      await import("@/services").then((m) => m.v1AdminAuthenticatedApi().post(`/admin/dedicated-accounts/${id}/suspend`));
-    },
+  const { mutateAsync: suspendDvaAction, isPending: suspending } = useMutation({
+    mutationFn: suspendDvaFn,
     onSuccess: () => { toastMessage("success", "DVA suspended"); setConfirmAction(null); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const { mutateAsync: deactivateDva, isPending: deactivating } = useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
-      await import("@/services").then((m) => m.v1AdminAuthenticatedApi().post(`/admin/dedicated-accounts/${id}/deactivate`));
-    },
+  const { mutateAsync: deactivateDvaAction, isPending: deactivating } = useMutation({
+    mutationFn: deactivateDvaFn,
     onSuccess: () => { toastMessage("success", "DVA deactivated"); setConfirmAction(null); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
@@ -188,7 +184,7 @@ function DedicatedAccountsContent() {
               <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
               {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
                 <div className="flex flex-wrap gap-2 pt-1">
-                  <Button size="sm" className="gap-2" onClick={() => { setCreditAction("apply"); setPaymentIntentId(""); }}>
+                  <Button size="sm" className="gap-2" onClick={() => { setCreditAction("apply"); setCreditRef(""); }}>
                     <Send className="size-3.5" /> Apply
                   </Button>
                   <Button size="sm" variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
@@ -201,12 +197,12 @@ function DedicatedAccountsContent() {
               )}
               {creditAction === "apply" && (
                 <div className="space-y-2 pt-2 border-t">
-                  <FormField label="Payment Intent ID" isRequired>
-                    <Input value={paymentIntentId} onChange={(e) => setPaymentIntentId(e.target.value)} placeholder="uuid" />
+                  <FormField label="Payment Reference" isRequired>
+                    <Input value={creditRef} onChange={(e) => setCreditRef(e.target.value)} placeholder="ord_lagos_..." />
                   </FormField>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await applyCredit({ id: selectedCredit.id, paymentIntentId }); } catch {} }} disabled={applying || !paymentIntentId}>
+                    <Button size="sm" onClick={async () => { try { await applyCredit({ id: selectedCredit.id, reference: creditRef }); } catch {} }} disabled={applying || !creditRef}>
                       {applying ? "Applying..." : "Apply"}
                     </Button>
                   </div>
@@ -227,18 +223,12 @@ function DedicatedAccountsContent() {
               )}
               {creditAction === "refund" && (
                 <div className="space-y-2 pt-2 border-t">
-                  <FormField label="Destination Account" isRequired>
-                    <Input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="0123456789" />
-                  </FormField>
-                  <FormField label="Bank Code" isRequired>
-                    <Input value={refundBankCode} onChange={(e) => setRefundBankCode(e.target.value)} placeholder="058" />
-                  </FormField>
                   <FormField label="Reason" isRequired>
                     <Input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Customer requested return" />
                   </FormField>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => setCreditAction(null)}>Cancel</Button>
-                    <Button size="sm" onClick={async () => { try { await refundCredit({ id: selectedCredit.id, destinationAccountNumber: refundAccount, destinationBankCode: refundBankCode, reason: refundReason }); } catch {} }} disabled={refunding || !refundAccount || !refundBankCode || !refundReason}>
+                    <Button size="sm" onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: {} }); } catch {} }} disabled={refunding || !refundReason}>
                       {refunding ? "Refunding..." : "Refund"}
                     </Button>
                   </div>
@@ -252,13 +242,13 @@ function DedicatedAccountsContent() {
       <ConfirmDialog open={confirmAction?.type === "suspend"} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}
         title="Suspend DVA" description="Suspend this dedicated virtual account?"
         confirmLabel="Suspend" variant="default"
-        onConfirm={async () => { try { if (confirmAction) await suspendDva({ id: confirmAction.id }); } catch {} }}
+        onConfirm={async () => { try { if (confirmAction) await suspendDvaAction({ id: confirmAction.id, reason: "Suspended by admin" }); } catch {} }}
         loading={suspending} />
 
       <ConfirmDialog open={confirmAction?.type === "deactivate"} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}
         title="Deactivate DVA" description="Permanently deactivate this dedicated virtual account?"
         confirmLabel="Deactivate" variant="destructive"
-        onConfirm={async () => { try { if (confirmAction) await deactivateDva({ id: confirmAction.id }); } catch {} }}
+        onConfirm={async () => { try { if (confirmAction) await deactivateDvaAction({ id: confirmAction.id, reason: "Deactivated by admin" }); } catch {} }}
         loading={deactivating} />
     </div>
   );

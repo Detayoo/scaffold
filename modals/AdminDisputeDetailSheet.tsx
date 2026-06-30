@@ -73,7 +73,7 @@ export function AdminDisputeDetailSheet({ dispute, onOpenChange, onSuccess }: Ad
   const handleOutcome = async () => {
     if (!dispute?.id || !outcome) return;
     try {
-      await recordOutcome({ id: dispute.id, outcome, note: note || undefined });
+      await recordOutcome({ id: dispute.id, outcome, reason: note || undefined, evidence: {} });
     } catch {}
   };
 
@@ -81,9 +81,9 @@ export function AdminDisputeDetailSheet({ dispute, onOpenChange, onSuccess }: Ad
     if (!dispute?.id) return;
     try {
       if (confirmAction === "hold") {
-        await hold({ id: dispute.id, amountMinor: dispute.amountMinor, holdScope: "merchant" });
+        await hold({ id: dispute.id, amountMinor: dispute.amountMinor, reason: "Hold placed by admin" });
       } else if (confirmAction === "close") {
-        await close({ id: dispute.id, note: note || undefined });
+        await close({ id: dispute.id, reason: note || undefined });
       }
     } catch {}
     setConfirmAction(null);

@@ -78,7 +78,8 @@ export const updateProviderHealthFn = async (payload: {
   channel: string;
   environment: string;
   status: string;
-  routingEnabled: boolean;
+  reason?: string;
+  metadata?: Record<string, any>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/provider-health", payload);
   return data;
@@ -88,17 +89,17 @@ export const reviewMerchantFn = async ({
   id,
   status,
   riskTier,
-  note,
+  reason,
 }: {
   id: string;
   status: string;
   riskTier: string;
-  note?: string;
+  reason?: string;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/merchants/${id}/review`, {
     status,
     riskTier,
-    note,
+    reason,
   });
   return data;
 };
@@ -134,17 +135,21 @@ export const getAdminRefundsFn = async ({
 };
 
 export const createAdminRefundFn = async (payload: {
-  amount: number;
   reference: string;
+  amount: number;
   currency: string;
+  executionMode?: string;
+  feePolicy?: string;
   reason?: string;
+  evidence?: Record<string, string>;
+  metadata?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/refunds", payload);
   return data;
 };
 
-export const approveAdminRefundFn = async ({ id, note }: { id: string; note?: string }) => {
-  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/approve`, { note });
+export const approveAdminRefundFn = async ({ id, reason, evidence }: { id: string; reason?: string; evidence?: Record<string, string> }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/approve`, { reason, evidence });
   return data;
 };
 
@@ -156,37 +161,33 @@ export const rejectAdminRefundFn = async ({ id, reason }: { id: string; reason?:
 export const processAdminRefundFn = async ({
   id,
   executionMode,
-  provider,
+  providerReference,
+  evidence,
 }: {
   id: string;
   executionMode: string;
-  provider: string;
+  providerReference?: string;
+  evidence?: Record<string, string>;
 }) => {
-  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/process`, { executionMode, provider });
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/process`, { executionMode, providerReference, evidence });
   return data;
 };
 
 export const markAdminRefundSucceededFn = async ({
   id,
-  providerReference,
-  succeededAt,
+  evidence,
 }: {
   id: string;
-  providerReference: string;
-  succeededAt: string;
+  evidence: Record<string, string>;
 }) => {
-  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/mark-succeeded`, {
-    providerReference,
-    evidence: { operator: "Admin" },
-    succeededAt,
-  });
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/mark-succeeded`, { evidence });
   return data;
 };
 
-export const markAdminRefundFailedFn = async ({ id, reason }: { id: string; reason?: string }) => {
+export const markAdminRefundFailedFn = async ({ id, reason, evidence }: { id: string; reason?: string; evidence?: Record<string, string> }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/refunds/${id}/mark-failed`, {
     reason: reason ?? "Processing failed",
-    evidence: {},
+    evidence: evidence ?? {},
   });
   return data;
 };
@@ -206,10 +207,11 @@ export const getAdminDisputesFn = async ({
 };
 
 export const createAdminDisputeFn = async (payload: {
-  paymentReference: string;
-  amountMinor: number;
-  currency: string;
+  reference: string;
+  amount: number;
   reason: string;
+  ownerId: string;
+  ownerName: string;
   evidenceDueAt?: string;
   metadata?: Record<string, string>;
 }) => {
@@ -220,16 +222,15 @@ export const createAdminDisputeFn = async (payload: {
 export const holdAdminDisputeFn = async ({
   id,
   amountMinor,
-  holdScope,
+  reason,
 }: {
   id: string;
   amountMinor: number;
-  holdScope: string;
+  reason?: string;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/hold`, {
     amountMinor,
-    currency: "NGN",
-    holdScope,
+    reason,
   });
   return data;
 };
@@ -253,28 +254,31 @@ export const assignAdminDisputeFn = async ({
 export const outcomeAdminDisputeFn = async ({
   id,
   outcome,
-  note,
+  reason,
+  evidence,
 }: {
   id: string;
   outcome: string;
-  note?: string;
+  reason?: string;
+  evidence?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/outcome`, {
     outcome,
-    note,
+    reason,
+    evidence,
   });
   return data;
 };
 
 export const closeAdminDisputeFn = async ({
   id,
-  note,
+  reason,
 }: {
   id: string;
-  note?: string;
+  reason?: string;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/disputes/${id}/close`, {
-    note: note ?? "Closed after outcome",
+    reason: reason ?? "Closed after outcome",
   });
   return data;
 };
@@ -314,12 +318,11 @@ export const markSettlementPaidFn = async ({
   return data;
 };
 
-export const runSplitSettlementFn = async (payload?: {
-  environment?: string;
-  currency?: string;
-  cutoffDate?: string;
+export const runSplitSettlementFn = async (payload: {
+  merchantId: string;
+  environment: string;
 }) => {
-  const { data } = await v1AdminAuthenticatedApi().post("/admin/split-settlements", payload ?? {});
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/split-settlements", payload);
   return data;
 };
 
@@ -424,8 +427,8 @@ export const getAccountCreditsFn = async ({
   return data;
 };
 
-export const applyAccountCreditFn = async ({ id, paymentIntentId }: { id: string; paymentIntentId: string }) => {
-  const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/apply`, { paymentIntentId });
+export const applyAccountCreditFn = async ({ id, reference }: { id: string; reference: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/apply`, { reference });
   return data;
 };
 
@@ -436,19 +439,36 @@ export const holdAccountCreditFn = async ({ id, reason }: { id: string; reason: 
 
 export const refundAccountCreditFn = async ({
   id,
-  destinationAccountNumber,
-  destinationBankCode,
   reason,
+  evidence,
 }: {
   id: string;
-  destinationAccountNumber: string;
-  destinationBankCode: string;
   reason: string;
+  evidence?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post(`/admin/account-credits/${id}/refund`, {
-    destinationAccountNumber,
-    destinationBankCode,
     reason,
+    evidence,
   });
+  return data;
+};
+
+export const suspendDvaFn = async ({ id, reason }: { id: string; reason?: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/dedicated-accounts/${id}/suspend`, { reason });
+  return data;
+};
+
+export const deactivateDvaFn = async ({ id, reason }: { id: string; reason?: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().post(`/admin/dedicated-accounts/${id}/deactivate`, { reason });
+  return data;
+};
+
+export const getPaymentTimelineFn = async ({ reference }: { reference: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().get(`/admin/payments/${reference}/timeline`);
+  return data;
+};
+
+export const rebuildReadModelsFn = async (payload: { models: string[] }) => {
+  const { data } = await v1AdminAuthenticatedApi().post("/admin/read-models/rebuild", payload);
   return data;
 };

@@ -56,7 +56,7 @@ export function MerchantReviewSheet({ merchant, onOpenChange }: MerchantReviewSh
 
   const handleReview = form.handleSubmit(async ({ status, riskTier, note }) => {
     try {
-      await review({ id: merchant?.id ?? "", status, riskTier, note: note || undefined });
+      await review({ id: merchant?.id ?? "", status, riskTier, reason: note || undefined });
     } catch {
       // handled by onError
     }
