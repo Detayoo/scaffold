@@ -10,7 +10,7 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "x-noname — Merchant Portal",
+  title: "Malimbe — Merchant Portal",
   description: "Manage payments, transactions, invoices, and your team.",
 };
 

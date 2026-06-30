@@ -22,17 +22,17 @@ export function Logo({ className, size = 32 }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn("shrink-0", className)}
-      aria-label="x-noname logo"
+      aria-label="Malimbe logo"
     >
       <rect x="2" y="2" width="28" height="28" rx="7" fill={boxFill} />
       <path
-        d="M10 10L22 22M22 10L10 22"
+        d="M8 24V8L16 18L24 8V24"
         stroke={markStroke}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        fill="none"
       />
-      <circle cx="22" cy="10" r="2" fill={markStroke} />
     </svg>
   );
 }
