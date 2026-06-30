@@ -139,9 +139,11 @@ function TeamContent() {
               Resend
             </Button>
           )}
-          <Button variant="destructive" className="h-8" onClick={(e) => { e.stopPropagation(); deleteEmailRef.current = i.email; setDeleteTarget(i); }}>
-            Revoke
-          </Button>
+          {i.status === "pending" && (
+            <Button variant="destructive" className="h-8" onClick={(e) => { e.stopPropagation(); deleteEmailRef.current = i.email; setDeleteTarget(i); }}>
+              Revoke
+            </Button>
+          )}
         </div>
       ),
     },
