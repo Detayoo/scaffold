@@ -267,14 +267,15 @@ function APIKeysSection() {
   });
   const errorCode = (error as any)?.status;
   const copy = useCopyToClipboard();
-  const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
+  const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string; environment: string } | null>(null);
   const [newKeysOpen, setNewKeysOpen] = useState(false);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
     onSuccess: (res) => {
       const k = res?.data?.keys;
-      if (k) setNewKeys({ publicKey: k.public, secretKey: k.secret });
+      const env = res?.data?.environment ?? "test";
+      if (k) setNewKeys({ publicKey: k.public, secretKey: k.secret, environment: env });
       setNewKeysOpen(true);
       refetch();
     },
@@ -323,7 +324,7 @@ function APIKeysSection() {
             </div>
           )}
           <ResponsiveModal open={newKeysOpen} onOpenChange={setNewKeysOpen} title="API Keys Generated">
-            <p className="text-sm text-muted-foreground pt-2">Copy these keys now. You won&apos;t be able to see them again.</p>
+            <p className="text-sm text-muted-foreground pt-2">Copy these {newKeys?.environment === "live" ? "Live" : "Test"} keys now. You won&apos;t be able to see them again.</p>
             <div className="space-y-4 pt-3">
               {[
                 { label: "Public Key", value: newKeys?.publicKey },
