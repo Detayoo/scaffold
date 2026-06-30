@@ -23,7 +23,7 @@ export function CustomerDetailSheet({ customer, onOpenChange }: CustomerDetailSh
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["customer-dvas", customer?.id],
-    queryFn: () => getCustomerDvasFn({ id: customer?.id! }),
+    queryFn: () => getCustomerDvasFn({ id: customer!.id }),
     enabled: !!customer?.id,
   });
 

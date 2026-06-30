@@ -42,11 +42,15 @@ import { CONFIG } from "@/config";
 function useEnvironment() {
   const [env, setEnvState] = useState<"test" | "live">("test");
   useEffect(() => {
-    const stored = localStorage.getItem("environment");
-    if (stored === "live" || stored === "test") setEnvState(stored);
+    try {
+      const stored = localStorage.getItem("environment");
+      if (stored === "live" || stored === "test") setEnvState(stored);
+    } catch {}
   }, []);
   const setEnv = (val: "test" | "live") => {
-    localStorage.setItem("environment", val);
+    try {
+      localStorage.setItem("environment", val);
+    } catch {}
     setEnvState(val);
   };
   return [env, setEnv] as const;

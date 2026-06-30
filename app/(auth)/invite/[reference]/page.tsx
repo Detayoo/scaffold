@@ -77,8 +77,7 @@ export default function AcceptInvitePage({
   return (
     <AuthLayout>
       <AsyncContent isPending={isPending} isError={isError} errorMessage="This invite link is invalid or has expired.">
-          className="space-y-6"
-  <div>
+      <div className="space-y-6">
           <PageHeader title="Accept invite" description={invite?.merchantName ? `You've been invited to join ${invite.merchantName}.` : "You've been invited to join a merchant account."} />
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <FormField label="Email" error={errors.email?.message} isRequired>
