@@ -743,7 +743,7 @@ function WebhookSection() {
         description="Create a new endpoint to receive payment events"
       >
         <form onSubmit={handleCreateEndpoint} className="space-y-4 pt-2">
-          <FormField label="URL" isRequired>
+          <FormField label="URL" error={createForm.formState.errors.url?.message} isRequired>
             <Input {...createForm.register("url")} placeholder="https://example.com/webhooks/malimbe" />
           </FormField>
           <FormField label="Environment" error={createForm.formState.errors.environment?.message} isRequired>
