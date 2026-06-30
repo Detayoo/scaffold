@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <PageHeader title={`Welcome back, ${user?.name ?? "User"}`} description={today} />
+        <PageHeader title={`Welcome back, ${user?.name?.split(" ")?.[0] ?? "User"}`} description={today} />
       </div>
 
       <div className="space-y-2">
