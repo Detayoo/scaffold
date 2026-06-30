@@ -34,6 +34,17 @@ import {
 } from "@/services";
 import { DatePicker } from "@/components/DatePicker";
 import { toastMessage, extractError, formatMoney } from "@/utils";
+const MOCK_OWNERS = [
+  { id: "ops_lagos_01", name: "Finance Ops Lagos" },
+  { id: "ops_abuja_02", name: "Finance Ops Abuja" },
+  { id: "ops_port_03", name: "Finance Ops Port Harcourt" },
+];
+
+const MOCK_MERCHANTS_DD = [
+  { id: "87fb27f1-9221-46e6-a5e1-c03d2e6840b1", name: "Alausa Mart" },
+  { id: "a2b3c4d5-6789-0123-4567-89abcdef012345", name: "Balogun Rice Store" },
+  { id: "e5f6a7b8-9012-3456-789a-bcdef012345678", name: "Ikeja Tech Hub" },
+];
 import { withSuspense } from "@/components/withSuspense";
 import type { ReconciliationException } from "@/types";
 
@@ -225,11 +236,15 @@ function ReconciliationContent() {
           )}
           {action === "assign" && (
             <div className="space-y-2 pt-2 border-t">
-              <FormField label="Owner ID" isRequired>
-                <Input value={ownerId} onChange={(e) => setOwnerId(e.target.value)} placeholder="ops_user_01" />
-              </FormField>
-              <FormField label="Owner Name" isRequired>
-                <Input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} placeholder="Finance Ops" />
+              <FormField label="Owner" isRequired>
+                <Select value={ownerId} onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
+                  <SelectContent>
+                    {MOCK_OWNERS.map((o) => (
+                      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormField>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setAction(null)}>Cancel</Button>
@@ -312,8 +327,15 @@ function ReconciliationContent() {
 
       <ResponsiveModal open={adjustModal} onOpenChange={setAdjustModal} title="Manual Adjustment">
         <div className="space-y-4 pt-2">
-          <FormField label="Merchant ID" isRequired>
-            <Input value={adjMerchantId} onChange={(e) => setAdjMerchantId(e.target.value)} placeholder="Merchant ID (87fb27f1-...)" />
+          <FormField label="Merchant" isRequired>
+            <Select value={adjMerchantId} onValueChange={setAdjMerchantId}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Select merchant" /></SelectTrigger>
+              <SelectContent>
+                {MOCK_MERCHANTS_DD.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </FormField>
           <FormField label="Reason" isRequired>
             <Input value={adjReason} onChange={(e) => setAdjReason(e.target.value)} placeholder="Correct duplicate import" />

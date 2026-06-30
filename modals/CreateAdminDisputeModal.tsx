@@ -20,12 +20,18 @@ import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { createAdminDisputeFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
+const MOCK_OWNERS = [
+  { id: "ops_lagos_01", name: "Finance Ops Lagos" },
+  { id: "ops_abuja_02", name: "Finance Ops Abuja" },
+  { id: "ops_port_03", name: "Finance Ops Port Harcourt" },
+];
+
 const schema = z.object({
   reference: z.string().nonempty("Reference is required"),
   amount: z.string().nonempty("Amount is required"),
   reason: z.string().nonempty("Reason is required"),
-  ownerId: z.string().nonempty("Owner ID is required"),
-  ownerName: z.string().nonempty("Owner name is required"),
+  ownerId: z.string().nonempty("Owner is required"),
+  ownerName: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -60,7 +66,7 @@ export function CreateAdminDisputeModal({ open, onOpenChange, onSuccess }: Creat
         amount: Number(amount),
         reason,
         ownerId,
-        ownerName,
+        ownerName: ownerName || "",
       });
     } catch {
       // handled by onError
@@ -84,11 +90,15 @@ export function CreateAdminDisputeModal({ open, onOpenChange, onSuccess }: Creat
         <FormField label="Reason" error={form.formState.errors.reason?.message} isRequired>
           <Textarea {...form.register("reason")} placeholder="Customer claims goods were not delivered" className="min-h-20" />
         </FormField>
-        <FormField label="Owner ID" error={form.formState.errors.ownerId?.message} isRequired>
-          <Input {...form.register("ownerId")} placeholder="ops_lagos_01" />
-        </FormField>
-        <FormField label="Owner Name" error={form.formState.errors.ownerName?.message} isRequired>
-          <Input {...form.register("ownerName")} placeholder="Finance Ops Lagos" />
+        <FormField label="Owner" error={form.formState.errors.ownerId?.message} isRequired>
+          <Select value={form.watch("ownerId")} onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); form.setValue("ownerId", v); form.setValue("ownerName", o?.name ?? ""); }}>
+            <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
+            <SelectContent>
+              {MOCK_OWNERS.map((o) => (
+                <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>

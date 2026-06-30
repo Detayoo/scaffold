@@ -133,11 +133,15 @@ export function AdminDisputeDetailSheet({ dispute, onOpenChange, onSuccess }: Ad
                   )}
                   {assigning && (
                     <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
-                      <FormField label="Owner ID" isRequired>
-                        <Input value={ownerId} onChange={(e) => setOwnerId(e.target.value)} placeholder="ops_user_lagos_01" />
-                      </FormField>
-                      <FormField label="Owner Name" isRequired>
-                        <Input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} placeholder="Finance Ops Lagos" />
+                      <FormField label="Owner" isRequired>
+                        <Select value={ownerId} onValueChange={(v) => { const o = [{ id: "ops_lagos_01", name: "Finance Ops Lagos" }, { id: "ops_abuja_02", name: "Finance Ops Abuja" }, { id: "ops_port_03", name: "Finance Ops Port Harcourt" }].find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}>
+                          <SelectTrigger className="w-full"><SelectValue placeholder="Select owner" /></SelectTrigger>
+                          <SelectContent>
+                            {[{ id: "ops_lagos_01", name: "Finance Ops Lagos" }, { id: "ops_abuja_02", name: "Finance Ops Abuja" }, { id: "ops_port_03", name: "Finance Ops Port Harcourt" }].map((o) => (
+                              <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormField>
                       <div className="flex gap-2">
                         <Button variant="outline" className="flex-1" onClick={() => setAssigning(false)}>Cancel</Button>
