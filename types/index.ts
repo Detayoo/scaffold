@@ -14,10 +14,19 @@ export type MerchantStatus =
 
 export type LoginResponse = {
   status: true;
-  message: string;
+  message?: string;
   data: {
     token: string;
     user: User;
+    merchant?: {
+      id: string;
+      displayName: string;
+      legalName: string;
+      email: string;
+      status: string;
+      riskTier: string;
+      defaultCurrency: string;
+    };
   };
 };
 
