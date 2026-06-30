@@ -131,9 +131,9 @@ export default function HomePage() {
                       <tr className="border-b">
                         <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Date</th>
                         <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Amount</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Status</th>
-                        <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-foreground md:table-cell">Customer</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-foreground">Reference</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground md:table-cell">Customer</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Reference</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-foreground">Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -141,13 +141,13 @@ export default function HomePage() {
                         <tr key={tx?.reference} className="border-b last:border-0 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => { setDetailRef(tx?.reference); setDetailOpen(true); }}>
                           <td className="px-4 py-3 text-xs text-muted-foreground">{tx?.created_at ? formatDate(tx?.created_at) : "—"}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{formatMoney(tx?.amount)}</td>
-                          <td className="px-4 py-3">
-                            <StatusBadge status={tx?.status} />
-                          </td>
                           <td className="hidden px-4 py-3 text-sm text-foreground md:table-cell">
                             {tx?.customer?.name ?? tx?.customer?.email ?? "—"}
                           </td>
-                          <td className="px-4 py-3 text-right text-sm text-foreground">{tx?.reference}</td>
+                          <td className="px-4 py-3 text-sm text-foreground">{tx?.reference}</td>
+                          <td className="px-4 py-3 text-right">
+                            <StatusBadge status={tx?.status} />
+                          </td>
                         </tr>
                       ))}
                     </tbody>

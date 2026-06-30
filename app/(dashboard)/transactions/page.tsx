@@ -64,11 +64,6 @@ function TransactionsContent() {
       cell: (tx) => <span className="text-sm text-foreground">{tx?.currency} {formatMoney(tx?.amount)}</span>,
     },
     {
-      key: "status",
-      header: "Status",
-      cell: (tx) => <StatusBadge status={tx?.status} size="sm" />,
-    },
-    {
       key: "customer",
       header: "Customer",
       cell: (tx) => (
@@ -81,6 +76,11 @@ function TransactionsContent() {
       key: "reference",
       header: "Reference",
       cell: (tx) => <span className="text-sm text-foreground">{tx?.reference}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (tx) => <StatusBadge status={tx?.status} size="sm" />,
     },
   ];
 
