@@ -66,3 +66,8 @@ export const logoutFn = async () => {
   const { data } = await v1AuthenticatedApi().post<BareResponse>("/auth/logout");
   return data;
 };
+
+export const adminLogoutFn = async () => {
+  const { data } = await v1AdminAuthenticatedApi().post<BareResponse>("/auth/logout");
+  return data;
+};

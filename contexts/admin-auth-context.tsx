@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import type { User } from "@/types";
 import { decrypt, encrypt } from "@/utils/encryption";
+import { adminLogoutFn } from "@/services";
 
 const TOKEN_KEY = "admin_token";
 const USER_KEY = "admin_user";
@@ -72,9 +73,11 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
+    try { adminLogoutFn(); } catch {}
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     dispatch({ type: "LOGOUT" });
+    window.location.replace("/admin/login");
   };
 
   return (

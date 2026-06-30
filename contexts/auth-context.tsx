@@ -11,6 +11,7 @@ import {
 import type { Merchant, User } from "@/types";
 import { getMerchantProfileFn } from "@/services";
 import { decrypt, encrypt } from "@/utils/encryption";
+import { logoutFn } from "@/services";
 
 interface AuthContextType {
   loading: boolean;
@@ -132,7 +133,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser: (payload: User) => dispatch({ type: "SET-USER", payload }),
     setMerchant: (payload: Merchant) =>
       dispatch({ type: "SET-MERCHANT", payload }),
-    logout: () => dispatch({ type: "LOGOUT" }),
+    logout: () => {
+      try { logoutFn(); } catch {}
+      localStorage.removeItem("TOKEN");
+      localStorage.removeItem("USER");
+      dispatch({ type: "LOGOUT" });
+      window.location.replace("/");
+    },
   };
 
   return (
