@@ -86,22 +86,28 @@ function VerificationForm() {
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <FormField label="Verification code" error={errors.otp?.message} isRequired>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Verification code</p>
             <InputOTP
               maxLength={6}
               value={otp}
               onChange={(val) => setValue("otp", val, { shouldValidate: true })}
+              className="w-full"
             >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
+              <InputOTPGroup className="flex w-full items-center justify-between gap-0">
+                {[0, 1, 2].map((i) => (
+                  <InputOTPSlot key={i} index={i} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
+                ))}
+                <span key="sep" className="text-lg text-muted-foreground/40 font-semibold select-none">—</span>
+                {[3, 4, 5].map((i) => (
+                  <InputOTPSlot key={i} index={i} className="flex size-12 items-center justify-center rounded-lg border border-input bg-background text-lg font-semibold text-foreground transition-all duration-150 data-[active=true]:border-foreground data-[active=true]:ring-2 data-[active=true]:ring-ring/50" />
+                ))}
               </InputOTPGroup>
             </InputOTP>
-          </FormField>
+            {errors.otp?.message && (
+              <p className="text-xs text-destructive">{errors.otp.message}</p>
+            )}
+          </div>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="size-4 animate-spin" />}
             Verify email

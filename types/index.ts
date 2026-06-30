@@ -74,9 +74,9 @@ export type State = {
 
 export type RegistrationDTO = {
   businessName: string;
+  name: string;
   email: string;
   password: string;
-  ownerName: string;
 };
 
 export type Collections = {
