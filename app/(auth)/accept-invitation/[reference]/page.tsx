@@ -131,7 +131,7 @@ export default function AcceptInvitePage({
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField label="Full name" error={errors.name?.message} isRequired>
-            <Input placeholder="Ada Developer" {...register("name")} />
+            <Input placeholder="Ada Developer" autoComplete="off" {...register("name")} />
           </FormField>
           <FormField label="Password" error={errors.password?.message} isRequired>
             <PasswordField placeholder="At least 6 characters" {...register("password")} />
