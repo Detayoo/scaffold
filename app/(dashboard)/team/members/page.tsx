@@ -41,6 +41,7 @@ function TeamContent() {
   const [tab, setTab] = useQueryState("tab", { defaultValue: "members" });
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Invite | null>(null);
+  const [resendTarget, setResendTarget] = useState<Invite | null>(null);
 
   const memberQuery = useQuery({
     queryKey: ["team-members"],
@@ -130,7 +131,7 @@ function TeamContent() {
       cell: (i: Invite) => (
         <div className="flex gap-2">
           {i.status === "pending" && (
-            <button type="button" onClick={async (e) => { e.stopPropagation(); try { await resendInvite(i.id); } catch {} }} disabled={isResending} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
+            <button type="button" onClick={(e) => { e.stopPropagation(); setResendTarget(i); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
               Resend
             </button>
           )}
@@ -197,6 +198,19 @@ function TeamContent() {
             variant="destructive"
             onConfirm={handleDeleteInvite}
             loading={isDeleting}
+          />
+          <ConfirmDialog
+            open={!!resendTarget}
+            onOpenChange={(o) => { if (!o) setResendTarget(null); }}
+            title="Resend Invitation"
+            description={`Resend the invitation to "${resendTarget?.email}"?`}
+            confirmLabel="Resend"
+            variant="default"
+            onConfirm={async () => {
+              try { if (resendTarget) await resendInvite(resendTarget.id); } catch {}
+              setResendTarget(null);
+            }}
+            loading={isResending}
           />
         </div>
       )}
