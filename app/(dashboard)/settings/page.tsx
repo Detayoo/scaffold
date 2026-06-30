@@ -51,8 +51,6 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
    import {
   getKeysFn,
   createKeyFn,
-  revokeKeyFn,
-  rotateKeyFn,
   getWebhookEndpointsFn,
   createWebhookEndpointFn,
   pauseWebhookEndpointFn,
@@ -269,10 +267,8 @@ function APIKeysSection() {
   });
   const errorCode = (error as any)?.status;
   const copy = useCopyToClipboard();
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState<{ publicKey: string; secretKey: string } | null>(null);
   const [newKeysOpen, setNewKeysOpen] = useState(false);
-  const [revokeTarget, setRevokeTarget] = useState<string | null>(null);
 
   const { mutateAsync: generateKeys, isPending: generating } = useMutation({
     mutationFn: createKeyFn,
@@ -280,27 +276,6 @@ function APIKeysSection() {
       const k = res?.data?.keys;
       if (k) setNewKeys({ publicKey: k.public, secretKey: k.secret });
       setNewKeysOpen(true);
-      refetch();
-    },
-    onError: (err) => toastMessage("error", extractError(err)),
-  });
-
-  const { mutateAsync: revokeKey, isPending: revoking } = useMutation({
-    mutationFn: revokeKeyFn,
-    onSuccess: () => {
-      toastMessage("success", "Key revoked");
-      setRevokeTarget(null);
-      setSelectedKey(null);
-      refetch();
-    },
-    onError: (err) => toastMessage("error", extractError(err)),
-  });
-
-  const { mutateAsync: rotateKey, isPending: rotating } = useMutation({
-    mutationFn: rotateKeyFn,
-    onSuccess: () => {
-      toastMessage("success", "Key rotated");
-      setSelectedKey(null);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -327,46 +302,15 @@ function APIKeysSection() {
         </CardHeader>
         <CardContent className="space-y-4">
           {keys.length > 0 && (
-            <div className="space-y-2">
+            <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+              <p className="text-xs text-muted-foreground">Last generated</p>
               {keys.map((k) => (
-                <div key={k.id} className="rounded-lg border bg-muted/30 p-3 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-muted-foreground capitalize">{k.type}</p>
-                      <p className="text-xs text-muted-foreground">{k.environment === "test" ? "Test" : "Live"}</p>
-                      <span className="inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium capitalize" data-status={k.status}>{k.status}</span>
-                    </div>
-                    <button type="button" onClick={() => setSelectedKey(selectedKey === k.id ? null : k.id)} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
-                      {selectedKey === k.id ? "Close" : "Details"}
-                    </button>
+                <div key={k.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs capitalize">{k.type}</p>
+                    <p className="text-xs text-muted-foreground">({k.environment === "test" ? "Test" : "Live"})</p>
                   </div>
-                  {k.maskedKey && (
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1">
-                        <Input value={k.maskedKey} readOnly className="pr-9 text-sm" />
-                      </div>
-                      <button type="button" onClick={() => handleCopy(k.maskedKey, `${k.environment} ${k.type} key`)} className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground cursor-pointer shrink-0">
-                        <Copy className="size-3.5" />
-                      </button>
-                    </div>
-                  )}
-                  {k.scopes && k.scopes.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground">{k.scopes.join(", ")}</p>
-                  )}
-                  {selectedKey === k.id && (
-                    <div className="border-t pt-3 space-y-3">
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div><p className="text-xs text-muted-foreground">Status</p><p className="capitalize">{k.status}</p></div>
-                        <div><p className="text-xs text-muted-foreground">Environment</p><p className="capitalize">{k.environment}</p></div>
-                        <div><p className="text-xs text-muted-foreground">Type</p><p className="capitalize">{k.type}</p></div>
-                        <div><p className="text-xs text-muted-foreground">Created</p><p>{k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "—"}</p></div>
-                      </div>
-                      <div className="flex gap-2 pt-1">
-                        <Button size="sm" variant="outline" onClick={async () => { try { await rotateKey({ id: k.id }); } catch {} }} disabled={rotating}>Rotate</Button>
-                        <Button size="sm" variant="destructive" onClick={() => setRevokeTarget(k.id)} disabled={revoking}>Revoke</Button>
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-xs text-muted-foreground">{k.createdAt ? new Date(k.createdAt).toLocaleDateString() : "—"}</p>
                 </div>
               ))}
             </div>
@@ -409,19 +353,6 @@ function APIKeysSection() {
         </CardContent>
       </Card>
       </AsyncContent>
-
-      <ConfirmDialog
-        open={!!revokeTarget}
-        onOpenChange={(o) => { if (!o) setRevokeTarget(null); }}
-        title="Revoke API Key"
-        description="Are you sure you want to revoke this API key? This action cannot be undone."
-        confirmLabel="Revoke"
-        variant="destructive"
-        onConfirm={async () => {
-          try { if (revokeTarget) await revokeKey({ id: revokeTarget }); } catch {}
-        }}
-        loading={revoking}
-      />
     </div>
   );
 }
