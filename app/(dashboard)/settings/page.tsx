@@ -289,6 +289,7 @@ function APIKeysSection() {
     mutationFn: revokeKeyFn,
     onSuccess: () => {
       toastMessage("success", "Key revoked");
+      setRevokeTarget(null);
       setSelectedKey(null);
       refetch();
     },
