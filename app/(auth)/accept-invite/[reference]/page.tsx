@@ -1,11 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { Suspense, useState } from "react";
+import { use } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -23,10 +24,13 @@ const acceptSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-function AcceptInviteForm() {
+export default function AcceptInvitePage({
+  params,
+}: {
+  params: Promise<{ reference: string }>;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
+  const { reference: token } = use(params);
   const [preview, setPreview] = useState<{ email: string; role: string; merchant: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -39,7 +43,7 @@ function AcceptInviteForm() {
     resolver: zodResolver(acceptSchema),
   });
 
-  useState(() => {
+  useEffect(() => {
     if (!token) {
       setError(true);
       setLoading(false);
@@ -55,7 +59,7 @@ function AcceptInviteForm() {
       setError(true);
       setLoading(false);
     });
-  });
+  }, [token]);
 
   const { mutateAsync: acceptInvite, isPending: accepting } = useMutation({
     mutationFn: acceptInviteFn,
@@ -112,13 +116,5 @@ function AcceptInviteForm() {
         </form>
       </div>
     </AuthLayout>
-  );
-}
-
-export default function AcceptInvitePage() {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <AcceptInviteForm />
-    </Suspense>
   );
 }
