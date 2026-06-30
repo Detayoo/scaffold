@@ -43,27 +43,18 @@ import { toastMessage } from "@/utils";
 
 function useEnvironment() {
   const [env, setEnvState] = useState<"test" | "live">("test");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchEnv = async () => {
-      try {
-        const stored = localStorage.getItem("environment");
-        if (stored === "live" || stored === "test") {
-          setEnvState(stored);
-        } else {
-          const envFromApi = await getEnvironmentFn();
-          if (envFromApi === "live" || envFromApi === "test") setEnvState(envFromApi);
-          localStorage.setItem("environment", envFromApi);
+    try {
+      const stored = localStorage.getItem("environment");
+      if (stored === "live" || stored === "test") setEnvState(stored);
+      getEnvironmentFn().then((apiEnv) => {
+        if (apiEnv === "live" || apiEnv === "test") {
+          setEnvState(apiEnv);
+          localStorage.setItem("environment", apiEnv);
         }
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEnv();
+      }).catch(() => {});
+    } catch {}
   }, []);
 
   const setEnv = async (val: "test" | "live") => {
@@ -76,7 +67,7 @@ function useEnvironment() {
     }
   };
 
-  return [env, setEnv, loading, error] as const;
+  return [env, setEnv] as const;
 }
 
 const mainNav = [
@@ -145,7 +136,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { merchant, user, logout } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [environment, setEnvironment, envLoading, envError] = useEnvironment();
+  const [environment, setEnvironment] = useEnvironment();
 
   const initials = user
     ? `${user.name?.charAt(0) ?? "?"}`
@@ -216,10 +207,9 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
-            disabled={envLoading}
             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
-              envLoading ? "opacity-50" : ""
-            } ${environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"}`}
+              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
+            }`}
             title={`Environment: ${environment}`}
           >
             <span
@@ -228,7 +218,7 @@ export function AppSidebar() {
               }`}
             />
           </button>
-          <span className="text-[11px] text-muted-foreground">{envLoading ? "..." : environment === "live" ? "Live" : "Test"}</span>
+          <span className="text-[11px] text-muted-foreground">{environment === "live" ? "Live" : "Test"}</span>
           {CONFIG.DOCUMENTATION_URL && (
             <Link href={CONFIG.DOCUMENTATION_URL} target="_blank" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group-data-[collapsible=icon]:hidden" title="Documentation">
               <span>Documentation</span>
@@ -240,10 +230,9 @@ export function AppSidebar() {
           <button
             type="button"
             onClick={async () => { try { await setEnvironment(environment === "test" ? "live" : "test"); } catch {} }}
-            disabled={envLoading}
             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors cursor-pointer ${
-              envLoading ? "opacity-50" : ""
-            } ${environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"}`}
+              environment === "live" ? "bg-foreground" : "bg-muted-foreground/30"
+            }`}
             title={`Environment: ${environment}`}
           >
             <span
