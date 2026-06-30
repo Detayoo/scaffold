@@ -1,8 +1,6 @@
-import { v1Api, v1AuthenticatedApi } from "../api";
+import { v1AuthenticatedApi } from "../api";
 import type {
-  AcceptInvite,
   BareResponse,
-  CreateInvitePayload,
   Invite,
   TeamMember,
 } from "@/types";
@@ -17,7 +15,7 @@ export const getInvitesFn = async () => {
   return data;
 };
 
-export const createInviteFn = async (payload: CreateInvitePayload) => {
+export const createInviteFn = async (payload: { email: string; role: string }) => {
   const { data } = await v1AuthenticatedApi().post<BareResponse>("/merchant/invitations", payload);
   return data;
 };
@@ -32,23 +30,12 @@ export const resendInviteFn = async (id: string) => {
   return data;
 };
 
-export const acceptInviteFn = async (payload: AcceptInvite) => {
-  const { data } = await v1AuthenticatedApi().post<BareResponse>("/invite/create-account", payload);
+export const previewInviteFn = async (token: string) => {
+  const { data } = await v1AuthenticatedApi().post("/auth/invitations/preview", { token });
   return data;
 };
 
-export const getSingleInviteFn = async (reference: string) => {
-  const { data } = await v1Api.get<{ data: Invite & { merchantName?: string } }>("/invite/single", { params: { reference } });
-  return data;
-};
-
-export const suspendMemberFn = async ({
-  id,
-  status,
-}: {
-  id: string;
-  status: string;
-}) => {
-  const { data } = await v1AuthenticatedApi().patch<BareResponse>("/merchant/team", { userId: id, status });
+export const acceptInviteFn = async (payload: { token: string; name: string; password: string }) => {
+  const { data } = await v1AuthenticatedApi().post("/auth/invitations/accept", payload);
   return data;
 };
