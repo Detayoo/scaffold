@@ -80,10 +80,33 @@ export default function AcceptInvitePage({
     } catch {}
   };
 
+  const handleRetry = async () => {
+    setError(false);
+    setLoading(true);
+    try {
+      const res = await previewInviteFn(token);
+      const d = res?.data;
+      if (d?.invitation) {
+        setPreview({ email: d.invitation.email, role: d.invitation.role, merchant: d.merchant?.display_name ?? "" });
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!token || error) {
     return (
       <AuthLayout>
-        <p className="text-sm text-muted-foreground text-center">This invite link is invalid or has expired.</p>
+        <div className="text-center space-y-4">
+          <p className="text-sm text-muted-foreground">This invite link is invalid or has expired.</p>
+          {error && (
+            <Button variant="outline" onClick={handleRetry}>
+              Retry
+            </Button>
+          )}
+        </div>
       </AuthLayout>
     );
   }
