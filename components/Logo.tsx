@@ -13,7 +13,8 @@ export function Logo({ className, size = 32 }: LogoProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const boxFill = isDark ? "#ffffff" : "#171717";
-  const markStroke = isDark ? "#171717" : "#ffffff";
+  const textFill = isDark ? "#171717" : "#ffffff";
+  const letter = APP_NAME.charAt(0).toUpperCase();
 
   return (
     <svg
@@ -26,14 +27,17 @@ export function Logo({ className, size = 32 }: LogoProps) {
       aria-label={`${APP_NAME} logo`}
     >
       <rect x="2" y="2" width="28" height="28" rx="7" fill={boxFill} />
-      <path
-        d="M8 24V8L16 18L24 8V24"
-        stroke={markStroke}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
+      <text
+        x="16"
+        y="22"
+        textAnchor="middle"
+        fill={textFill}
+        fontSize="16"
+        fontWeight="700"
+        fontFamily="system-ui, sans-serif"
+      >
+        {letter}
+      </text>
     </svg>
   );
 }
