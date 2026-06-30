@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQueryState } from "nuqs";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,8 @@ function TeamContent() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Invite | null>(null);
   const [resendTarget, setResendTarget] = useState<Invite | null>(null);
+  const deleteEmailRef = useRef("");
+  const resendEmailRef = useRef("");
 
   const memberQuery = useQuery({
     queryKey: ["team-members"],
@@ -133,11 +135,11 @@ function TeamContent() {
       cell: (i: Invite) => (
         <div className="flex gap-1">
           {i.status === "pending" && (
-            <Button variant="outline" className="h-8" onClick={(e) => { e.stopPropagation(); setResendTarget(i); }}>
+            <Button variant="outline" className="h-8" onClick={(e) => { e.stopPropagation(); resendEmailRef.current = i.email; setResendTarget(i); }}>
               Resend
             </Button>
           )}
-          <Button variant="destructive" className="h-8" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }}>
+          <Button variant="destructive" className="h-8" onClick={(e) => { e.stopPropagation(); deleteEmailRef.current = i.email; setDeleteTarget(i); }}>
             Revoke
           </Button>
         </div>
@@ -195,7 +197,7 @@ function TeamContent() {
             open={!!deleteTarget}
             onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}
             title="Revoke Invitation"
-            description={`Are you sure you want to revoke the invitation for "${deleteTarget?.email}"? This cannot be undone.`}
+            description={`Are you sure you want to revoke the invitation for "${deleteEmailRef.current}"? This cannot be undone.`}
             confirmLabel="Revoke"
             variant="destructive"
             onConfirm={handleDeleteInvite}
@@ -205,7 +207,7 @@ function TeamContent() {
             open={!!resendTarget}
             onOpenChange={(o) => { if (!o) setResendTarget(null); }}
             title="Resend Invitation"
-            description={`Resend the invitation to "${resendTarget?.email}"?`}
+            description={`Resend the invitation to "${resendEmailRef.current}"?`}
             confirmLabel="Resend"
             variant="default"
             onConfirm={async () => {
