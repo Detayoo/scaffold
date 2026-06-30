@@ -51,20 +51,19 @@ function ReconciliationContent() {
   const [action, setAction] = useState<string | null>(null);
 
   // Reconcile form
-  const [reconType, setReconType] = useState("payment");
+  const [reconImportId, setReconImportId] = useState("");
+  const [reconJobType, setReconJobType] = useState("provider_payment_reconciliation");
   const [reconProvider, setReconProvider] = useState("VPS");
-  const [reconFrom, setReconFrom] = useState("");
-  const [reconTo, setReconTo] = useState("");
 
   // Import form
   const [importProvider, setImportProvider] = useState("VPS");
   const [importItems, setImportItems] = useState("");
+  const [importStatementBank, setImportStatementBank] = useState("");
 
   // Adjust form
   const [adjMerchantId, setAdjMerchantId] = useState("");
-  const [adjAmount, setAdjAmount] = useState("");
-  const [adjDirection, setAdjDirection] = useState("credit");
   const [adjReason, setAdjReason] = useState("");
+  const [adjLines, setAdjLines] = useState([{ ownerType: "merchant", ownerId: "", accountType: "merchant_available_balance", accountName: "Merchant Available Balance", direction: "debit", amountMinor: 0, currency: "NGN" }]);
 
   // Assign form
   const [ownerId, setOwnerId] = useState("");
@@ -258,13 +257,14 @@ function ReconciliationContent() {
 
       <ResponsiveModal open={reconModal} onOpenChange={setReconModal} title="Run Reconciliation">
         <div className="space-y-4 pt-2">
-          <FormField label="Type" isRequired>
-            <Select value={reconType} onValueChange={setReconType}>
+          <FormField label="Import ID" isRequired>
+            <Input value={reconImportId} onChange={(e) => setReconImportId(e.target.value)} placeholder="uuid" />
+          </FormField>
+          <FormField label="Job Type" isRequired>
+            <Select value={reconJobType} onValueChange={setReconJobType}>
               <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="payment">Payment</SelectItem>
-                <SelectItem value="settlement">Settlement</SelectItem>
-                <SelectItem value="ledger_trial_balance">Ledger Trial Balance</SelectItem>
+                <SelectItem value="provider_payment_reconciliation">Provider Payment Reconciliation</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
@@ -278,12 +278,8 @@ function ReconciliationContent() {
               </SelectContent>
             </Select>
           </FormField>
-          <div className="grid grid-cols-2 gap-3">
-            <DatePicker label="Date From" value={reconFrom ? new Date(reconFrom) : undefined} onChange={(d) => setReconFrom(d ? d.toISOString() : "")} isRequired />
-            <DatePicker label="Date To" value={reconTo ? new Date(reconTo) : undefined} onChange={(d) => setReconTo(d ? d.toISOString() : "")} isRequired />
-          </div>
-          <Button className="w-full" disabled={isReconning || !reconFrom || !reconTo}
-            onClick={async () => { try { await runRecon({ type: reconType, environment: "test", provider: reconProvider, dateFrom: new Date(reconFrom).toISOString(), dateTo: new Date(reconTo).toISOString() }); } catch {} }}>
+          <Button className="w-full" disabled={isReconning || !reconImportId}
+            onClick={async () => { try { await runRecon({ importId: reconImportId, jobType: reconJobType, environment: "test", provider: reconProvider, detectMissingProvider: true, metadata: { operator: "Admin" } }); } catch {} }}>
             {isReconning ? "Running..." : "Run Reconciliation"}
           </Button>
         </div>
@@ -301,11 +297,14 @@ function ReconciliationContent() {
               </SelectContent>
             </Select>
           </FormField>
+          <FormField label="Statement Bank">
+            <Input value={importStatementBank} onChange={(e) => setImportStatementBank(e.target.value)} placeholder="Providus Bank" />
+          </FormField>
           <FormField label="Items (JSON)" isRequired>
-            <Input value={importItems} onChange={(e) => setImportItems(e.target.value)} placeholder='[{"providerReference":"...","accountNumber":"...","amountMinor":1000,"currency":"NGN","settledAt":"2026-..."}]' />
+            <Input value={importItems} onChange={(e) => setImportItems(e.target.value)} placeholder='[{"providerReference":"...","amountMinor":1000,"currency":"NGN","occurredAt":"2026-..."}]' />
           </FormField>
           <Button className="w-full" disabled={isImporting || !importItems}
-            onClick={async () => { try { await importStatements({ provider: importProvider, environment: "test", items: JSON.parse(importItems) }); } catch (e) { toastMessage("error", "Invalid JSON"); } }}>
+            onClick={async () => { try { await importStatements({ sourceType: "provider_statement", provider: importProvider, environment: "test", items: JSON.parse(importItems), metadata: importStatementBank ? { statement_bank: importStatementBank, statement_date: new Date().toISOString().split("T")[0] } : undefined }); } catch (e) { toastMessage("error", "Invalid JSON"); } }}>
             {isImporting ? "Importing..." : "Import"}
           </Button>
         </div>
@@ -316,23 +315,57 @@ function ReconciliationContent() {
           <FormField label="Merchant ID" isRequired>
             <Input value={adjMerchantId} onChange={(e) => setAdjMerchantId(e.target.value)} placeholder="uuid" />
           </FormField>
-          <FormField label="Amount (kobo)" isRequired>
-            <Input type="number" value={adjAmount} onChange={(e) => setAdjAmount(e.target.value)} placeholder="50000" />
-          </FormField>
-          <FormField label="Direction" isRequired>
-            <Select value={adjDirection} onValueChange={setAdjDirection}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="credit">Credit</SelectItem>
-                <SelectItem value="debit">Debit</SelectItem>
-              </SelectContent>
-            </Select>
-          </FormField>
           <FormField label="Reason" isRequired>
-            <Input value={adjReason} onChange={(e) => setAdjReason(e.target.value)} placeholder="Fee correction" />
+            <Input value={adjReason} onChange={(e) => setAdjReason(e.target.value)} placeholder="Correct duplicate import" />
           </FormField>
-          <Button className="w-full" disabled={isAdjusting || !adjMerchantId || !adjAmount || !adjReason}
-            onClick={async () => { try { await createAdjustment({ merchantId: adjMerchantId, currency: "NGN", amountMinor: Number(adjAmount), direction: adjDirection, reason: adjReason }); } catch {} }}>
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Ledger Lines</p>
+            <div className="space-y-3">
+              {adjLines.map((line, i) => (
+                <div key={i} className="rounded-lg border bg-muted/30 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">Line {i + 1}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField label="Owner Type">
+                      <Select value={line.ownerType} onValueChange={(v) => { const l = [...adjLines]; l[i] = { ...l[i], ownerType: v }; setAdjLines(l); }}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="merchant">Merchant</SelectItem>
+                          <SelectItem value="platform">Platform</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormField>
+                    <FormField label="Account Type">
+                      <Input value={line.accountType} onChange={(e) => { const l = [...adjLines]; l[i] = { ...l[i], accountType: e.target.value }; setAdjLines(l); }} placeholder="merchant_available_balance" />
+                    </FormField>
+                  </div>
+                  <FormField label="Account Name">
+                    <Input value={line.accountName} onChange={(e) => { const l = [...adjLines]; l[i] = { ...l[i], accountName: e.target.value }; setAdjLines(l); }} placeholder="Merchant Available Balance" />
+                  </FormField>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField label="Direction">
+                      <Select value={line.direction} onValueChange={(v) => { const l = [...adjLines]; l[i] = { ...l[i], direction: v }; setAdjLines(l); }}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="debit">Debit</SelectItem>
+                          <SelectItem value="credit">Credit</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormField>
+                    <FormField label="Amount (kobo)">
+                      <Input type="number" value={line.amountMinor || ""} onChange={(e) => { const l = [...adjLines]; l[i] = { ...l[i], amountMinor: Number(e.target.value) }; setAdjLines(l); }} placeholder="50000" />
+                    </FormField>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button type="button" variant="outline" className="mt-2 w-full gap-2" onClick={() => setAdjLines([...adjLines, { ownerType: "platform", ownerId: "", accountType: "suspense", accountName: "Suspense / Exceptions", direction: "credit", amountMinor: 0, currency: "NGN" }])}>
+              + Add Line
+            </Button>
+          </div>
+          <Button className="w-full" disabled={isAdjusting || !adjMerchantId || !adjReason || adjLines.length === 0}
+            onClick={async () => { try { await createAdjustment({ merchantId: adjMerchantId, reason: adjReason, lines: adjLines }); } catch {} }}>
             {isAdjusting ? "Creating..." : "Create Adjustment"}
           </Button>
         </div>

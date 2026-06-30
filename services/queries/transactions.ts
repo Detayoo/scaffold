@@ -324,20 +324,23 @@ export const runSplitSettlementFn = async (payload?: {
 };
 
 export const importProviderStatementsFn = async (payload: {
+  sourceType: string;
   provider: string;
   environment: string;
-  items: Array<{ providerReference: string; accountNumber: string; amountMinor: number; currency: string; settledAt: string }>;
+  items: Array<{ providerReference: string; amountMinor: number; currency: string; occurredAt: string }>;
+  metadata?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/provider-statements/import", payload);
   return data;
 };
 
 export const runReconciliationFn = async (payload: {
-  type: string;
+  importId: string;
+  jobType: string;
   environment: string;
   provider: string;
-  dateFrom: string;
-  dateTo: string;
+  detectMissingProvider: boolean;
+  metadata?: Record<string, string>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/reconciliation-runs", payload);
   return data;
@@ -391,11 +394,17 @@ export const resolveReconciliationExceptionFn = async ({
 
 export const createManualAdjustmentFn = async (payload: {
   merchantId: string;
-  currency: string;
-  amountMinor: number;
-  direction: string;
   reason: string;
   evidence?: Record<string, string>;
+  lines: Array<{
+    ownerType: string;
+    ownerId?: string;
+    accountType: string;
+    accountName: string;
+    direction: string;
+    amountMinor: number;
+    currency: string;
+  }>;
 }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/manual-adjustments", payload);
   return data;
