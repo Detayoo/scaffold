@@ -19,6 +19,8 @@ export const formatNumber = (text: any): string => {
 
 export const formatMoney = (text: any): string => {
   return Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(text));

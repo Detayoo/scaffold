@@ -148,7 +148,11 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
                           <div className="flex-1 min-w-0 pt-[3px]">
                             <div className="flex items-center justify-between gap-2">
                               <p className="text-xs text-muted-foreground">
-                                {t?.occurred_at ? formatDate(t.occurred_at) : "—"}
+                                {t?.occurred_at
+                                  ? new Date(t.occurred_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) +
+                                    " " +
+                                    new Date(t.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                                  : "—"}
                               </p>
                               {t?.source && (
                                 <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 rounded bg-muted shrink-0">
