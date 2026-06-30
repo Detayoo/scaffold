@@ -34,11 +34,14 @@ export default function HomePage() {
 
   const ngnBalance = home?.balances?.find((b: any) => b?.currency === "NGN");
 
-  const stats = [
+  const todayStats = [
     { icon: Receipt, label: "Payments", value: home?.today?.successful_payments },
-    { icon: TrendingUp, label: "Volume", value: home?.today?.net_amount_minor, compact: true },
-    { icon: Landmark, label: "Pending", value: ngnBalance?.pending_amount_minor, compact: true },
-    { icon: RefreshCw, label: "Available", value: ngnBalance?.available_amount_minor, compact: true },
+    { icon: TrendingUp, label: "Net Volume", value: home?.today?.net_amount_minor, compact: true },
+  ];
+
+  const balanceStats = [
+    { icon: Landmark, label: "Pending Settlement", value: ngnBalance?.pending_amount_minor, compact: true },
+    { icon: RefreshCw, label: "Available Balance", value: ngnBalance?.available_amount_minor, compact: true },
   ];
 
   const quickActions = [
@@ -54,10 +57,22 @@ export default function HomePage() {
         <PageHeader title={`Welcome back, ${merchant?.name ?? "Merchant"}`} description={today} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
-        ))}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-foreground">Today</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {todayStats.map((s) => (
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-foreground">Balances</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {balanceStats.map((s) => (
+            <AnalyticsCard key={s.label} icon={s.icon} label={s.label} value={s.value} compact={s.compact} />
+          ))}
+        </div>
       </div>
 
       <div>
