@@ -54,7 +54,7 @@ function useEnvironment() {
           setEnvState(stored);
         } else {
           const envFromApi = await getEnvironmentFn();
-          setEnvState(envFromApi);
+          if (envFromApi === "live" || envFromApi === "test") setEnvState(envFromApi);
           localStorage.setItem("environment", envFromApi);
         }
       } catch {
