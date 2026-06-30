@@ -32,6 +32,7 @@ import {
   resolveReconciliationExceptionFn,
   createManualAdjustmentFn,
 } from "@/services";
+import { DatePicker } from "@/components/DatePicker";
 import { toastMessage, extractError, formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 import type { ReconciliationException } from "@/types";
@@ -278,12 +279,8 @@ function ReconciliationContent() {
             </Select>
           </FormField>
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Date From" isRequired>
-              <Input type="date" value={reconFrom} onChange={(e) => setReconFrom(e.target.value)} />
-            </FormField>
-            <FormField label="Date To" isRequired>
-              <Input type="date" value={reconTo} onChange={(e) => setReconTo(e.target.value)} />
-            </FormField>
+            <DatePicker label="Date From" value={reconFrom ? new Date(reconFrom) : undefined} onChange={(d) => setReconFrom(d ? d.toISOString() : "")} isRequired />
+            <DatePicker label="Date To" value={reconTo ? new Date(reconTo) : undefined} onChange={(d) => setReconTo(d ? d.toISOString() : "")} isRequired />
           </div>
           <Button className="w-full" disabled={isReconning || !reconFrom || !reconTo}
             onClick={async () => { try { await runRecon({ type: reconType, environment: "test", provider: reconProvider, dateFrom: new Date(reconFrom).toISOString(), dateTo: new Date(reconTo).toISOString() }); } catch {} }}>

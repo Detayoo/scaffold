@@ -12,6 +12,7 @@ import { FormField } from "@/components/FormField";
 import { Separator } from "@/components/ui/separator";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { approveSettlementFn, markSettlementPaidFn } from "@/services";
+import { DatePicker } from "@/components/DatePicker";
 import { formatMoney, toastMessage, extractError } from "@/utils";
 import type { SettlementBatch } from "@/types";
 
@@ -116,9 +117,7 @@ export function SettlementDetailSheet({ batch, onOpenChange }: SettlementDetailS
               <>
                 <Separator />
                 <div className="space-y-3">
-                  <FormField label="Paid At" isRequired>
-                    <Input type="datetime-local" value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
-                  </FormField>
+                  <DatePicker label="Paid At" value={paidAt ? new Date(paidAt) : undefined} onChange={(d) => setPaidAt(d ? d.toISOString() : "")} isRequired />
                   <FormField label="Bank" isRequired>
                     <Input value={bank} onChange={(e) => setBank(e.target.value)} placeholder="GTBank" />
                   </FormField>
