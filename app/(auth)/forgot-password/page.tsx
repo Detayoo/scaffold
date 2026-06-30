@@ -39,8 +39,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout>
-        className="space-y-6"
-  <div>
+      <div className="space-y-6">
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold">Forgot password</h1>
           <p className="text-sm text-muted-foreground">
