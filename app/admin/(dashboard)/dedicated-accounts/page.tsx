@@ -31,6 +31,7 @@ import { withSuspense } from "@/components/withSuspense";
 import type { AccountCreditEntry } from "@/types";
 
 function DedicatedAccountsContent() {
+  const [tab, setTab] = useState<"dvas" | "credits">("dvas");
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
@@ -68,7 +69,14 @@ function DedicatedAccountsContent() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const columns: Column<AccountCreditEntry>[] = [
+  const dvasColumns: Column<any>[] = [
+    { key: "accountNumber", header: "Account", cell: (d) => <span className="text-sm text-foreground">{d?.accountNumber}</span> },
+    { key: "accountName", header: "Name", cell: (d) => <span className="text-sm text-foreground">{d?.accountName}</span> },
+    { key: "bankName", header: "Bank", cell: (d) => <span className="text-sm text-foreground">{d?.bankName}</span> },
+    { key: "status", header: "Status", cell: (d) => <StatusBadge status={d?.status} size="sm" /> },
+  ];
+
+  const creditsColumns: Column<AccountCreditEntry>[] = [
     { key: "amountMinor", header: "Amount", cell: (c) => <span className="text-sm text-foreground">{formatMoney(c?.amountMinor)}</span> },
     { key: "currency", header: "Currency", cell: (c) => <span className="text-sm text-foreground">{c?.currency}</span> },
     { key: "status", header: "Status", cell: (c) => <StatusBadge status={c?.status} size="sm" /> },
@@ -77,100 +85,122 @@ function DedicatedAccountsContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Account Credits" description="Manage unapplied and held account credits" />
+      <PageHeader title="Dedicated Accounts" description="Manage virtual accounts and unapplied credits" />
 
-      <div className="flex items-center gap-2">
-        <SearchInput value={searchInput} onChange={setSearchInput} onSearch={() => {}} onClear={() => setSearchInput("")} showClear={!!searchInput} placeholder="Search..." className="flex-1" />
-        <Button variant="outline" className="size-10" onClick={() => { setLocalStatus(statusFilter); setFilterOpen(true); }}>
-          <Filter className="size-4" />
-        </Button>
+      <div className="flex gap-1 border-b">
+        {[{ id: "dvas", label: "Virtual Accounts" }, { id: "credits", label: "Unapplied Credits" }].map((t) => (
+          <button key={t.id} type="button" onClick={() => setTab(t.id as "dvas" | "credits")}
+            className={`px-4 pb-2 text-sm font-medium transition-colors cursor-pointer border-b-2 -mb-px ${tab === t.id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"}`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <FilterModal open={filterOpen} onOpenChange={setFilterOpen}
-        onApply={() => { setStatusFilter(localStatus); setFilterOpen(false); }}
-        onClear={() => { setLocalStatus(""); setStatusFilter(""); setFilterOpen(false); }}>
-        <FormField label="Status">
-          <Select value={localStatus} onValueChange={setLocalStatus}>
-            <SelectTrigger><SelectValue placeholder="All statuses" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value=" ">All statuses</SelectItem>
-              <SelectItem value="unapplied">Unapplied</SelectItem>
-              <SelectItem value="held">Held</SelectItem>
-              <SelectItem value="applied">Applied</SelectItem>
-              <SelectItem value="refunded">Refunded</SelectItem>
-            </SelectContent>
-          </Select>
-        </FormField>
-      </FilterModal>
+      {tab === "dvas" && (
+        <div className="space-y-4">
+          <DataTable columns={dvasColumns} data={undefined} isPending={false} isError={false}
+            emptyTitle="No virtual accounts"
+            emptyDescription="No dedicated accounts found."
+          />
+        </div>
+      )}
 
-      <DataTable columns={columns} data={credits} isPending={isPending} isError={false}
-        emptyTitle="No credits" emptyDescription="No account credits found"
-        onRowClick={(c) => setSelectedCredit(c)}
-      />
-
-      {selectedCredit && (
-        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-foreground">Credit: {formatMoney(selectedCredit?.amountMinor)}</p>
-            <button type="button" onClick={() => { setSelectedCredit(null); setCreditAction(null); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">Close</button>
+      {tab === "credits" && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <SearchInput value={searchInput} onChange={setSearchInput} onSearch={() => {}} onClear={() => setSearchInput("")} showClear={!!searchInput} placeholder="Search..." className="flex-1" />
+            <Button variant="outline" className="size-10" onClick={() => { setLocalStatus(statusFilter); setFilterOpen(true); }}>
+              <Filter className="size-4" />
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
-          {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
-            <div className="flex flex-wrap gap-4 pt-4">
-              <Button className="gap-2" onClick={() => { setCreditAction("apply"); setCreditRef(""); }}>
-                <Send className="size-3.5" /> Apply
-              </Button>
-              <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
-                <Lock className="size-3.5" /> Hold
-              </Button>
-              <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); setRefundBank(""); setRefundAccount(""); }}>
-                <Undo2 className="size-3.5" /> Refund
-              </Button>
-            </div>
-          )}
-          {creditAction === "apply" && (
-            <div className="space-y-2 pt-2 border-t">
-              <FormField label="Payment Reference" isRequired>
-                <Input value={creditRef} onChange={(e) => setCreditRef(e.target.value)} placeholder="ord_lagos_..." />
-              </FormField>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
-                <Button onClick={async () => { try { await applyCredit({ id: selectedCredit.id, reference: creditRef }); } catch {} }} disabled={applying || !creditRef}>
-                  {applying ? "Applying..." : "Apply"}
-                </Button>
+
+          <FilterModal open={filterOpen} onOpenChange={setFilterOpen}
+            onApply={() => { setStatusFilter(localStatus); setFilterOpen(false); }}
+            onClear={() => { setLocalStatus(""); setStatusFilter(""); setFilterOpen(false); }}>
+            <FormField label="Status">
+              <Select value={localStatus} onValueChange={setLocalStatus}>
+                <SelectTrigger><SelectValue placeholder="All statuses" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value=" ">All statuses</SelectItem>
+                  <SelectItem value="unapplied">Unapplied</SelectItem>
+                  <SelectItem value="held">Held</SelectItem>
+                  <SelectItem value="applied">Applied</SelectItem>
+                  <SelectItem value="refunded">Refunded</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormField>
+          </FilterModal>
+
+          <DataTable columns={creditsColumns} data={credits} isPending={isPending} isError={false}
+            emptyTitle="No credits" emptyDescription="No account credits found"
+            onRowClick={(c) => setSelectedCredit(c)}
+          />
+
+          {selectedCredit && (
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-foreground">Credit: {formatMoney(selectedCredit?.amountMinor)}</p>
+                <button type="button" onClick={() => { setSelectedCredit(null); setCreditAction(null); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">Close</button>
               </div>
-            </div>
-          )}
-          {creditAction === "hold" && (
-            <div className="space-y-2 pt-2 border-t">
-              <FormField label="Reason" isRequired>
-                <Input value={holdReason} onChange={(e) => setHoldReason(e.target.value)} placeholder="Suspected duplicate" />
-              </FormField>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
-                <Button onClick={async () => { try { await holdCredit({ id: selectedCredit.id, reason: holdReason }); } catch {} }} disabled={holding || !holdReason}>
-                  {holding ? "Holding..." : "Hold"}
-                </Button>
-              </div>
-            </div>
-          )}
-          {creditAction === "refund" && (
-            <div className="space-y-2 pt-2 border-t">
-              <FormField label="Reason" isRequired>
-                <Input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Customer transferred to inactive account" />
-              </FormField>
-              <FormField label="Refund Bank">
-                <Input value={refundBank} onChange={(e) => setRefundBank(e.target.value)} placeholder="Access Bank" />
-              </FormField>
-              <FormField label="Refund Account">
-                <Input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="0123456789" />
-              </FormField>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
-                <Button onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: { refund_bank: refundBank, refund_account: refundAccount } }); } catch {} }} disabled={refunding || !refundReason}>
-                  {refunding ? "Refunding..." : "Refund"}
-                </Button>
-              </div>
+              <p className="text-xs text-muted-foreground">Status: <StatusBadge status={selectedCredit?.status} size="sm" /></p>
+              {(selectedCredit?.status === "unapplied" || selectedCredit?.status === "held") && !creditAction && (
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Button className="gap-2" onClick={() => { setCreditAction("apply"); setCreditRef(""); }}>
+                    <Send className="size-3.5" /> Apply
+                  </Button>
+                  <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("hold"); setHoldReason(""); }}>
+                    <Lock className="size-3.5" /> Hold
+                  </Button>
+                  <Button variant="outline" className="gap-2" onClick={() => { setCreditAction("refund"); setRefundReason(""); setRefundBank(""); setRefundAccount(""); }}>
+                    <Undo2 className="size-3.5" /> Refund
+                  </Button>
+                </div>
+              )}
+              {creditAction === "apply" && (
+                <div className="space-y-2 pt-2 border-t">
+                  <FormField label="Payment Reference" isRequired>
+                    <Input value={creditRef} onChange={(e) => setCreditRef(e.target.value)} placeholder="ord_lagos_..." />
+                  </FormField>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await applyCredit({ id: selectedCredit.id, reference: creditRef }); } catch {} }} disabled={applying || !creditRef}>
+                      {applying ? "Applying..." : "Apply"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {creditAction === "hold" && (
+                <div className="space-y-2 pt-2 border-t">
+                  <FormField label="Reason" isRequired>
+                    <Input value={holdReason} onChange={(e) => setHoldReason(e.target.value)} placeholder="Suspected duplicate" />
+                  </FormField>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await holdCredit({ id: selectedCredit.id, reason: holdReason }); } catch {} }} disabled={holding || !holdReason}>
+                      {holding ? "Holding..." : "Hold"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {creditAction === "refund" && (
+                <div className="space-y-2 pt-2 border-t">
+                  <FormField label="Reason" isRequired>
+                    <Input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Customer transferred to inactive account" />
+                  </FormField>
+                  <FormField label="Refund Bank">
+                    <Input value={refundBank} onChange={(e) => setRefundBank(e.target.value)} placeholder="Access Bank" />
+                  </FormField>
+                  <FormField label="Refund Account">
+                    <Input value={refundAccount} onChange={(e) => setRefundAccount(e.target.value)} placeholder="0123456789" />
+                  </FormField>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setCreditAction(null)}>Cancel</Button>
+                    <Button onClick={async () => { try { await refundCredit({ id: selectedCredit.id, reason: refundReason, evidence: { refund_bank: refundBank, refund_account: refundAccount } }); } catch {} }} disabled={refunding || !refundReason}>
+                      {refunding ? "Refunding..." : "Refund"}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
