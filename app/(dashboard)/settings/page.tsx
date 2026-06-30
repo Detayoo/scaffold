@@ -380,7 +380,6 @@ function APIKeysSection() {
           )}
           {newKeys && (
             <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
-              <p className="text-xs font-medium">Latest generated keys</p>
               {[
                 { label: "Public Key", value: newKeys.publicKey },
                 { label: "Secret Key", value: newKeys.secretKey },
