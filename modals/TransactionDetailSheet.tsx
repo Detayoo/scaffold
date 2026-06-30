@@ -52,10 +52,43 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
               <p className="text-xs text-muted-foreground">Status</p>
               <StatusBadge status={pi?.status ?? ""} size="sm" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Channel</p>
-              <p className="text-sm text-foreground capitalize">{pi?.channel}</p>
-            </div>
+            {pi?.channel && (
+              <div>
+                <p className="text-xs text-muted-foreground">Channel</p>
+                <p className="text-sm text-foreground capitalize">{pi?.channel}</p>
+              </div>
+            )}
+            {pi?.currency && (
+              <div>
+                <p className="text-xs text-muted-foreground">Currency</p>
+                <p className="text-sm text-foreground">{pi?.currency}</p>
+              </div>
+            )}
+            {pi?.customer?.name && (
+              <div>
+                <p className="text-xs text-muted-foreground">Customer</p>
+                <p className="text-sm text-foreground">{pi?.customer?.name}</p>
+                {pi?.customer?.email && <p className="text-sm text-foreground">{pi?.customer?.email}</p>}
+              </div>
+            )}
+            {pi?.environment && (
+              <div>
+                <p className="text-xs text-muted-foreground">Environment</p>
+                <p className="text-sm text-foreground capitalize">{pi?.environment}</p>
+              </div>
+            )}
+            {pi?.settlementStatus && pi?.settlementStatus !== "none" && (
+              <div>
+                <p className="text-xs text-muted-foreground">Settlement</p>
+                <p className="text-sm text-foreground capitalize">{pi?.settlementStatus}</p>
+              </div>
+            )}
+            {pi?.expiresAt && (
+              <div>
+                <p className="text-xs text-muted-foreground">Expires</p>
+                <p className="text-sm text-foreground">{formatDate(pi?.expiresAt)}</p>
+              </div>
+            )}
 
             {financials && (
               <>
