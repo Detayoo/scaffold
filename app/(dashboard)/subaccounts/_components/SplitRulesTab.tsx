@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { getSubaccountsFn, createSplitRuleFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
@@ -179,21 +180,13 @@ export function SplitRulesTab() {
                 error={form.formState.errors.recipients?.[index]?.subaccountId?.message}
                 isRequired
               >
-                <Select
+                <SearchableSelect
+                  options={subaccounts?.map((sa: any) => ({ value: sa.id, label: sa.name })) ?? []}
                   value={form.watch(`recipients.${index}.subaccountId`)}
                   onValueChange={(v) => form.setValue(`recipients.${index}.subaccountId`, v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select subaccount" />
-                  </SelectTrigger>
-                  <SelectContent>
-{subaccounts?.map((sa: { id: string; name: string }) => (
-                      <SelectItem key={sa?.id} value={sa?.id}>
-                        {sa?.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select subaccount"
+                  searchPlaceholder="Search subaccounts..."
+                />
               </FormField>
               <div className="grid grid-cols-2 gap-3">
                 <FormField
@@ -235,21 +228,13 @@ export function SplitRulesTab() {
       </div>
 
       <FormField label="Remainder Recipient (optional)" error={form.formState.errors.remainderRecipientSubaccountId?.message}>
-        <Select
+        <SearchableSelect
+          options={subaccounts?.map((sa: any) => ({ value: sa.id, label: sa.name })) ?? []}
           value={form.watch("remainderRecipientSubaccountId")}
           onValueChange={(v) => form.setValue("remainderRecipientSubaccountId", v)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select subaccount" />
-          </SelectTrigger>
-          <SelectContent>
-            {subaccounts?.map((sa: { id: string; name: string }) => (
-              <SelectItem key={sa?.id} value={sa?.id}>
-                {sa?.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Select subaccount"
+          searchPlaceholder="Search subaccounts..."
+        />
       </FormField>
 
       <div className="flex justify-end gap-2 pt-2">
