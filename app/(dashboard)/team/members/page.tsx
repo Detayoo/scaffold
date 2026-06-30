@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, X } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -129,17 +129,17 @@ function TeamContent() {
       cell: (i: Invite) => <span className="text-xs text-muted-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
     },
     {
-      key: "actions", header: "", className: "w-20",
+      key: "actions", header: "", className: "w-28",
       cell: (i: Invite) => (
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           {i.status === "pending" && (
-            <button type="button" onClick={(e) => { e.stopPropagation(); setResendTarget(i); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">
+            <Button variant="outline" className="h-8" onClick={(e) => { e.stopPropagation(); setResendTarget(i); }}>
               Resend
-            </button>
+            </Button>
           )}
-          <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }} className="cursor-pointer">
-            <X className="size-3.5 text-destructive" />
-          </button>
+          <Button variant="destructive" className="h-8" onClick={(e) => { e.stopPropagation(); setDeleteTarget(i); }}>
+            Revoke
+          </Button>
         </div>
       ),
     },
