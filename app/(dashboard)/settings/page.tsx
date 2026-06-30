@@ -395,6 +395,9 @@ function APIKeysSection() {
                   </div>
                 </div>
               ))}
+              <Button variant="default" className="w-full" onClick={() => setNewKeysOpen(false)}>
+                I have copied the keys
+              </Button>
             </div>
           </ResponsiveModal>
           <div>

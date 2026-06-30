@@ -643,8 +643,11 @@ export type ApiKeysListResponse = {
 export type APIKeyResponse = {
   status: boolean;
   data: {
-    publicKey: string;
-    secretKey: string;
+    environment: string;
+    keys: {
+      public: string;
+      secret: string;
+    };
   };
 };
 
