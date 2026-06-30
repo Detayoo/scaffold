@@ -25,11 +25,11 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex min-h-[300px] flex-col items-center justify-center gap-3 text-center",
+        "flex min-h-[300px] flex-col items-center justify-center gap-3 text-center max-w-sm mx-auto",
         className
       )}
     >
-      <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-muted">
         <Icon className="size-6 text-muted-foreground" />
       </div>
       <div className="max-w-[280px] space-y-1">
