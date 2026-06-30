@@ -66,7 +66,7 @@ function ProviderHealthContent() {
     {
       key: "channel",
       header: "Channel",
-      cell: (e) => <span className="text-sm text-foreground capitalize">{e?.channel}</span>,
+      cell: (e) => <span className="text-sm text-foreground capitalize">{e?.channel?.replace(/_/g, " ")}</span>,
     },
     {
       key: "environment",
