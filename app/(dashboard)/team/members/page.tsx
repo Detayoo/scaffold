@@ -125,6 +125,10 @@ function TeamContent() {
       cell: (i: Invite) => <span className="text-xs text-foreground">{i.created_at ? formatDate(i.created_at) : "—"}</span>,
     },
     {
+      key: "expires_at", header: "Expires",
+      cell: (i: Invite) => <span className="text-xs text-foreground">{i.expires_at ? formatDate(i.expires_at) : "—"}</span>,
+    },
+    {
       key: "email", header: "Email",
       cell: (i: Invite) => <span className="text-sm text-foreground">{i.email}</span>,
     },
