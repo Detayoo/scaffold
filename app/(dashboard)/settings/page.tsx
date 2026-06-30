@@ -326,7 +326,7 @@ function APIKeysSection() {
           ) : (
             <div className="space-y-3">
               {keys.map((k) => (
-                <div key={k.id} className="space-y-1.5">
+                <div key={k.id} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
                       {k.environment === "test" ? "Test" : "Live"} — {k.type === "public" ? "Public" : "Secret"}
@@ -384,7 +384,7 @@ function APIKeysSection() {
                 { label: "Public Key", value: newKeys.publicKey },
                 { label: "Secret Key", value: newKeys.secretKey },
               ].map((nk) => (
-                <div key={nk.label} className="space-y-1.5">
+                <div key={nk.label} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                   <p className="text-xs text-muted-foreground">{nk.label}</p>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
