@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
 import { Filter, Settings2 } from "lucide-react";
 
