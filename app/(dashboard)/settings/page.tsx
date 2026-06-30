@@ -913,9 +913,11 @@ function ChannelsSection() {
           <div className="space-y-3">
             {channels.map((ch: any) => (
               <div key={ch?.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground capitalize">{ch?.channel?.replace(/_/g, " ")}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{ch?.environment}</p>
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground capitalize">{ch?.channel?.replace(/_/g, " ")}</p>
+                    <p className="text-xs text-muted-foreground capitalize">({ch?.environment})</p>
+                  </div>
                   <p className="text-xs text-muted-foreground">{ch?.createdAt ? formatDate(ch?.createdAt) : ""}</p>
                 </div>
                 <button
