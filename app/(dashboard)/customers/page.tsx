@@ -119,6 +119,7 @@ function CustomersContent() {
         isFetching={isFetching}
         emptyTitle="No customers found"
         emptyDescription={searchInput ? "Try a different search term" : "No customers yet"}
+        emptyAction={searchInput ? undefined : { label: "Create Customer", onClick: () => setCreateOpen(true) }}
         onRowClick={(c) => setSelectedCustomer(c)}
       />
 
