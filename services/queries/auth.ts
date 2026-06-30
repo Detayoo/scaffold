@@ -1,5 +1,5 @@
 import { BareResponse, LoginResponse, RegistrationDTO } from "@/types";
-import { v1Api, v1AuthenticatedApi } from "../api";
+import { v1Api, v1AuthenticatedApi, v1AdminAuthenticatedApi } from "../api";
 
 export const registerFn = async (payload: RegistrationDTO) => {
   const { data } = await v1Api.post<BareResponse>("/auth/register", payload);
