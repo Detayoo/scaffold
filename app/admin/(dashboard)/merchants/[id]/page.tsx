@@ -134,31 +134,31 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               )}
 
               {tab === "users" && (
-                <div className="space-y-2">
-                  {users && users.length > 0 ? users.map((u: any) => (
-                    <div key={u.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-3">
-                      <div>
-                        <p className="text-sm text-foreground">{u.email}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{u.role}</p>
-                      </div>
-                      <StatusBadge status={u.status} size="sm" />
-                    </div>
-                  )) : <p className="text-sm text-muted-foreground">No users.</p>}
-                </div>
+                <DataTable
+                  columns={[
+                    { key: "email", header: "Email", cell: (u: any) => <span className="text-sm text-foreground">{u.email}</span> },
+                    { key: "role", header: "Role", cell: (u: any) => <span className="text-sm capitalize">{u.role}</span> },
+                    { key: "status", header: "Status", cell: (u: any) => <StatusBadge status={u.status} size="sm" /> },
+                  ]}
+                  data={users}
+                  isPending={false}
+                  isError={false}
+                  emptyTitle="No users"
+                />
               )}
 
               {tab === "channels" && (
-                <div className="space-y-2">
-                  {channelPolicies && channelPolicies.length > 0 ? channelPolicies.map((cp: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between rounded-lg border bg-muted/30 p-3">
-                      <div>
-                        <p className="text-sm capitalize">{cp?.channel?.replace(/_/g, " ")}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{cp?.environment}</p>
-                      </div>
-                      <StatusBadge status={cp?.enabled ? "active" : "inactive"} size="sm" />
-                    </div>
-                  )) : <p className="text-sm text-muted-foreground">No channel policies.</p>}
-                </div>
+                <DataTable
+                  columns={[
+                    { key: "channel", header: "Channel", cell: (cp: any) => <span className="text-sm capitalize">{cp?.channel?.replace(/_/g, " ")}</span> },
+                    { key: "environment", header: "Environment", cell: (cp: any) => <span className="text-sm capitalize">{cp?.environment}</span> },
+                    { key: "enabled", header: "Status", cell: (cp: any) => <StatusBadge status={cp?.enabled ? "active" : "inactive"} size="sm" /> },
+                  ]}
+                  data={channelPolicies}
+                  isPending={false}
+                  isError={false}
+                  emptyTitle="No channel policies"
+                />
               )}
 
               {tab === "payments" && (
@@ -191,14 +191,18 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               )}
 
               {tab === "audit" && (
-                <div className="space-y-1">
-                  {auditLogs && auditLogs.length > 0 ? auditLogs.map((l: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
-                      <p className="text-sm text-foreground">{l.action}</p>
-                      <p className="text-xs text-muted-foreground">{l.target_type}</p>
-                    </div>
-                  )) : <p className="text-sm text-muted-foreground">No audit logs.</p>}
-                </div>
+                <DataTable
+                  columns={[
+                    { key: "action", header: "Action", cell: (l: any) => <span className="text-sm text-foreground">{l.action}</span> },
+                    { key: "actor_type", header: "Actor", cell: (l: any) => <span className="text-sm capitalize">{l?.actor_type?.replace(/_/g, " ")}</span> },
+                    { key: "target_type", header: "Target", cell: (l: any) => <span className="text-sm capitalize">{l?.target_type?.replace(/_/g, " ")}</span> },
+                    { key: "created_at", header: "Date", cell: (l: any) => <span className="text-xs text-foreground">{l?.created_at ? formatDate(l.created_at) : "—"}</span> },
+                  ]}
+                  data={auditLogs}
+                  isPending={false}
+                  isError={false}
+                  emptyTitle="No audit logs"
+                />
               )}
             </div>
           </div>

@@ -54,6 +54,7 @@ const statusConfig: Record<
   cancelled: { variant: "neutral", label: "Cancelled" },
   inactive: { variant: "neutral", label: "Inactive" },
   accepted: { variant: "success", label: "Accepted" },
+  succeeded: { variant: "success", label: "Succeeded" },
   revoked: { variant: "error", label: "Revoked" },
   queued: { variant: "pending", label: "Queued" },
 };
