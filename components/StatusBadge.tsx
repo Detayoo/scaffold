@@ -53,6 +53,7 @@ const statusConfig: Record<
   overdue: { variant: "warning", label: "Overdue" },
   cancelled: { variant: "neutral", label: "Cancelled" },
   inactive: { variant: "neutral", label: "Inactive" },
+  open: { variant: "pending", label: "Open" },
   accepted: { variant: "success", label: "Accepted" },
   succeeded: { variant: "success", label: "Succeeded" },
   revoked: { variant: "error", label: "Revoked" },
