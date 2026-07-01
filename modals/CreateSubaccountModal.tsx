@@ -21,7 +21,6 @@ const schema = z.object({
     const n = Number(v);
     return !isNaN(n) && n > 0 && n <= 100;
   }, "Must be between 1 and 100"),
-  market: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -35,7 +34,7 @@ interface CreateSubaccountModalProps {
 export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateSubaccountModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", bankCode: "", accountNumber: "", percentage: "", market: "" },
+    defaultValues: { name: "", bankCode: "", accountNumber: "", percentage: "" },
   });
 
   const { mutateAsync: createSubaccount, isPending: creating } = useMutation({
@@ -49,7 +48,7 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ name, bankCode, accountNumber, percentage, market }) => {
+  const handleCreate = form.handleSubmit(async ({ name, bankCode, accountNumber, percentage }) => {
     try {
       const pct = Number(percentage);
       await createSubaccount({
@@ -60,7 +59,6 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
           percentageBps: Math.round(pct * 100),
           platformPercentageBps: Math.round((100 - pct) * 100),
         },
-        metadata: market ? { market } : undefined,
       });
     } catch {}
   });
@@ -88,9 +86,6 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
         </FormField>
         <FormField label="Your Share (%)" error={form.formState.errors.percentage?.message} isRequired>
           <Input {...form.register("percentage")} type="number" placeholder="e.g. 90" />
-        </FormField>
-        <FormField label="Market (optional)">
-          <Input {...form.register("market")} placeholder="e.g. Balogun" />
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>
