@@ -231,11 +231,38 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
             <div><p className="text-xs text-muted-foreground">Activity</p><p className="text-sm">{selectedAuditLog?.activity ?? selectedAuditLog?.action ?? "—"}</p></div>
             <div><p className="text-xs text-muted-foreground">Action</p><p className="text-sm">{selectedAuditLog?.actionName ?? selectedAuditLog?.action}</p></div>
             <div><p className="text-xs text-muted-foreground">Actor</p><p className="text-sm">{selectedAuditLog?.actorLabel ?? selectedAuditLog?.actorId}</p></div>
+            <div><p className="text-xs text-muted-foreground">Actor Type</p><p className="text-sm">{selectedAuditLog?.actorType ?? selectedAuditLog?.actor?.type}</p></div>
             <div><p className="text-xs text-muted-foreground">Target</p><p className="text-sm">{selectedAuditLog?.targetLabel ?? selectedAuditLog?.targetType}</p></div>
-            {selectedAuditLog?.activityDetails?.map((d: any, i: number) => (
-              <div key={i}><p className="text-xs text-muted-foreground">{d.label}</p><p className="text-sm">{d.value}</p></div>
-            ))}
-            <div><p className="text-xs text-muted-foreground">Date</p><p className="text-sm">{selectedAuditLog?.created_at ?? selectedAuditLog?.createdAt ? formatDate(selectedAuditLog?.created_at ?? selectedAuditLog?.createdAt) : "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Target Type</p><p className="text-sm">{selectedAuditLog?.targetType}</p></div>
+            <div><p className="text-xs text-muted-foreground">Merchant</p><p className="text-sm">{selectedAuditLog?.merchantId ?? selectedAuditLog?.merchant_id}</p></div>
+            <div><p className="text-xs text-muted-foreground">Date</p><p className="text-sm">{formatDate(selectedAuditLog?.created_at ?? selectedAuditLog?.createdAt)}</p></div>
+
+            {selectedAuditLog?.activityDetails && selectedAuditLog?.activityDetails?.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <p className="text-sm font-medium text-foreground">Details</p>
+                <div className="relative pl-5">
+                  <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
+                  <div className="space-y-4">
+                    {selectedAuditLog?.activityDetails?.map((d: any, i: number) => (
+                      <div key={i} className="relative">
+                        <div className={`absolute -left-[14px] mt-1.5 size-2.5 rounded-full border-2 ${i === 0 ? "bg-foreground border-foreground" : "bg-background border-muted-foreground/40"}`} />
+                        <div>
+                          <p className="text-xs font-medium text-foreground">{d.label}</p>
+                          <p className="text-sm text-muted-foreground">{d.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedAuditLog?.metadata && Object.keys(selectedAuditLog?.metadata).length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-foreground mb-1">Metadata</p>
+                <p className="text-xs text-muted-foreground">{JSON.stringify(selectedAuditLog?.metadata)}</p>
+              </div>
+            )}
           </div>
         )}
       </ResponsiveSheet>
