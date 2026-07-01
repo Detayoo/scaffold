@@ -4,12 +4,12 @@ import { useQueryState, parseAsString } from "nuqs";
 
 import { PageHeader } from "@/components/PageHeader";
 import { SubaccountsTab } from "./_components/SubaccountsTab";
-import { SplitRulesTab } from "./_components/SplitRulesTab";
+// import { SplitRulesTab } from "./_components/SplitRulesTab";
 import { withSuspense } from "@/components/withSuspense";
 
 const tabs = [
   { id: "subaccounts", label: "Subaccounts" },
-  { id: "split-rules", label: "Split Rules" },
+  // { id: "split-rules", label: "Split Rules" },
 ];
 
 function SubaccountsContent() {
@@ -40,7 +40,7 @@ function SubaccountsContent() {
       </div>
 
       {tab === "subaccounts" && <SubaccountsTab />}
-      {tab === "split-rules" && <SplitRulesTab />}
+      {/* {tab === "split-rules" && <SplitRulesTab />} */}
     </div>
   );
 }

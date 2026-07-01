@@ -100,36 +100,23 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
           <Input {...form.register("accountNumber")} placeholder="0123456789" maxLength={10} />
         </FormField>
 
-        <div className="min-h-[20px]">
-          {resolving && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Resolving account...
-            </div>
-          )}
-          {resolved && verified && (
-            <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
-              <div className="flex justify-between">
-                <p className="text-xs text-muted-foreground">Account Name</p>
-                <p className="text-sm font-medium text-foreground">{resolved.accountName}</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-xs text-muted-foreground">Bank</p>
-                <p className="text-sm text-foreground">{resolved.bankName}</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-xs text-muted-foreground">Account Number</p>
-                <p className="text-sm text-foreground">{resolved.accountNumber}</p>
-              </div>
-            </div>
-          )}
-          {resolveError && canResolve && !resolving && (
-            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-              <XCircle className="size-4 shrink-0" />
-              Could not resolve account
-            </div>
-          )}
-        </div>
+        {resolving && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            Resolving account...
+          </div>
+        )}
+        {resolved && verified && (
+          <div className="flex items-center gap-2 rounded-lg border border-success/20 bg-success/5 px-3 py-2 text-sm">
+            <span className="text-foreground font-medium">{resolved.accountName}</span>
+          </div>
+        )}
+        {resolveError && canResolve && !resolving && (
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <XCircle className="size-4 shrink-0" />
+            Could not resolve account
+          </div>
+        )}
 
         <FormField label="Your Share (%)" error={form.formState.errors.percentage?.message} isRequired>
           <Input {...form.register("percentage")} type="number" placeholder="e.g. 90" />
