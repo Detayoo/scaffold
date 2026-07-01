@@ -26,6 +26,7 @@ const tabs = [
   { id: "balances", label: "Balances" },
   { id: "users", label: "Users" },
   { id: "channels", label: "Channel Policies" },
+  { id: "charge-policies", label: "Charge Policies" },
   { id: "charges", label: "Charges" },
   { id: "payments", label: "Recent Payments" },
   { id: "audit", label: "Audit Logs" },
@@ -190,6 +191,10 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                 </div>
               )}
 
+              {tab === "charge-policies" && (
+                <DataTable columns={chargeColumns} data={data?.data?.charge_policies} isPending={false} isError={false} emptyTitle="No charge policies" onRowClick={(c: any) => setSelectedCharge(c)} />
+              )}
+
               {tab === "charges" && (
                 <div className="space-y-4">
                   <div className="flex justify-end">
@@ -197,7 +202,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                       <Plus className="size-3.5" /> Add Charge
                     </Button>
                   </div>
-                  <DataTable columns={chargeColumns} data={charges} isPending={false} isError={false} emptyTitle="No charge policies" emptyDescription="Add a charge policy to get started." emptyAction={{ label: "Add Charge", onClick: () => setChargeOpen(true) }} onRowClick={(c: any) => setSelectedCharge(c)} />
+                  <DataTable columns={chargeColumns} data={charges} isPending={false} isError={false} emptyTitle="No charges" emptyDescription="No charge data from separate endpoint." onRowClick={(c: any) => setSelectedCharge(c)} />
                 </div>
               )}
 
