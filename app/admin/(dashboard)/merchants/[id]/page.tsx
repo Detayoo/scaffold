@@ -21,6 +21,7 @@ import type { ChargePolicy } from "@/types";
 
 const tabs = [
   { id: "overview", label: "Overview" },
+  { id: "balances", label: "Balances" },
   { id: "users", label: "Users" },
   { id: "channels", label: "Channel Policies" },
   { id: "payments", label: "Recent Payments" },
@@ -90,8 +91,6 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                     <div className="flex items-center gap-6">
                       <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={merchant?.status ?? ""} size="sm" /></div>
                       <div><p className="text-xs text-muted-foreground">Risk Tier</p><p className="text-sm font-medium capitalize">{merchant?.risk_tier}</p></div>
-                      {testBalance && <div><p className="text-xs text-muted-foreground">Test Balance</p><p className="text-sm font-semibold">{formatMoney(testBalance?.available_amount_minor)}</p></div>}
-                      {liveBalance && <div><p className="text-xs text-muted-foreground">Live Balance</p><p className="text-sm font-semibold">{formatMoney(liveBalance?.available_amount_minor)}</p></div>}
                     </div>
                     <Button variant="outline" onClick={() => setReviewOpen(true)}>Review</Button>
                   </div>
@@ -103,6 +102,34 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                     <div><p className="text-xs text-muted-foreground">Settlement Bank</p><p className="text-sm">{merchant?.settlement_bank_account_id ?? "—"}</p></div>
                     <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{merchant?.created_at ? formatDate(merchant.created_at) : "—"}</p></div>
                   </div>
+                </div>
+              )}
+
+              {tab === "balances" && (
+                <div className="space-y-6">
+                  {["test", "live"].map((env) => {
+                    const b = balances?.[env]?.[0];
+                    if (!b) return null;
+                    return (
+                      <div key={env}>
+                        <p className="text-sm font-medium text-foreground capitalize mb-3">{env} Environment</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                          {[
+                            { label: "Pending", value: b?.pending_amount_minor },
+                            { label: "Available", value: b?.available_amount_minor },
+                            { label: "Held", value: b?.held_amount_minor },
+                            { label: "Settlement Payable", value: b?.settlement_payable_amount_minor },
+                            { label: "Paid", value: b?.paid_amount_minor },
+                          ].map((item) => (
+                            <div key={item.label} className="rounded-lg border bg-muted/30 p-3">
+                              <p className="text-xs text-muted-foreground">{item.label}</p>
+                              <p className="text-lg font-semibold mt-1">{formatMoney(item.value ?? 0)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
