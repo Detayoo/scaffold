@@ -73,11 +73,13 @@ function PaylinksContent() {
     {
       key: "amount",
       header: "Amount",
+      className: "w-28",
       cell: (pl) => <span className="text-sm text-foreground">{pl?.amountMinor ? formatMoney(pl?.amountMinor) : "—"}</span>,
     },
     {
       key: "status",
       header: "Status",
+      className: "w-20",
       cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
     },
     {
@@ -102,6 +104,7 @@ function PaylinksContent() {
     {
       key: "actions",
       header: "Actions",
+      className: "w-0",
       cell: (pl) => (
         <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
           <button
