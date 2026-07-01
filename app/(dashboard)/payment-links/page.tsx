@@ -65,12 +65,12 @@ function PaylinksContent() {
     {
       key: "reference",
       header: "Reference",
-      cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,
+      cell: (pl) => <span className="text-sm text-foreground font-mono">{pl?.reference}</span>,
     },
     {
       key: "amount",
       header: "Amount",
-      cell: (pl) => <span className="text-sm text-foreground">{formatMoney(pl?.amount)}</span>,
+      cell: (pl) => <span className="text-sm text-foreground">{pl?.amountMinor ? formatMoney(pl?.amountMinor) : "—"}</span>,
     },
     {
       key: "status",
@@ -86,7 +86,7 @@ function PaylinksContent() {
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setConfirmId(pl?.id); setConfirmAction("inactive"); }}
-            className="text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/5 cursor-pointer"
           >
             Deactivate
           </button>
@@ -94,7 +94,7 @@ function PaylinksContent() {
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setConfirmId(pl?.id); setConfirmAction("active"); }}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
           >
             Activate
           </button>

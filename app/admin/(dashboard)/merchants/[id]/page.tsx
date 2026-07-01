@@ -25,9 +25,9 @@ const tabs = [
   { id: "overview", label: "Overview" },
   { id: "balances", label: "Balances" },
   { id: "users", label: "Users" },
-  { id: "channels", label: "Channel Policies" },
-  { id: "charge-policies", label: "Charge Policies" },
   { id: "charges", label: "Charges" },
+  { id: "charge-policies", label: "Charge Policies" },
+  { id: "channels", label: "Channel Policies" },
   { id: "payments", label: "Recent Payments" },
   { id: "audit", label: "Audit Logs" },
 ];
