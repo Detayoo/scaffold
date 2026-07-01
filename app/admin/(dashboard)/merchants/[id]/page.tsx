@@ -159,7 +159,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                   columns={[
                     { key: "channel", header: "Channel", cell: (cp: any) => <span className="text-sm capitalize">{cp?.channel?.replace(/_/g, " ")}</span> },
                     { key: "environment", header: "Environment", cell: (cp: any) => <span className="text-sm capitalize">{cp?.environment}</span> },
-                    { key: "routing_policy_id", header: "Routing", cell: (cp: any) => <span className="text-sm">{cp?.routing_policy_id ?? "—"}</span> },
+                    { key: "routing_policy_id", header: "Routing", cell: (cp: any) => <span className="text-sm">{cp?.routing_policy_id?.replace("provider:", "") ?? "—"}</span> },
                     { key: "enabled", header: "Status", cell: (cp: any) => <StatusBadge status={cp?.enabled ? "active" : "inactive"} size="sm" /> },
                   ]}
                   data={channelPolicies}
@@ -230,9 +230,6 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               <div><p className="text-xs text-muted-foreground">Channel</p><p className="text-sm capitalize">{selectedChannel?.channel?.replace(/_/g, " ")}</p></div>
               <div><p className="text-xs text-muted-foreground">Environment</p><p className="text-sm capitalize">{selectedChannel?.environment}</p></div>
               <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={selectedChannel?.enabled ? "active" : "inactive"} size="sm" /></div>
-              {selectedChannel?.routing_policy_id && <div><p className="text-xs text-muted-foreground">Routing Policy</p><p className="text-sm">{selectedChannel?.routing_policy_id}</p></div>}
-              {selectedChannel?.settlement_policy_id && <div><p className="text-xs text-muted-foreground">Settlement Policy</p><p className="text-sm">{selectedChannel?.settlement_policy_id}</p></div>}
-              {selectedChannel?.risk_policy_id && <div><p className="text-xs text-muted-foreground">Risk Policy</p><p className="text-sm">{selectedChannel?.risk_policy_id}</p></div>}
             </div>
             <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{selectedChannel?.created_at ? formatDate(selectedChannel.created_at) : "—"}</p></div>
           </div>
