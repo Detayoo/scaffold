@@ -22,10 +22,10 @@ import type { ChargePolicy } from "@/types";
 const tabs = [
   { id: "overview", label: "Overview" },
   { id: "balances", label: "Balances" },
+  { id: "charges", label: "Charges" },
   { id: "users", label: "Users" },
   { id: "channels", label: "Channel Policies" },
   { id: "payments", label: "Recent Payments" },
-  { id: "charges", label: "Charges" },
   { id: "audit", label: "Audit Logs" },
 ];
 
