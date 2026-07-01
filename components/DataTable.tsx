@@ -96,8 +96,8 @@ export function DataTable<T>({
 
     return (
       <TableRow>
-        <TableCell colSpan={columns.length} className="h-80 p-0">
-          <div className="flex items-center justify-center h-full">
+        <TableCell colSpan={columns.length} className="h-80 whitespace-normal p-0">
+          <div className="grid place-items-center h-full w-full">
             {!hasEverLoaded && isPending ? (
               <LoadingState />
             ) : !hasEverLoaded && isError ? (

@@ -25,6 +25,7 @@ interface ResponsiveSheetProps {
   title?: string;
   description?: string;
   children: ReactNode;
+  footer?: ReactNode;
   className?: string;
   side?: "left" | "right";
 }
@@ -35,6 +36,7 @@ export function ResponsiveSheet({
   title,
   description,
   children,
+  footer,
   className,
   side = "right",
 }: ResponsiveSheetProps) {
@@ -52,9 +54,14 @@ export function ResponsiveSheet({
               )}
             </DrawerHeader>
           )}
-          <ScrollArea className="px-4 pb-6">
+          <ScrollArea className="px-4 pb-6 flex-1">
             {children}
           </ScrollArea>
+          {footer && (
+            <div className="border-t px-4 py-3">
+              {footer}
+            </div>
+          )}
         </DrawerContent>
       </Drawer>
     );
@@ -64,7 +71,7 @@ export function ResponsiveSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={side}
-        className={cn("sm:max-w-md", className)}
+        className={cn("sm:max-w-md flex flex-col", className)}
       >
         {(title || description) && (
           <SheetHeader>
@@ -77,6 +84,11 @@ export function ResponsiveSheet({
         <ScrollArea className="flex-1 min-h-0 px-4 pb-6">
           {children}
         </ScrollArea>
+        {footer && (
+          <div className="border-t px-4 py-3">
+            {footer}
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

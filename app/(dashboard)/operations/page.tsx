@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileText, ArrowLeftRight, Undo2, Landmark, RefreshCw, BookOpen } from "lucide-react";
+import { Download, FileText, ArrowLeftRight, Undo2, Landmark, RefreshCw, BookOpen, Eye } from "lucide-react";
 
 import { getExportsFn, getExportDownloadFn, getReadModelsFn, getRunbooksFn } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ExportModal } from "@/components/ExportModal";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
+import { DataTable, type Column } from "@/components/DataTable";
 import { formatDate } from "@/utils";
 
 const exportTypes = [
@@ -23,6 +25,38 @@ const exportTypes = [
 export default function OperationsPage() {
   const [exportType, setExportType] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRunbook, setSelectedRunbook] = useState<any | null>(null);
+
+  const handleDownload = useCallback(async (id: string) => {
+    try {
+      const res = await getExportDownloadFn({ id });
+      const ref = res?.data?.storageRef;
+      if (ref) window.open(ref, "_blank");
+    } catch {}
+  }, []);
+
+  const exportColumns: Column<any>[] = [
+    { key: "createdAt", header: "Created", cell: (j) => <span className="text-xs text-foreground">{j?.createdAt ? formatDate(j.createdAt) : "—"}</span> },
+    { key: "exportType", header: "Type", cell: (j) => <span className="text-sm capitalize text-foreground">{j?.exportType}</span> },
+    { key: "environment", header: "Environment", cell: (j) => <span className="text-sm capitalize text-foreground">{j?.environment ?? "—"}</span> },
+    { key: "rowCount", header: "Rows", cell: (j) => <span className="text-sm text-foreground">{j?.rowCount ?? "—"}</span> },
+    { key: "status", header: "Status", cell: (j) => <StatusBadge status={j?.status} size="sm" /> },
+    {
+      key: "actions",
+      header: "",
+      className: "pr-6",
+      cell: (j) => j?.status === "completed" ? (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); handleDownload(j?.id); }}
+          className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium cursor-pointer"
+        >
+          <Download className="size-3.5 mr-1.5" />
+          Download
+        </button>
+      ) : null,
+    },
+  ];
 
   const { data: exportsData, isPending: exportsPending, isError: exportsError, refetch: refetchExports } = useQuery({
     queryKey: ["exports"],
@@ -40,8 +74,8 @@ export default function OperationsPage() {
   });
 
   const exports = exportsData?.data ?? [];
-  const models = modelsData?.data ?? [];
-  const runbooks = runbooksData?.data ?? [];
+  const models = (modelsData?.data ?? []) as any[];
+  const runbooks = (runbooksData?.data ?? []) as any[];
 
   const openExport = (type: string) => {
     setExportType(type);
@@ -73,39 +107,16 @@ export default function OperationsPage() {
 
       <div>
         <h2 className="text-base font-semibold mb-4">Export History</h2>
-        <AsyncContent isPending={exportsPending} isError={exportsError} onRetry={refetchExports} errorMessage="Failed to load exports">
-          {exports.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No exports yet. Start by exporting data above.</p>
-          ) : (
-            <div className="space-y-2">
-              {exports.map((job) => (
-                <Card key={job?.id}>
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium capitalize">{job?.exportType}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(job?.createdAt)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={job?.status} size="sm" />
-                      {job?.status === "completed" && (
-                        <Button variant="outline" onClick={async () => {
-                          try {
-                            const res = await getExportDownloadFn({ id: job?.id ?? "" });
-                            const ref = res?.data?.storageRef;
-                            if (ref) window.open(ref, "_blank");
-                          } catch {}
-                        }}>
-                          <Download className="size-3.5" />
-                          Download
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </AsyncContent>
+        <DataTable
+          columns={exportColumns}
+          data={exports}
+          isPending={exportsPending}
+          isError={exportsError}
+          onRetry={refetchExports}
+          errorMessage="Failed to load exports"
+          emptyTitle="No exports yet"
+          emptyDescription="Start by exporting data above."
+        />
       </div>
 
       <div>
@@ -113,38 +124,20 @@ export default function OperationsPage() {
           <RefreshCw className="size-4 inline mr-2 text-muted-foreground" />
           Read Models
         </h2>
-        <AsyncContent isPending={modelsPending} isError={modelsError} onRetry={refetchModels} errorMessage="Failed to load read models">
-        <Card>
-          <CardContent className="p-0">
-            {models.length === 0 ? (
-              <p className="text-sm text-muted-foreground p-4">No read models available.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Model</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Rows</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase text-foreground">Lag</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {models.map((m: any, idx: number) => (
-                      <tr key={idx} className="border-b last:border-0">
-                        <td className="px-4 py-3 text-sm text-foreground">{m?.modelName}</td>
-                        <td className="px-4 py-3"><StatusBadge status={m?.status} size="sm" /></td>
-                        <td className="px-4 py-3 text-sm text-foreground">{m?.rowCount ?? "—"}</td>
-                        <td className="px-4 py-3 text-sm text-foreground">{m?.lagSeconds ?? 0}s</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        </AsyncContent>
+        <DataTable
+          columns={[
+            { key: "modelName", header: "Model", cell: (m: any) => <span className="text-sm text-foreground">{m?.modelName}</span> },
+            { key: "status", header: "Status", cell: (m: any) => <StatusBadge status={m?.status} size="sm" /> },
+            { key: "rowCount", header: "Rows", cell: (m: any) => <span className="text-sm text-foreground">{m?.rowCount ?? "—"}</span> },
+            { key: "lagSeconds", header: "Lag", cell: (m: any) => <span className="text-sm text-foreground">{m?.lagSeconds ?? 0}s</span> },
+          ]}
+          data={models}
+          isPending={modelsPending}
+          isError={modelsError}
+          onRetry={refetchModels}
+          errorMessage="Failed to load read models"
+          emptyTitle="No read models"
+        />
       </div>
 
       <div>
@@ -152,31 +145,67 @@ export default function OperationsPage() {
           <BookOpen className="size-4 inline mr-2 text-muted-foreground" />
           Runbooks
         </h2>
-        <AsyncContent isPending={runbooksPending} isError={runbooksError} onRetry={refetchRunbooks} errorMessage="Failed to load runbooks">
-        <div className="space-y-3">
-          {runbooks.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No runbooks available.</p>
-          ) : (
-            runbooks.map((rb: any, idx: number) => (
-              <Card key={idx}>
-                <CardContent className="p-4">
-                  <p className="text-sm font-medium">{rb?.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{rb?.slug}</p>
-                  {rb?.triggers && rb.triggers.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-xs text-muted-foreground font-medium">Triggers:</p>
-                      <ul className="list-disc list-inside text-xs text-muted-foreground mt-0.5">
-                        {rb.triggers.map((t: string, i: number) => <li key={i}>{t}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-        </AsyncContent>
+        <DataTable
+          columns={[
+            { key: "title", header: "Title", cell: (rb: any) => <span className="text-sm font-medium text-foreground">{rb?.title}</span> },
+            { key: "triggers", header: "Triggers", cell: (rb: any) => <span className="text-sm text-muted-foreground">{rb?.triggers?.length ?? 0} trigger{(rb?.triggers?.length ?? 0) !== 1 ? "s" : ""}</span> },
+            { key: "slug", header: "Slug", cell: (rb: any) => <span className="text-sm text-muted-foreground">{rb?.slug}</span> },
+            { key: "actions", header: "", className: "pr-6", cell: () => <Eye className="size-4 text-muted-foreground" /> },
+          ]}
+          data={runbooks}
+          isPending={runbooksPending}
+          isError={runbooksError}
+          onRetry={refetchRunbooks}
+          errorMessage="Failed to load runbooks"
+          emptyTitle="No runbooks"
+          onRowClick={(rb) => setSelectedRunbook(rb)}
+        />
       </div>
+
+      <ResponsiveSheet
+        open={!!selectedRunbook}
+        onOpenChange={(o) => { if (!o) setSelectedRunbook(null); }}
+        title={selectedRunbook?.title ?? "Runbook Details"}
+      >
+        {selectedRunbook && (
+          <div className="space-y-5 pt-2">
+            <div>
+              <p className="text-xs text-muted-foreground">Title</p>
+              <p className="text-sm font-medium text-foreground">{selectedRunbook?.title}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Slug</p>
+              <p className="text-sm text-muted-foreground">{selectedRunbook?.slug}</p>
+            </div>
+            {selectedRunbook?.triggers && selectedRunbook.triggers.length > 0 && (
+              <div>
+                <p className="text-xs text-muted-foreground font-medium mb-1.5">Triggers</p>
+                <ul className="space-y-1.5">
+                  {selectedRunbook.triggers.map((t: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <span className="mt-1.5 size-1.5 rounded-full bg-warning shrink-0" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {selectedRunbook?.actions && selectedRunbook.actions.length > 0 && (
+              <div>
+                <p className="text-xs text-muted-foreground font-medium mb-1.5">Actions</p>
+                <ul className="space-y-1.5">
+                  {selectedRunbook.actions.map((a: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <span className="mt-1.5 size-1.5 rounded-full bg-primary shrink-0" />
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </ResponsiveSheet>
 
       <ExportModal
         open={modalOpen}

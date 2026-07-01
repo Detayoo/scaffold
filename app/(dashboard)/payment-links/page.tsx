@@ -23,7 +23,7 @@ import { PaymentLinkDetailSheet } from "@/modals/PaymentLinkDetailSheet";
 import { CreatePaymentLinkModal } from "@/modals/CreatePaymentLinkModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { getPaylinksFn, updatePaylinkStatusFn } from "@/services";
-import { toastMessage, extractError, formatMoney } from "@/utils";
+import { toastMessage, extractError, formatMoney, formatDate } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 
 function PaylinksContent() {
@@ -56,6 +56,7 @@ function PaylinksContent() {
     onSuccess: () => {
       toastMessage("success", confirmAction === "inactive" ? "Link deactivated" : "Link activated");
       setConfirmId(null);
+      setDetailRef(null);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -63,9 +64,14 @@ function PaylinksContent() {
 
   const columns: Column<any>[] = [
     {
-      key: "reference",
-      header: "Reference",
-      cell: (pl) => <span className="text-sm text-foreground font-mono">{pl?.reference}</span>,
+      key: "createdAt",
+      header: "Created",
+      cell: (pl) => <span className="text-xs text-foreground">{pl?.createdAt ? formatDate(pl.createdAt) : "—"}</span>,
+    },
+    {
+      key: "channels",
+      header: "Channels",
+      cell: (pl) => <span className="text-sm capitalize text-foreground">{pl?.channels?.join(", ").replace(/_/g, " ") ?? "—"}</span>,
     },
     {
       key: "amount",
@@ -78,9 +84,14 @@ function PaylinksContent() {
       cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
     },
     {
+      key: "reference",
+      header: "Reference",
+      cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,
+    },
+    {
       key: "actions",
       header: "",
-      className: "w-10",
+      className: "pr-6",
       cell: (pl) => (
         pl?.status === "active" ? (
           <button
@@ -158,13 +169,17 @@ function PaylinksContent() {
         onRetry={refetch}
         isFetching={isFetching}
         emptyTitle="No payment links yet"
-        emptyDescription="Create your first payment link to start collecting payments."
+        emptyDescription="Create one to start collecting payments."
         emptyAction={{ label: "Create Link", onClick: () => setCreateOpen(true) }}
         onRowClick={(pl) => setDetailRef(pl?.reference)}
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
-      <PaymentLinkDetailSheet reference={detailRef} onOpenChange={(o) => { if (!o) setDetailRef(null); }} />
+      <PaymentLinkDetailSheet
+        reference={detailRef}
+        onOpenChange={(o) => { if (!o) setDetailRef(null); }}
+        onToggleStatus={(id, action) => { setConfirmId(id); setConfirmAction(action); }}
+      />
 
       <ConfirmDialog
         open={!!confirmId}
