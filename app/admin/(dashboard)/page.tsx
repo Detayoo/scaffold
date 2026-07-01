@@ -12,6 +12,7 @@ import { DataTable, type Column } from "@/components/DataTable";
 import { AsyncContent } from "@/components/AsyncContent";
 import { getAuditLogsFn } from "@/services";
 import { formatDate } from "@/utils";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { withSuspense } from "@/components/withSuspense";
 import { getAdminMerchantsFn } from "@/services";
 import type { AuditLogEntry, AdminMerchant } from "@/types";
@@ -41,6 +42,8 @@ function AdminHome() {
 
   const logs = data?.data?.slice(0, 5);
 
+  const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
+
   const logColumns: Column<AuditLogEntry>[] = [
     {
       key: "createdAt", header: "Date",
@@ -48,12 +51,14 @@ function AdminHome() {
     },
     { key: "actionName", header: "Action", cell: (l) => <span className="text-sm text-foreground">{l?.actionName ?? l?.action}</span> },
     { key: "actorLabel", header: "Actor", cell: (l) => <span className="text-sm text-foreground">{l?.actorLabel ?? l?.actorId}</span> },
+    { key: "targetType", header: "Target", cell: (l) => <span className="text-sm text-foreground capitalize">{l?.targetType}</span> },
   ];
 
   const merchantColumns: Column<AdminMerchant>[] = [
     { key: "display_name", header: "Name", cell: (m) => <span className="text-sm text-foreground">{m?.display_name}</span> },
     { key: "email", header: "Email", cell: (m) => <span className="text-sm text-foreground">{m?.email}</span> },
     { key: "status", header: "Status", cell: (m) => <StatusBadge status={m?.status} size="sm" /> },
+    { key: "risk_tier", header: "Risk", cell: (m) => <span className="text-sm capitalize">{m?.risk_tier}</span> },
   ];
 
   return (
@@ -80,7 +85,10 @@ function AdminHome() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Merchants</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Merchants</CardTitle>
+            <Link href="/admin/merchants" className="text-xs text-muted-foreground hover:text-foreground transition-colors">View All</Link>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <DataTable columns={merchantColumns} data={merchants} isPending={false} isError={false} />
@@ -89,18 +97,33 @@ function AdminHome() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Recent Activity</CardTitle>
+            <Link href="/admin/audit-logs" className="text-xs text-muted-foreground hover:text-foreground transition-colors">View All</Link>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load activity">
             {logs && logs.length > 0 ? (
-              <DataTable columns={logColumns} data={logs} isPending={false} isError={false} />
+              <DataTable columns={logColumns} data={logs} isPending={false} isError={false} onRowClick={(l) => setSelectedLog(l)} />
             ) : (
               <p className="text-sm text-muted-foreground p-4">No recent activity.</p>
             )}
           </AsyncContent>
         </CardContent>
       </Card>
+
+      <ResponsiveSheet open={!!selectedLog} onOpenChange={(o) => { if (!o) setSelectedLog(null); }} title="Activity Details">
+        {selectedLog && (
+          <div className="space-y-4 pt-2">
+            <div><p className="text-xs text-muted-foreground">Activity</p><p className="text-sm">{selectedLog?.activity ?? selectedLog?.action ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Action</p><p className="text-sm">{selectedLog?.actionName ?? selectedLog?.action}</p></div>
+            <div><p className="text-xs text-muted-foreground">Actor</p><p className="text-sm">{selectedLog?.actorLabel ?? selectedLog?.actorId}</p></div>
+            <div><p className="text-xs text-muted-foreground">Target</p><p className="text-sm capitalize">{selectedLog?.targetLabel ?? selectedLog?.targetType}</p></div>
+            <div><p className="text-xs text-muted-foreground">Date</p><p className="text-sm">{selectedLog?.createdAt ? formatDate(selectedLog.createdAt) : "—"}</p></div>
+          </div>
+        )}
+      </ResponsiveSheet>
     </div>
   );
 }
