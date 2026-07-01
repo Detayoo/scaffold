@@ -67,7 +67,8 @@ function PaylinksContent() {
     {
       key: "reference",
       header: "Reference",
-      cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,
+      className: "max-w-32",
+      cell: (pl) => <span className="text-sm text-foreground truncate block">{pl?.reference}</span>,
     },
     {
       key: "amount",
@@ -82,10 +83,10 @@ function PaylinksContent() {
     {
       key: "paymentLink",
       header: "\u00A0",
-      className: "max-w-48",
+      className: "w-64 max-w-64",
       cell: (pl) => (
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-foreground truncate flex-1">{pl?.paymentLink || pl?.payment_link || "—"}</span>
+          <span className="text-sm text-foreground truncate flex-1">{pl?.paymentLink || pl?.payment_link || "—"}</span>
           {pl?.paymentLink && (
             <button
               type="button"
