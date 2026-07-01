@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
-import { Filter, Plus } from "lucide-react";
+import { Filter, Plus, Copy, Check, Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -42,6 +42,7 @@ function PaylinksContent() {
   const [createOpen, setCreateOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
   const [statusUpdateId, setStatusUpdateId] = useState<string | null>(null);
+  const [copiedUrlId, setCopiedUrlId] = useState<string | null>(null);
 
   const handleSearch = useCallback(() => {}, []);
 
@@ -80,16 +81,37 @@ function PaylinksContent() {
     },
     {
       key: "paymentLink",
-      header: "URL",
+      header: "\u00A0",
       className: "max-w-48",
-      cell: (pl) => <span className="text-xs text-foreground truncate block">{pl?.paymentLink || pl?.payment_link || "—"}</span>,
+      cell: (pl) => (
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-foreground truncate flex-1">{pl?.paymentLink || pl?.payment_link || "—"}</span>
+          {pl?.paymentLink && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(pl.paymentLink); setCopiedUrlId(pl.id); setTimeout(() => setCopiedUrlId(null), 2000); }}
+              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              {copiedUrlId === pl.id ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            </button>
+          )}
+        </div>
+      ),
     },
     {
       key: "actions",
-      header: "",
+      header: "\u00A0",
       className: "pr-2",
       cell: (pl) => (
-        <div onClick={(e) => e.stopPropagation()}>
+        <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => router.push(`/payment-links/${pl?.id}`)}
+            className="inline-flex items-center justify-center rounded-md border bg-background px-2.5 py-1.5 text-xs font-medium cursor-pointer"
+          >
+            <Eye className="size-3.5 mr-1" />
+            View
+          </button>
           <Button variant="outline" size="sm" onClick={() => setStatusUpdateId(pl?.id)}>
             Update Status
           </Button>
@@ -156,7 +178,6 @@ function PaylinksContent() {
         emptyTitle="No payment links yet"
         emptyDescription="Create one to start collecting payments."
         emptyAction={{ label: "Create Link", onClick: () => setCreateOpen(true) }}
-        onRowClick={(pl) => router.push(`/payment-links/${pl?.id}`)}
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
