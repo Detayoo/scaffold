@@ -39,7 +39,7 @@ export const formatDate = (date: string) => {
   const d = new Date(date);
   const day = d.getDate();
   const suffix = ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10] || "th";
-  const dateStr = format(d, `d'${suffix}' MMMM yyyy`);
+  const dateStr = format(d, `d'${suffix}' MMM yyyy`);
   const timeStr = format(d, "p");
   return (
     <>
