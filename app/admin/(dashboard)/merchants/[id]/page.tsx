@@ -48,7 +48,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
     enabled: !!id,
   });
 
-  const { data: chargesData } = useQuery({
+  const { data: chargesData, refetch: refetchCharges } = useQuery({
     queryKey: ["admin-merchant-charges", id],
     queryFn: () => getAdminMerchantChargesFn({ id }),
     enabled: !!id,
