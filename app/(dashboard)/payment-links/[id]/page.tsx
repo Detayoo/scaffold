@@ -5,16 +5,24 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Copy, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTable, type Column } from "@/components/DataTable";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
 import { getPaylinkPaymentsFn, updatePaylinkStatusFn } from "@/services";
 import { toastMessage, extractError, formatMoney, formatDate } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { useState, useRef } from "react";
+import { useState } from "react";
+
+const statusOptions = ["draft", "active", "paused", "archived"];
 
 function PaylinkDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +30,7 @@ function PaylinkDetailPage() {
   const [copiedRef, setCopiedRef] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
   const copy = useCopyToClipboard();
-  const [confirmAction, setConfirmAction] = useState<"active" | "inactive" | null>(null);
-  const confirmContentRef = useRef<{ title: string; description: string; label: string; variant: "destructive" | "default" } | null>(null);
+  const [detailRef, setDetailRef] = useState<string | null>(null);
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["paylink-detail", id],
@@ -33,31 +40,20 @@ function PaylinkDetailPage() {
 
   const paylink = data?.data?.paylink;
   const payments = data?.data?.payments ?? [];
-  const [detailRef, setDetailRef] = useState<string | null>(null);
 
-  const { mutateAsync: updateStatus, isPending: updating } = useMutation({
+  const { mutateAsync: updateStatus } = useMutation({
     mutationFn: updatePaylinkStatusFn,
     onSuccess: () => {
-      toastMessage("success", confirmAction === "inactive" ? "Link deactivated" : "Link activated");
-      setConfirmAction(null);
-      confirmContentRef.current = null;
+      toastMessage("success", "Status updated");
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const openConfirm = (action: "active" | "inactive") => {
-    setConfirmAction(action);
-    confirmContentRef.current = {
-      title: action === "inactive" ? "Deactivate Link" : "Activate Link",
-      description: `Are you sure you want to ${action === "inactive" ? "deactivate" : "activate"} this payment link?`,
-      label: action === "inactive" ? "Deactivate" : "Activate",
-      variant: action === "inactive" ? "destructive" : "default",
-    };
-  };
-
-  const closeConfirm = () => {
-    setConfirmAction(null);
+  const handleStatusChange = async (status: string) => {
+    try {
+      await updateStatus({ id, status });
+    } catch {}
   };
 
   const handleCopyRef = async (text: string) => {
@@ -114,7 +110,19 @@ function PaylinkDetailPage() {
                     </div>
                   </div>
                 </div>
-                <StatusBadge status={paylink?.status} size="md" />
+                <Select
+                  value={paylink?.status}
+                  onValueChange={handleStatusChange}
+                >
+                  <SelectTrigger className="h-9 w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((s) => (
+                      <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
@@ -149,17 +157,6 @@ function PaylinkDetailPage() {
                   </div>
                 </div>
               )}
-              <div className="flex gap-2 pt-1">
-                {paylink?.status === "active" ? (
-                  <Button variant="outline" className="text-destructive" onClick={() => openConfirm("inactive")}>
-                    Deactivate Link
-                  </Button>
-                ) : (
-                  <Button variant="default" onClick={() => openConfirm("active")}>
-                    Activate Link
-                  </Button>
-                )}
-              </div>
             </div>
 
             <div>
@@ -182,17 +179,6 @@ function PaylinkDetailPage() {
           </>
         )}
       </AsyncContent>
-
-      <ConfirmDialog
-        open={!!confirmAction}
-        onOpenChange={(o) => { if (!o) closeConfirm(); }}
-        title={confirmContentRef.current?.title ?? ""}
-        description={confirmContentRef.current?.description ?? ""}
-        confirmLabel={confirmContentRef.current?.label ?? ""}
-        variant={confirmContentRef.current?.variant ?? "default"}
-        onConfirm={async () => { try { if (confirmAction && id) await updateStatus({ id, status: confirmAction }); } catch {} }}
-        loading={updating}
-      />
     </div>
   );
 }

@@ -21,10 +21,11 @@ import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { CreatePaymentLinkModal } from "@/modals/CreatePaymentLinkModal";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { getPaylinksFn, updatePaylinkStatusFn } from "@/services";
 import { toastMessage, extractError, formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
+
+const statusOptions = ["draft", "active", "paused", "archived"];
 
 function PaylinksContent() {
   const router = useRouter();
@@ -32,8 +33,6 @@ function PaylinksContent() {
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [confirmAction, setConfirmAction] = useState<"active" | "inactive">("active");
   const [localStatus, setLocalStatus] = useState("");
 
   const handleSearch = useCallback(() => {}, []);
@@ -49,15 +48,20 @@ function PaylinksContent() {
 
   const paylinks = data?.data;
 
-  const { mutateAsync: updateStatus, isPending: updating } = useMutation({
+  const { mutateAsync: updateStatus } = useMutation({
     mutationFn: updatePaylinkStatusFn,
     onSuccess: () => {
-      toastMessage("success", confirmAction === "inactive" ? "Link deactivated" : "Link activated");
-      setConfirmId(null);
+      toastMessage("success", "Status updated");
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
+
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      await updateStatus({ id, status });
+    } catch {}
+  };
 
   const columns: Column<any>[] = [
     {
@@ -85,23 +89,19 @@ function PaylinksContent() {
       header: "",
       className: "pr-6",
       cell: (pl) => (
-        pl?.status === "active" ? (
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); setConfirmId(pl?.id); setConfirmAction("inactive"); }}
-            className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/5 cursor-pointer"
-          >
-            Deactivate
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); setConfirmId(pl?.id); setConfirmAction("active"); }}
-            className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            Activate
-          </button>
-        )
+        <Select
+          value={pl?.status}
+          onValueChange={(v) => handleStatusChange(pl?.id, v)}
+        >
+          <SelectTrigger className="h-8 w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {statusOptions.map((s) => (
+              <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       ),
     },
   ];
@@ -146,8 +146,9 @@ function PaylinksContent() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value=" ">All statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
+              {statusOptions.map((s) => (
+                <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </FormField>
@@ -167,17 +168,6 @@ function PaylinksContent() {
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
-
-      <ConfirmDialog
-        open={!!confirmId}
-        onOpenChange={(o) => { if (!o) setConfirmId(null); }}
-        title={confirmAction === "inactive" ? "Deactivate Link" : "Activate Link"}
-        description={`Are you sure you want to ${confirmAction === "inactive" ? "deactivate" : "activate"} this payment link?`}
-        confirmLabel={confirmAction === "inactive" ? "Deactivate" : "Activate"}
-        variant={confirmAction === "inactive" ? "destructive" : "default"}
-        onConfirm={async () => { try { if (confirmId) await updateStatus({ id: confirmId, status: confirmAction }); } catch {} }}
-        loading={updating}
-      />
     </div>
   );
 }

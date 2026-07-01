@@ -66,6 +66,6 @@ export const updatePaylinkStatusFn = async ({
   id: string;
   status: string;
 }) => {
-  const { data } = await v1AuthenticatedApi().post(`/paylinks/${id}/status`, { status });
+  const { data } = await v1AuthenticatedApi().post(`/paylinks/${id}/status`, { id, status });
   return data;
 };
