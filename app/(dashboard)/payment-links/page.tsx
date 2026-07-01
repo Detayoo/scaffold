@@ -87,7 +87,7 @@ function PaylinksContent() {
     {
       key: "actions",
       header: "",
-      className: "pr-6",
+      className: "pr-2",
       cell: (pl) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Button variant="outline" size="sm" onClick={() => setStatusUpdateId(pl?.id)}>
