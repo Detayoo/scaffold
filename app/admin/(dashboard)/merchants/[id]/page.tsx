@@ -67,35 +67,18 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
       <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load merchant details.">
         {merchant ? (
-          <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-            {/* Sidebar nav + merchant info */}
-            <div className="flex shrink-0 flex-col gap-4 lg:w-48">
-              <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">Status</p>
-                  <StatusBadge status={merchant?.status ?? ""} size="sm" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Risk Tier</p>
-                  <p className="text-sm font-medium capitalize">{merchant?.risk_tier}</p>
-                </div>
-                {testBalance && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Test Balance</p>
-                    <p className="text-lg font-semibold">{formatMoney(testBalance?.available_amount_minor)}</p>
-                  </div>
-                )}
-                {liveBalance && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Live Balance</p>
-                    <p className="text-lg font-semibold">{formatMoney(liveBalance?.available_amount_minor)}</p>
-                  </div>
-                )}
-                <Separator />
-                <Button className="w-full" onClick={() => setReviewOpen(true)}>Review</Button>
-              </div>
+          <>
+            <div className="flex flex-wrap items-center gap-6 pb-4 border-b">
+              <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={merchant?.status ?? ""} size="sm" /></div>
+              <div><p className="text-xs text-muted-foreground">Risk Tier</p><p className="text-sm font-medium capitalize">{merchant?.risk_tier}</p></div>
+              {testBalance && <div><p className="text-xs text-muted-foreground">Test Balance</p><p className="text-sm font-semibold">{formatMoney(testBalance?.available_amount_minor)}</p></div>}
+              {liveBalance && <div><p className="text-xs text-muted-foreground">Live Balance</p><p className="text-sm font-semibold">{formatMoney(liveBalance?.available_amount_minor)}</p></div>}
+              <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>Review</Button>
+            </div>
 
-              <nav className="flex flex-col gap-1">
+            <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+              {/* Sidebar tabs */}
+              <nav className="flex shrink-0 flex-col gap-1 lg:w-48">
                 {tabs.map((t) => (
                   <button key={t.id} type="button" onClick={() => setTab(t.id)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-left ${tab === t.id ? "bg-foreground/5 font-medium text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"}`}>
@@ -103,7 +86,6 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                   </button>
                 ))}
               </nav>
-            </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
@@ -184,6 +166,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               )}
             </div>
           </div>
+          </>
         ) : null}
       </AsyncContent>
 
