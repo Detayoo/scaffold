@@ -87,12 +87,43 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
 
   const status = refund?.status?.toLowerCase();
 
+  const actionFooter = status && ["requested", "approved", "processing"].includes(status) ? (
+    <div className="flex flex-col gap-2">
+      {status === "requested" && (
+        <>
+          <Button className="gap-2 w-full" onClick={() => setConfirmAction("approve")} disabled={approving}>
+            <CheckCircle2 className="size-4" /> Approve
+          </Button>
+          <Button variant="outline" className="gap-2 w-full" onClick={() => setConfirmAction("reject")} disabled={rejecting}>
+            <XCircle className="size-4" /> Reject
+          </Button>
+        </>
+      )}
+      {status === "approved" && (
+        <Button className="gap-2 w-full" onClick={() => setConfirmAction("process")} disabled={processing}>
+          <Send className="size-4" /> Start Processing
+        </Button>
+      )}
+      {status === "processing" && (
+        <>
+          <Button className="gap-2 w-full" onClick={() => setConfirmAction("mark-success")} disabled={markingSuccess}>
+            <CheckCheck className="size-4" /> Mark Succeeded
+          </Button>
+          <Button variant="destructive" className="gap-2 w-full" onClick={() => setConfirmAction("mark-failed")} disabled={markingFailed}>
+            <AlertTriangle className="size-4" /> Mark Failed
+          </Button>
+        </>
+      )}
+    </div>
+  ) : undefined;
+
   return (
     <>
       <ResponsiveSheet
         open={!!refund}
         onOpenChange={(o) => { if (!o) onOpenChange(false); }}
         title="Refund Details"
+        footer={actionFooter}
       >
         {refund ? (
           <div className="space-y-4 pt-2">
@@ -179,39 +210,6 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
               <p className="text-xs text-muted-foreground">Failed</p>
               <p className="text-sm text-foreground">{refund?.failedAt ? formatDate(refund.failedAt) : "—"}</p>
             </div>
-
-            {status && ["requested", "approved", "processing"].includes(status) && (
-              <>
-                <Separator />
-                <div className="flex flex-col gap-2">
-                  {status === "requested" && (
-                    <>
-                      <Button className="gap-2 w-full" onClick={() => setConfirmAction("approve")} disabled={approving}>
-                        <CheckCircle2 className="size-4" /> Approve
-                      </Button>
-                      <Button variant="outline" className="gap-2 w-full" onClick={() => setConfirmAction("reject")} disabled={rejecting}>
-                        <XCircle className="size-4" /> Reject
-                      </Button>
-                    </>
-                  )}
-                  {status === "approved" && (
-                    <Button className="gap-2 w-full" onClick={() => setConfirmAction("process")} disabled={processing}>
-                      <Send className="size-4" /> Start Processing
-                    </Button>
-                  )}
-                  {status === "processing" && (
-                    <>
-                      <Button className="gap-2 w-full" onClick={() => setConfirmAction("mark-success")} disabled={markingSuccess}>
-                        <CheckCheck className="size-4" /> Mark Succeeded
-                      </Button>
-                      <Button variant="destructive" className="gap-2 w-full" onClick={() => setConfirmAction("mark-failed")} disabled={markingFailed}>
-                        <AlertTriangle className="size-4" /> Mark Failed
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
           </div>
         ) : null}
       </ResponsiveSheet>
