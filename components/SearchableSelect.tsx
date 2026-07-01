@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,14 @@ export function SearchableSelect({
   disabled,
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [triggerWidth, setTriggerWidth] = useState(0);
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      setTriggerWidth(triggerRef.current.offsetWidth);
+    }
+  }, [open]);
 
   const selected = options.find((o) => o.value === value);
 
@@ -52,6 +60,7 @@ export function SearchableSelect({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          ref={triggerRef}
           variant="outline"
           role="combobox"
           aria-expanded={open}
@@ -62,7 +71,7 @@ export function SearchableSelect({
           <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+      <PopoverContent className="p-0" style={{ width: triggerWidth || undefined }}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
@@ -77,8 +86,8 @@ export function SearchableSelect({
                     setOpen(false);
                   }}
                 >
-                  <span className={cn("mr-2 size-4 shrink-0")} />
-                  <span className="truncate">{option.label}</span>
+                  <span className="mr-2 size-4 shrink-0" />
+                  {option.label}
                 </CommandItem>
               ))}
             </CommandGroup>
