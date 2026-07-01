@@ -38,7 +38,7 @@ export const createPaylinkFn = async ({
   status,
   metadata,
 }: {
-  reference: string;
+  reference?: string;
   amount: number;
   currency: string;
   channels?: string[];
