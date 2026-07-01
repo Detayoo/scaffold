@@ -670,6 +670,8 @@ export type ChargePolicy = {
   cap_amount_minor?: number;
   status: string;
   version: number;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type AdminMerchantDetailResponse = {
