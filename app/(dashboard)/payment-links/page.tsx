@@ -89,19 +89,21 @@ function PaylinksContent() {
       header: "",
       className: "pr-6",
       cell: (pl) => (
-        <Select
-          value={pl?.status}
-          onValueChange={(v) => handleStatusChange(pl?.id, v)}
-        >
-          <SelectTrigger className="h-8 w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {statusOptions.map((s) => (
-              <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div onClick={(e) => e.stopPropagation()}>
+          <Select
+            value={pl?.status}
+            onValueChange={(v) => handleStatusChange(pl?.id, v)}
+          >
+            <SelectTrigger className="h-8 w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((s) => (
+                <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       ),
     },
   ];
