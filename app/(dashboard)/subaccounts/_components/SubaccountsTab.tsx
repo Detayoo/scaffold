@@ -30,12 +30,21 @@ export function SubaccountsTab() {
     {
       key: "settlementBankAccountId",
       header: "Bank Account",
-      cell: (s) => (
-        <div className="flex flex-col">
-          <span className="text-sm text-foreground">{s?.metadata?.bank_name ?? "—"} · {s?.metadata?.account_number ?? "—"}</span>
-          <span className="text-xs text-muted-foreground">{s?.metadata?.account_name ?? ""}</span>
-        </div>
-      ),
+      cell: (s) => {
+        const bankName = s?.metadata?.bank_name;
+        const acctNumber = s?.metadata?.account_number;
+        const acctName = s?.metadata?.account_name;
+        return (
+          <div className="flex flex-col">
+            {bankName || acctNumber ? (
+              <span className="text-sm text-foreground">{bankName ?? "—"} · {acctNumber ?? "—"}</span>
+            ) : (
+              <span className="text-sm text-foreground">—</span>
+            )}
+            {acctName && <span className="text-xs text-muted-foreground">{acctName}</span>}
+          </div>
+        );
+      },
     },
     {
       key: "status",
