@@ -205,3 +205,30 @@
         transition: background-color 9999s ease-in-out 0s;
     }
 }
+
+/* Hide number input chevrons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Visible scrollbar for command lists */
+[data-slot="command-list"] {
+    scrollbar-width: thin;
+}
+[data-slot="command-list"]::-webkit-scrollbar {
+    width: 6px;
+    display: block;
+}
+[data-slot="command-list"]::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+}
+[data-slot="command-list"]::-webkit-scrollbar-track {
+    background: transparent;
+}
