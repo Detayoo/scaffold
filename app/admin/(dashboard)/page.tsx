@@ -42,12 +42,12 @@ function AdminHome() {
   const logs = data?.data?.slice(0, 5);
 
   const logColumns: Column<AuditLogEntry>[] = [
-    { key: "action", header: "Action", cell: (l) => <span className="text-sm text-foreground">{l?.action}</span> },
-    { key: "actorId", header: "Actor", cell: (l) => <span className="text-sm text-foreground">{l?.actorId}</span> },
     {
       key: "createdAt", header: "Date",
-      cell: (l) => <span className="text-xs text-muted-foreground">{l?.createdAt ? formatDate(l.createdAt) : "—"}</span>,
+      cell: (l) => <span className="text-xs text-foreground">{l?.createdAt ? formatDate(l.createdAt) : "—"}</span>,
     },
+    { key: "action", header: "Action", cell: (l) => <span className="text-sm text-foreground">{l?.action}</span> },
+    { key: "actorId", header: "Actor", cell: (l) => <span className="text-sm text-foreground">{l?.actorId}</span> },
   ];
 
   const merchantColumns: Column<AdminMerchant>[] = [
