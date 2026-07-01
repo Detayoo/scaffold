@@ -86,7 +86,6 @@ export function SearchableSelect({
                     setOpen(false);
                   }}
                 >
-                  <span className="mr-2 size-4 shrink-0" />
                   {option.label}
                 </CommandItem>
               ))}
