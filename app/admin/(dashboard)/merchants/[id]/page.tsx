@@ -24,10 +24,10 @@ import type { ChargePolicy } from "@/types";
 const tabs = [
   { id: "overview", label: "Overview" },
   { id: "balances", label: "Balances" },
-  { id: "charges", label: "Charges" },
-  { id: "payments", label: "Recent Payments" },
   { id: "users", label: "Users" },
   { id: "channels", label: "Channel Policies" },
+  { id: "charges", label: "Charges" },
+  { id: "payments", label: "Recent Payments" },
   { id: "audit", label: "Audit Logs" },
 ];
 
@@ -36,6 +36,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [tab, setTab] = useQueryState("tab", { defaultValue: "overview" });
   const [reviewOpen, setReviewOpen] = useState(false);
   const [chargeOpen, setChargeOpen] = useState(false);
+  const [selectedAuditLog, setSelectedAuditLog] = useState<any>(null);
   const [selectedCharge, setSelectedCharge] = useState<ChargePolicy | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<any>(null);
   const [detailRef, setDetailRef] = useState<string | null>(null);
@@ -47,7 +48,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
     enabled: !!id,
   });
 
-  const { data: chargesData, refetch: refetchCharges } = useQuery({
+  const { data: chargesData } = useQuery({
     queryKey: ["admin-merchant-charges", id],
     queryFn: () => getAdminMerchantChargesFn({ id }),
     enabled: !!id,
@@ -212,6 +213,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                   isPending={false}
                   isError={false}
                   emptyTitle="No audit logs"
+                  onRowClick={(l: any) => setSelectedAuditLog(l)}
                 />
               )}
             </div>
@@ -222,6 +224,21 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
       <MerchantReviewModal open={reviewOpen} onOpenChange={setReviewOpen} merchantId={id} onSuccess={() => refetch()} />
       <ChargePolicyModal open={chargeOpen} onOpenChange={setChargeOpen} merchantId={id} onSuccess={() => refetchCharges()} />
       <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} admin />
+
+      <ResponsiveSheet open={!!selectedAuditLog} onOpenChange={(o) => { if (!o) setSelectedAuditLog(null); }} title="Activity Details">
+        {selectedAuditLog && (
+          <div className="space-y-4 pt-2">
+            <div><p className="text-xs text-muted-foreground">Activity</p><p className="text-sm">{selectedAuditLog?.activity ?? selectedAuditLog?.action ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Action</p><p className="text-sm">{selectedAuditLog?.actionName ?? selectedAuditLog?.action}</p></div>
+            <div><p className="text-xs text-muted-foreground">Actor</p><p className="text-sm">{selectedAuditLog?.actorLabel ?? selectedAuditLog?.actorId}</p></div>
+            <div><p className="text-xs text-muted-foreground">Target</p><p className="text-sm">{selectedAuditLog?.targetLabel ?? selectedAuditLog?.targetType}</p></div>
+            {selectedAuditLog?.activityDetails?.map((d: any, i: number) => (
+              <div key={i}><p className="text-xs text-muted-foreground">{d.label}</p><p className="text-sm">{d.value}</p></div>
+            ))}
+            <div><p className="text-xs text-muted-foreground">Date</p><p className="text-sm">{selectedAuditLog?.created_at ?? selectedAuditLog?.createdAt ? formatDate(selectedAuditLog?.created_at ?? selectedAuditLog?.createdAt) : "—"}</p></div>
+          </div>
+        )}
+      </ResponsiveSheet>
 
       <ResponsiveSheet open={!!selectedChannel} onOpenChange={(o) => { if (!o) setSelectedChannel(null); }} title="Channel Policy Details">
         {selectedChannel && (
