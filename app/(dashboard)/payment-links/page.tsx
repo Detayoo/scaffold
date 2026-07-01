@@ -82,7 +82,7 @@ function PaylinksContent() {
       key: "paymentLink",
       header: "URL",
       className: "max-w-48",
-      cell: (pl) => <span className="text-xs text-muted-foreground truncate block">{pl?.paymentLink || pl?.payment_link || "—"}</span>,
+      cell: (pl) => <span className="text-xs text-foreground truncate block">{pl?.paymentLink || pl?.payment_link || "—"}</span>,
     },
     {
       key: "actions",
