@@ -416,6 +416,10 @@ function WebhookSection() {
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
+  const handlePause = async (id: string) => {
+    try { await pauseEndpoint({ id }); } catch {}
+  };
+
   const { mutateAsync: resumeEndpoint } = useMutation({
     mutationFn: resumeWebhookEndpointFn,
     onSuccess: () => {
@@ -424,6 +428,10 @@ function WebhookSection() {
     },
     onError: (err) => toastMessage("error", extractError(err)),
   });
+
+  const handleResume = async (id: string) => {
+    try { await resumeEndpoint({ id }); } catch {}
+  };
 
   const fetchLogs = useCallback(async (endpointId: string) => {
     setLogsLoading(true);
@@ -533,7 +541,7 @@ function WebhookSection() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        onClick={() => pauseEndpoint({ id: ep?.id ?? "" })}
+                        onClick={() => handlePause(ep?.id ?? "")}
                       >
                         <Pause className="size-3.5" />
                       </Button>
@@ -541,7 +549,7 @@ function WebhookSection() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        onClick={() => resumeEndpoint({ id: ep?.id ?? "" })}
+                        onClick={() => handleResume(ep?.id ?? "")}
                       >
                         <Play className="size-3.5" />
                       </Button>
@@ -731,6 +739,10 @@ function TaxesSection() {
     queryFn: () => getTaxesFn({ page: page + 1, size }),
   });
 
+  const handleDeleteTax = async () => {
+    try { if (deleteTarget) await removeTax(deleteTarget); } catch {}
+  };
+
   const form = useForm({ resolver: zodResolver(createTaxSchema) });
 
   const { mutateAsync: createTax, isPending: creating } = useMutation({
@@ -822,7 +834,7 @@ function TaxesSection() {
         description="Are you sure? This action cannot be undone."
         confirmLabel="Delete"
         variant="destructive"
-        onConfirm={() => deleteTarget && removeTax(deleteTarget)}
+        onConfirm={handleDeleteTax}
         loading={deleting}
       />
     </div>

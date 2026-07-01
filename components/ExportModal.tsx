@@ -43,15 +43,17 @@ export function ExportModal({ open, onOpenChange, exportType, label, onComplete 
   });
 
   const handleExport = async () => {
-    const filters: Record<string, string> = {};
-    if (startDate) filters.createdFrom = startDate.toISOString();
-    if (endDate) filters.createdTo = endDate.toISOString();
+    try {
+      const filters: Record<string, string> = {};
+      if (startDate) filters.createdFrom = startDate.toISOString();
+      if (endDate) filters.createdTo = endDate.toISOString();
 
-    await createExport({
-      exportType,
-      environment,
-      filters: Object.keys(filters).length > 0 ? filters : undefined,
-    });
+      await createExport({
+        exportType,
+        environment,
+        filters: Object.keys(filters).length > 0 ? filters : undefined,
+      });
+    } catch {}
   };
 
   return (

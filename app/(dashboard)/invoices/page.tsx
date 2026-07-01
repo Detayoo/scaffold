@@ -93,6 +93,12 @@ function InvoicesContent() {
     },
   });
 
+  const handleDelete = async () => {
+    try {
+      if (deleteId) await deleteMutation.mutateAsync(deleteId);
+    } catch {}
+  };
+
   const uploadMutation = useMutation({
     mutationFn: uploadInvoiceFn,
     onSuccess: (res) => {
@@ -296,7 +302,7 @@ function InvoicesContent() {
         description="Are you sure you want to delete this invoice? This action cannot be undone."
         confirmLabel="Delete"
         variant="destructive"
-        onConfirm={() => deleteId && deleteMutation.mutateAsync(deleteId)}
+        onConfirm={handleDelete}
         loading={deleteMutation.isPending}
       />
     </div>

@@ -50,6 +50,12 @@ export default function InvoiceDetailPage({
     },
   });
 
+  const handleDelete = async () => {
+    try {
+      if (invoiceId) await deleteMutation.mutateAsync(invoiceId);
+    } catch {}
+  };
+
   const handleDownload = async () => {
     if (!invoiceId) return;
     try {
@@ -209,7 +215,7 @@ export default function InvoiceDetailPage({
           description="Are you sure you want to delete this invoice? This action cannot be undone."
           confirmLabel="Delete"
           variant="destructive"
-          onConfirm={() => deleteMutation.mutateAsync(invoiceId!)}
+          onConfirm={handleDelete}
           loading={deleteMutation.isPending}
         />
       </div>
