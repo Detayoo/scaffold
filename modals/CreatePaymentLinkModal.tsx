@@ -20,8 +20,9 @@ import { createPaylinkFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
 const createSchema = z.object({
+  name: z.string().nonempty("Name is required"),
   reference: z.string().optional(),
-  amount: z.string().nonempty("Amount is required"),
+  amount: z.string().nonempty("Amount is required").refine((v) => !v.includes(".") && !v.includes(","), "Whole numbers only"),
   currency: z.string().nonempty("Currency is required"),
   status: z.string().nonempty("Status is required"),
   cardChannel: z.boolean().optional(),
@@ -39,7 +40,7 @@ interface CreatePaymentLinkModalProps {
 export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: CreatePaymentLinkModalProps) {
   const form = useForm<CreateForm>({
     resolver: zodResolver(createSchema),
-    defaultValues: { reference: "", amount: "", currency: "NGN", status: "active", cardChannel: true, transferChannel: true },
+    defaultValues: { name: "", reference: "", amount: "", currency: "NGN", status: "active", cardChannel: true, transferChannel: true },
   });
 
   const cardChannel = form.watch("cardChannel");
@@ -56,12 +57,12 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ reference, amount, currency, status, cardChannel, transferChannel }) => {
+  const handleCreate = form.handleSubmit(async ({ name, reference, amount, currency, status, cardChannel, transferChannel }) => {
     try {
       const channels: string[] = [];
       if (cardChannel) channels.push("card");
       if (transferChannel) channels.push("bank_transfer");
-      await createPaylink({ reference, amount: Number(amount), currency, channels, status });
+      await createPaylink({ name, reference, amount: Number(amount), currency, channels, status });
     } catch {}
   });
 
@@ -73,6 +74,9 @@ export function CreatePaymentLinkModal({ open, onOpenChange, onSuccess }: Create
       description="Generate a new shareable payment link"
     >
       <form onSubmit={handleCreate} className="space-y-4 pt-2">
+        <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
+          <Input {...form.register("name")} placeholder="e.g. Lekki Catering Deposits" />
+        </FormField>
         <FormField label="Amount (NGN)" error={form.formState.errors.amount?.message} isRequired>
           <Input {...form.register("amount")} type="number" step="any" placeholder="10000" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
         </FormField>
