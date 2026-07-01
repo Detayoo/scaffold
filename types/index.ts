@@ -154,8 +154,13 @@ export type AuditLogEntry = {
   actorId: string;
   merchantId: string;
   action: string;
+  actionName?: string;
+  actorLabel?: string;
   targetType: string;
   targetId: string;
+  targetLabel?: string;
+  activity?: string;
+  activityDetails?: Array<{ label: string; value: string }>;
   metadata?: Record<string, string>;
   createdAt: string;
 };

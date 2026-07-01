@@ -45,33 +45,31 @@ function AuditLogsContent() {
 
   const columns: Column<AuditLogEntry>[] = [
     {
-      key: "action",
-      header: "Action",
-      cell: (l) => <span className="text-sm text-foreground">{l?.action}</span>,
-    },
-    {
-      key: "actorId",
-      header: "Actor",
-      cell: (l) => <span className="text-sm text-foreground">{l?.actorId}</span>,
-    },
-    {
-      key: "targetType",
-      header: "Target Type",
-      cell: (l) => <span className="text-sm text-foreground capitalize">{l?.targetType}</span>,
-    },
-    {
-      key: "merchantId",
-      header: "Merchant",
-      cell: (l) => (
-        <span className="text-xs text-muted-foreground font-mono">{l?.merchantId?.slice(0, 8)}...</span>
-      ),
-    },
-    {
       key: "createdAt",
       header: "Date",
       cell: (l) => (
-        <span className="text-xs text-muted-foreground">{l?.createdAt ? formatDate(l.createdAt) : "—"}</span>
+        <span className="text-xs text-foreground">{l?.createdAt ? formatDate(l.createdAt) : "—"}</span>
       ),
+    },
+    {
+      key: "actionName",
+      header: "Action",
+      cell: (l) => <span className="text-sm text-foreground">{l?.actionName ?? l?.action}</span>,
+    },
+    {
+      key: "actorLabel",
+      header: "Actor",
+      cell: (l) => <span className="text-sm text-foreground">{l?.actorLabel ?? l?.actorId}</span>,
+    },
+    {
+      key: "targetType",
+      header: "Target",
+      cell: (l) => <span className="text-sm text-foreground capitalize">{l?.targetType}</span>,
+    },
+    {
+      key: "activity",
+      header: "Activity",
+      cell: (l) => <span className="text-sm text-foreground">{l?.activity ?? "—"}</span>,
     },
   ];
 

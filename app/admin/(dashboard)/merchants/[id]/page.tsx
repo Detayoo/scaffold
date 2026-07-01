@@ -204,9 +204,9 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                 <DataTable
                   columns={[
                     { key: "created_at", header: "Date", cell: (l: any) => <span className="text-xs text-foreground">{l?.created_at ? formatDate(l.created_at) : "—"}</span> },
-                    { key: "action", header: "Action", cell: (l: any) => <span className="text-sm text-foreground">{l.action}</span> },
-                    { key: "actor_type", header: "Actor", cell: (l: any) => <span className="text-sm capitalize">{l?.actor_type?.replace(/_/g, " ")}</span> },
-                    { key: "target_type", header: "Target", cell: (l: any) => <span className="text-sm capitalize">{l?.target_type?.replace(/_/g, " ")}</span> },
+                    { key: "action", header: "Action", cell: (l: any) => <span className="text-sm text-foreground">{l?.actionName ?? l.action}</span> },
+                    { key: "actor_type", header: "Actor", cell: (l: any) => <span className="text-sm text-foreground">{l?.actorLabel ?? l?.actor_type?.replace(/_/g, " ")}</span> },
+                    { key: "target_type", header: "Target", cell: (l: any) => <span className="text-sm text-foreground capitalize">{l?.target_label ?? l?.target_type?.replace(/_/g, " ")}</span> },
                   ]}
                   data={auditLogs}
                   isPending={false}
