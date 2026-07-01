@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,7 +77,7 @@ export function SearchableSelect({
                     setOpen(false);
                   }}
                 >
-                  <Check className={cn("mr-2 size-4 shrink-0", value === option.value ? "opacity-100" : "opacity-0")} />
+                  <span className={cn("mr-2 size-4 shrink-0")} />
                   <span className="truncate">{option.label}</span>
                 </CommandItem>
               ))}
