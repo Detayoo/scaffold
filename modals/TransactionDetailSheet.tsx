@@ -22,7 +22,7 @@ interface TransactionDetailSheetProps {
 export function TransactionDetailSheet({ reference, onOpenChange, admin }: TransactionDetailSheetProps) {
   const copy = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
-  const [copiedRef, setCopiedRef] = useState<string | null>(null);
+  const [copiedProvRef, setCopiedProvRef] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const toggle = (key: string) => setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -52,6 +52,11 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
   const handleCopy = async (text: string) => {
     const ok = await copy(text);
     if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); }
+  };
+
+  const handleCopyProvRef = async (text: string) => {
+    const ok = await copy(text);
+    if (ok) { setCopiedProvRef(true); setTimeout(() => setCopiedProvRef(false), 2000); }
   };
 
   return (
@@ -162,10 +167,13 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                           {a?.providerReference && (
                             <div className="flex items-center gap-1">
                               <p className="text-xs text-muted-foreground">Ref: {a?.providerReference}</p>
-                              <button type="button" onClick={async () => { const ok = await copy(a?.providerReference); if (ok) { setCopiedRef(a?.id); setTimeout(() => setCopiedRef(null), 2000); } }} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                                {copiedRef === a?.id ? <Check className="size-3" /> : <Copy className="size-3" />}
+                              <button type="button" onClick={() => handleCopyProvRef(a?.providerReference)} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                {copiedProvRef ? <Check className="size-3" /> : <Copy className="size-3" />}
                               </button>
                             </div>
+                          )}
+                          {a?.actionRequired?.type && a?.actionRequired?.type !== "none" && (
+                            <p className="text-xs text-muted-foreground">Action: {a?.actionRequired?.type}</p>
                           )}
                           {a?.providerData?.responseMessage && <p className="text-xs text-muted-foreground">{a?.providerData?.responseMessage}</p>}
                           {a?.createdAt && <p className="text-xs text-muted-foreground">{formatDate(a?.createdAt)}</p>}
