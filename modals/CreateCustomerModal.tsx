@@ -16,15 +16,16 @@ import {
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { createGatewayCustomerFn } from "@/services";
+import { createCustomerFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
-import type { CreateCustomerPayload } from "@/types";
 
 const schema = z.object({
-  reference: z.string().nonempty("Reference is required"),
-  name: z.string().optional(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  name: z.string().nonempty("Name is required"),
+  email: z.string().email("Invalid email"),
   status: z.string().optional(),
+  phone: z.string().optional(),
+  city: z.string().optional(),
+  reference: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -38,11 +39,11 @@ interface CreateCustomerModalProps {
 export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCustomerModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { reference: "", name: "", email: "", status: "active" },
+    defaultValues: { name: "", email: "", status: "active", phone: "", city: "", reference: "" },
   });
 
   const { mutateAsync: createCustomer, isPending: creating } = useMutation({
-    mutationFn: createGatewayCustomerFn,
+    mutationFn: createCustomerFn,
     onSuccess: () => {
       toastMessage("success", "Customer created");
       form.reset();
@@ -52,16 +53,19 @@ export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCus
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ reference, name, email, status }) => {
+  const handleCreate = form.handleSubmit(async ({ name, email, status, phone, city, reference }) => {
     try {
-      const payload: CreateCustomerPayload = { reference };
-      if (name) payload.name = name;
-      if (email) payload.email = email;
-      if (status) payload.status = status;
-      await createCustomer(payload);
-    } catch {
-      // handled by onError
-    }
+      const metadata: Record<string, string> = {};
+      if (phone) metadata.phone = phone;
+      if (city) metadata.city = city;
+      await createCustomer({
+        name,
+        email,
+        status: status || undefined,
+        reference: reference || undefined,
+        metadata: Object.keys(metadata).length ? metadata : undefined,
+      });
+    } catch {}
   });
 
   return (
@@ -72,16 +76,13 @@ export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCus
       description="Add a new customer record"
     >
       <form onSubmit={handleCreate} className="space-y-4 pt-2">
-        <FormField label="Reference" error={form.formState.errors.reference?.message} isRequired>
-          <Input {...form.register("reference")} placeholder="cus_unique_ref" />
+        <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
+          <Input {...form.register("name")} placeholder="Chinedu Okafor" />
         </FormField>
-        <FormField label="Name" error={form.formState.errors.name?.message}>
-          <Input {...form.register("name")} placeholder="Customer name (optional)" />
+        <FormField label="Email" error={form.formState.errors.email?.message} isRequired>
+          <Input {...form.register("email")} placeholder="chinedu.okafor@example.ng" />
         </FormField>
-        <FormField label="Email" error={form.formState.errors.email?.message}>
-          <Input {...form.register("email")} placeholder="customer@example.com (optional)" />
-        </FormField>
-        <FormField label="Status" error={form.formState.errors.status?.message}>
+        <FormField label="Status">
           <Select
             value={form.watch("status")}
             onValueChange={(v) => form.setValue("status", v)}
@@ -94,6 +95,15 @@ export function CreateCustomerModal({ open, onOpenChange, onSuccess }: CreateCus
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
+        </FormField>
+        <FormField label="Phone (optional)">
+          <Input {...form.register("phone")} placeholder="08034561234" />
+        </FormField>
+        <FormField label="City (optional)">
+          <Input {...form.register("city")} placeholder="Ikeja" />
+        </FormField>
+        <FormField label="Reference (optional)">
+          <Input {...form.register("reference")} placeholder="Auto-generated if blank" />
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>

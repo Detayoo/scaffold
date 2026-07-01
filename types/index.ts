@@ -340,10 +340,10 @@ export type VirtualAccount = {
 };
 
 export type CreateCustomerPayload = {
-  reference: string;
-  email?: string;
-  name?: string;
+  email: string;
+  name: string;
   status?: string;
+  reference?: string;
   metadata?: Record<string, string>;
 };
 

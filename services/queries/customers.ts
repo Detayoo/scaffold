@@ -15,7 +15,7 @@ export const getCustomerListFn = async (opts: {
   return data;
 };
 
-export const createGatewayCustomerFn = async (payload: CreateCustomerPayload) => {
+export const createCustomerFn = async (payload: CreateCustomerPayload) => {
   const { data } = await v1AuthenticatedApi().post("/customers", payload);
   return data;
 };

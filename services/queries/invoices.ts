@@ -13,7 +13,7 @@ import type {
   UpdateInvoice,
 } from "@/types";
 
-export const createCustomerFn = async (payload: CreateCustomer) => {
+export const createInvoiceCustomerFn = async (payload: CreateCustomer) => {
   const { data } = await v1AuthenticatedApi().post("/customer", payload);
   return data;
 };
