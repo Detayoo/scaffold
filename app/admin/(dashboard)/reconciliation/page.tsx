@@ -176,7 +176,7 @@ function ReconciliationContent() {
         <div className="space-y-4">
           <FormField label="Type">
             <Select value={localType} onValueChange={setLocalType}>
-              <SelectTrigger><SelectValue placeholder="All types" /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="All types" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value=" ">All types</SelectItem>
                 <SelectItem value="amount_mismatch">Amount Mismatch</SelectItem>
@@ -187,7 +187,7 @@ function ReconciliationContent() {
           </FormField>
           <FormField label="Status">
             <Select value={localStatus} onValueChange={setLocalStatus}>
-              <SelectTrigger><SelectValue placeholder="All statuses" /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="All statuses" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value=" ">All statuses</SelectItem>
                 <SelectItem value="open">Open</SelectItem>
