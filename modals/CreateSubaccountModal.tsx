@@ -7,18 +7,11 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
+import { BankSelectField } from "@/components/BankSelectField";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { createSubaccountFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
-import { useBanks } from "@/hooks/use-banks";
 
 const schema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -40,7 +33,6 @@ interface CreateSubaccountModalProps {
 }
 
 export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateSubaccountModalProps) {
-  const { data: banks, isFetching: banksLoading } = useBanks();
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", bankCode: "", accountNumber: "", percentage: "", market: "" },
@@ -84,22 +76,13 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
         <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
           <Input {...form.register("name")} placeholder="e.g. Balogun Rice Seller" />
         </FormField>
-        <FormField label="Bank" error={form.formState.errors.bankCode?.message} isRequired>
-          <Select
-            value={form.watch("bankCode")}
-            onValueChange={(v) => form.setValue("bankCode", v)}
-            disabled={banksLoading}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={banksLoading ? "Loading banks..." : "Select a bank"} />
-            </SelectTrigger>
-            <SelectContent>
-              {banks?.map((b) => (
-                <SelectItem key={b.code} value={b.code}>{b.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FormField>
+        <BankSelectField
+          value={form.watch("bankCode")}
+          onValueChange={(v) => form.setValue("bankCode", v)}
+          label="Bank"
+          isRequired
+          error={form.formState.errors.bankCode?.message}
+        />
         <FormField label="Account Number" error={form.formState.errors.accountNumber?.message} isRequired>
           <Input {...form.register("accountNumber")} placeholder="0123456789" maxLength={10} />
         </FormField>

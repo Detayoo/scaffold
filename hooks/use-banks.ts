@@ -8,6 +8,5 @@ export function useBanks() {
       const { data } = await v1AuthenticatedApi().get("/banks");
       return data?.data as Array<{ code: string; name: string; country: string; currency: string; type: string }>;
     },
-    staleTime: 5 * 60 * 1000,
   });
 }
