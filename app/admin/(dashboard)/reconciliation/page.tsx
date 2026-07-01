@@ -22,6 +22,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { SectionHeader } from "@/components/SectionHeader";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -211,64 +212,62 @@ function ReconciliationContent() {
         onRowClick={(e) => setSelectedExc(e)}
       />
 
-      {selectedExc && (
-        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-foreground">Exception Details</p>
-            <button type="button" onClick={() => { setSelectedExc(null); setAction(null); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer">Close</button>
-          </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div><p className="text-xs text-muted-foreground">Type</p><p className="capitalize">{selectedExc?.type?.replace(/_/g, " ")}</p></div>
-            <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={selectedExc?.status} size="sm" /></div>
-            <div><p className="text-xs text-muted-foreground">Expected</p><p>{formatMoney(selectedExc?.expectedAmountMinor ?? 0)}</p></div>
-            <div><p className="text-xs text-muted-foreground">Received</p><p>{formatMoney(selectedExc?.receivedAmountMinor ?? 0)}</p></div>
-            <div className="col-span-2"><p className="text-xs text-muted-foreground">Provider Ref</p><p className="font-mono text-xs">{selectedExc?.providerReference ?? "—"}</p></div>
-            {selectedExc?.ownerName && <div className="col-span-2"><p className="text-xs text-muted-foreground">Owner</p><p>{selectedExc.ownerName}</p></div>}
-          </div>
-          {selectedExc?.status === "open" && (
-            <div className="flex gap-2 pt-1">
-              <Button variant="outline" onClick={() => { setAction("assign"); setOwnerId(""); setOwnerName(""); }}>Assign</Button>
+      <ResponsiveSheet open={!!selectedExc} onOpenChange={(o) => { if (!o) { setSelectedExc(null); setAction(null); } }} title="Exception Details">
+        {selectedExc && (
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div><p className="text-xs text-muted-foreground">Type</p><p className="capitalize">{selectedExc?.type?.replace(/_/g, " ")}</p></div>
+              <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={selectedExc?.status} size="sm" /></div>
+              <div><p className="text-xs text-muted-foreground">Expected</p><p>{formatMoney(selectedExc?.expectedAmountMinor ?? 0)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Received</p><p>{formatMoney(selectedExc?.receivedAmountMinor ?? 0)}</p></div>
+              <div className="col-span-2"><p className="text-xs text-muted-foreground">Provider Ref</p><p className="text-xs">{selectedExc?.providerReference ?? "—"}</p></div>
+              {selectedExc?.ownerName && <div className="col-span-2"><p className="text-xs text-muted-foreground">Owner</p><p>{selectedExc.ownerName}</p></div>}
             </div>
-          )}
-          {selectedExc?.status === "assigned" && (
-            <div className="flex gap-2 pt-1">
-              <Button onClick={() => { setAction("resolve"); setResolveReason(""); }}>Resolve</Button>
-            </div>
-          )}
-          {action === "assign" && (
-            <div className="space-y-2 pt-2 border-t">
-              <FormField label="Owner" isRequired>
-                <SearchableSelect
-                  options={MOCK_OWNERS.map((o) => ({ value: o.id, label: o.name }))}
-                  value={ownerId}
-                  onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}
-                  placeholder="Select owner"
-                  searchPlaceholder="Search owners..."
-                />
-              </FormField>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
-                <Button onClick={async () => { try { await assignExc({ id: selectedExc.id, ownerId, ownerName }); } catch {} }} disabled={isAssigning || !ownerId || !ownerName}>
-                  {isAssigning ? "Assigning..." : "Assign"}
-                </Button>
+            {selectedExc?.status === "open" && (
+              <div className="flex gap-2 pt-1">
+                <Button variant="outline" onClick={() => { setAction("assign"); setOwnerId(""); setOwnerName(""); }}>Assign</Button>
               </div>
-            </div>
-          )}
-          {action === "resolve" && (
-            <div className="space-y-2 pt-2 border-t">
-              <FormField label="Resolution Reason" isRequired>
-                <Input value={resolveReason} onChange={(e) => setResolveReason(e.target.value)} placeholder="Provider confirmed correct amount" />
-              </FormField>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
-                <Button onClick={async () => { try { await resolveExc({ id: selectedExc.id, reason: resolveReason, evidence: {} }); } catch {} }} disabled={isResolving || !resolveReason}>
-                  {isResolving ? "Resolving..." : "Resolve"}
-                </Button>
+            )}
+            {selectedExc?.status === "assigned" && (
+              <div className="flex gap-2 pt-1">
+                <Button onClick={() => { setAction("resolve"); setResolveReason(""); }}>Resolve</Button>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+            {action === "assign" && (
+              <div className="space-y-2 pt-2 border-t">
+                <FormField label="Owner" isRequired>
+                  <SearchableSelect
+                    options={MOCK_OWNERS.map((o) => ({ value: o.id, label: o.name }))}
+                    value={ownerId}
+                    onValueChange={(v) => { const o = MOCK_OWNERS.find((x) => x.id === v); setOwnerId(v); setOwnerName(o?.name ?? ""); }}
+                    placeholder="Select owner"
+                    searchPlaceholder="Search owners..."
+                  />
+                </FormField>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
+                  <Button onClick={async () => { try { await assignExc({ id: selectedExc.id, ownerId, ownerName }); } catch {} }} disabled={isAssigning || !ownerId || !ownerName}>
+                    {isAssigning ? "Assigning..." : "Assign"}
+                  </Button>
+                </div>
+              </div>
+            )}
+            {action === "resolve" && (
+              <div className="space-y-2 pt-2 border-t">
+                <FormField label="Resolution Reason" isRequired>
+                  <Input value={resolveReason} onChange={(e) => setResolveReason(e.target.value)} placeholder="Provider confirmed correct amount" />
+                </FormField>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
+                  <Button onClick={async () => { try { await resolveExc({ id: selectedExc.id, reason: resolveReason, evidence: {} }); } catch {} }} disabled={isResolving || !resolveReason}>
+                    {isResolving ? "Resolving..." : "Resolve"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </ResponsiveSheet>
 
       <ResponsiveModal open={reconModal} onOpenChange={setReconModal} title="Run Reconciliation">
         <div className="space-y-4 pt-2">
