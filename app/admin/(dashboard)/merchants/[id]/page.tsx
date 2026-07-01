@@ -159,6 +159,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                   columns={[
                     { key: "channel", header: "Channel", cell: (cp: any) => <span className="text-sm capitalize">{cp?.channel?.replace(/_/g, " ")}</span> },
                     { key: "environment", header: "Environment", cell: (cp: any) => <span className="text-sm capitalize">{cp?.environment}</span> },
+                    { key: "routing_policy_id", header: "Routing", cell: (cp: any) => <span className="text-sm">{cp?.routing_policy_id ?? "—"}</span> },
                     { key: "enabled", header: "Status", cell: (cp: any) => <StatusBadge status={cp?.enabled ? "active" : "inactive"} size="sm" /> },
                   ]}
                   data={channelPolicies}
