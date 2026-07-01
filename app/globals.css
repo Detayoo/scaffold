@@ -220,6 +220,7 @@ input[type="number"] {
 /* Visible scrollbar for command lists */
 [data-slot="command-list"] {
     scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
 }
 [data-slot="command-list"]::-webkit-scrollbar {
     width: 6px;
@@ -227,7 +228,10 @@ input[type="number"] {
 }
 [data-slot="command-list"]::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
-    border-radius: 3px;
+    border-radius: 999px;
+}
+[data-slot="command-list"]::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
 }
 [data-slot="command-list"]::-webkit-scrollbar-track {
     background: transparent;
