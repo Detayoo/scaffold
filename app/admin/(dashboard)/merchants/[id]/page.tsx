@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Separator } from "@/components/ui/separator";
 import { AsyncContent } from "@/components/AsyncContent";
@@ -35,6 +36,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [tab, setTab] = useQueryState("tab", { defaultValue: "overview" });
   const [reviewOpen, setReviewOpen] = useState(false);
   const [chargeOpen, setChargeOpen] = useState(false);
+  const [selectedCharge, setSelectedCharge] = useState<ChargePolicy | null>(null);
   const [detailRef, setDetailRef] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -64,7 +66,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
     { key: "channel", header: "Channel", cell: (c) => <span className="text-sm capitalize">{c?.channel?.replace(/_/g, " ")}</span> },
     { key: "environment", header: "Env", cell: (c) => <span className="text-sm capitalize">{c?.environment}</span> },
     { key: "percentage_bps", header: "% (bps)", cell: (c) => <span className="text-sm">{c?.percentage_bps}</span> },
-    { key: "fixed_amount_minor", header: "Fixed", cell: (c) => <span className="text-sm">{formatMoney(c?.fixed_amount_minor)}</span> },
+    { key: "fixed_amount_minor", header: "Fixed", cell: (c) => <span className="text-sm">{formatMoney((c?.fixed_amount_minor ?? 0) / 100)}</span> },
     { key: "status", header: "Status", cell: (c) => <StatusBadge status={c?.status} size="sm" /> },
   ];
 
@@ -190,7 +192,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                       <Plus className="size-3.5" /> Add Charge
                     </Button>
                   </div>
-                  <DataTable columns={chargeColumns} data={charges} isPending={false} isError={false} emptyTitle="No charge policies" emptyDescription="Add a charge policy to get started." emptyAction={{ label: "Add Charge", onClick: () => setChargeOpen(true) }} />
+                  <DataTable columns={chargeColumns} data={charges} isPending={false} isError={false} emptyTitle="No charge policies" emptyDescription="Add a charge policy to get started." emptyAction={{ label: "Add Charge", onClick: () => setChargeOpen(true) }} onRowClick={(c: any) => setSelectedCharge(c)} />
                 </div>
               )}
 
@@ -216,6 +218,26 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
       <MerchantReviewModal open={reviewOpen} onOpenChange={setReviewOpen} merchantId={id} onSuccess={() => refetch()} />
       <ChargePolicyModal open={chargeOpen} onOpenChange={setChargeOpen} merchantId={id} onSuccess={() => refetchCharges()} />
       <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} admin />
+
+      <ResponsiveSheet open={!!selectedCharge} onOpenChange={(o) => { if (!o) setSelectedCharge(null); }} title="Charge Policy Details">
+        {selectedCharge && (
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div><p className="text-xs text-muted-foreground">Channel</p><p className="text-sm capitalize">{selectedCharge?.channel?.replace(/_/g, " ")}</p></div>
+              <div><p className="text-xs text-muted-foreground">Environment</p><p className="text-sm capitalize">{selectedCharge?.environment}</p></div>
+              <div><p className="text-xs text-muted-foreground">Currency</p><p className="text-sm">{selectedCharge?.currency}</p></div>
+              <div><p className="text-xs text-muted-foreground">Fee Bearer</p><p className="text-sm capitalize">{selectedCharge?.fee_bearer}</p></div>
+              <div><p className="text-xs text-muted-foreground">Percentage (bps)</p><p className="text-sm">{selectedCharge?.percentage_bps}</p></div>
+              <div><p className="text-xs text-muted-foreground">Fixed Amount</p><p className="text-sm">{formatMoney((selectedCharge?.fixed_amount_minor ?? 0) / 100)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Floor Amount</p><p className="text-sm">{formatMoney((selectedCharge?.floor_amount_minor ?? 0) / 100)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Cap Amount</p><p className="text-sm">{formatMoney((selectedCharge?.cap_amount_minor ?? 0) / 100)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={selectedCharge?.status} size="sm" /></div>
+              <div><p className="text-xs text-muted-foreground">Version</p><p className="text-sm">{selectedCharge?.version}</p></div>
+            </div>
+            <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{selectedCharge?.created_at ? formatDate(selectedCharge.created_at) : "—"}</p></div>
+          </div>
+        )}
+      </ResponsiveSheet>
     </div>
   );
 }
