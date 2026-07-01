@@ -24,9 +24,9 @@ const tabs = [
   { id: "overview", label: "Overview" },
   { id: "balances", label: "Balances" },
   { id: "charges", label: "Charges" },
+  { id: "payments", label: "Recent Payments" },
   { id: "users", label: "Users" },
   { id: "channels", label: "Channel Policies" },
-  { id: "payments", label: "Recent Payments" },
   { id: "audit", label: "Audit Logs" },
 ];
 
@@ -215,7 +215,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
       <MerchantReviewModal open={reviewOpen} onOpenChange={setReviewOpen} merchantId={id} onSuccess={() => refetch()} />
       <ChargePolicyModal open={chargeOpen} onOpenChange={setChargeOpen} merchantId={id} onSuccess={() => refetchCharges()} />
-      <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} />
+      <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} admin />
     </div>
   );
 }

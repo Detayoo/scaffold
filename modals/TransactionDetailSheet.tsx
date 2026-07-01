@@ -9,16 +9,17 @@ import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Separator } from "@/components/ui/separator";
-import { getTransactionDetailFn } from "@/services";
+import { getTransactionDetailFn, getAdminTransactionDetailFn } from "@/services";
 import { formatMoney, formatDate } from "@/utils";
 import type { TimelineEntry } from "@/types";
 
 interface TransactionDetailSheetProps {
   reference: string | null;
   onOpenChange: (open: boolean) => void;
+  admin?: boolean;
 }
 
-export function TransactionDetailSheet({ reference, onOpenChange }: TransactionDetailSheetProps) {
+export function TransactionDetailSheet({ reference, onOpenChange, admin }: TransactionDetailSheetProps) {
   const copy = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
@@ -32,9 +33,11 @@ export function TransactionDetailSheet({ reference, onOpenChange }: TransactionD
     </button>
   );
 
+  const detailFn = admin ? getAdminTransactionDetailFn : getTransactionDetailFn;
+
   const { data, isPending, isError, refetch } = useQuery({
-    queryKey: ["transaction-detail", reference],
-    queryFn: () => getTransactionDetailFn({ reference: reference! }),
+    queryKey: ["transaction-detail", reference, admin],
+    queryFn: () => detailFn({ reference: reference! }),
     enabled: !!reference,
   });
 
