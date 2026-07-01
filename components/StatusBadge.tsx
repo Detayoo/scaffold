@@ -58,6 +58,7 @@ const statusConfig: Record<
   succeeded: { variant: "success", label: "Succeeded" },
   completed: { variant: "success", label: "Completed" },
   revoked: { variant: "error", label: "Revoked" },
+  rejected: { variant: "error", label: "Rejected" },
   queued: { variant: "pending", label: "Queued" },
   requested: { variant: "pending", label: "Requested" },
   paused: { variant: "warning", label: "Paused" },
