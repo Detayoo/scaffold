@@ -68,8 +68,8 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
       <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load merchant details.">
         {merchant ? (
           <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-            {/* Sidebar */}
-            <div className="flex shrink-0 flex-col gap-4 lg:w-64">
+            {/* Sidebar nav + merchant info */}
+            <div className="flex shrink-0 flex-col gap-4 lg:w-48">
               <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
                 <div>
                   <p className="text-xs text-muted-foreground">Status</p>
@@ -94,18 +94,19 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                 <Separator />
                 <Button className="w-full" onClick={() => setReviewOpen(true)}>Review</Button>
               </div>
+
+              <nav className="flex flex-col gap-1">
+                {tabs.map((t) => (
+                  <button key={t.id} type="button" onClick={() => setTab(t.id)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-left ${tab === t.id ? "bg-foreground/5 font-medium text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"}`}>
+                    {t.label}
+                  </button>
+                ))}
+              </nav>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex gap-1 border-b mb-4">
-                {tabs.map((t) => (
-                  <button key={t.id} type="button" onClick={() => setTab(t.id)}
-                    className={`px-4 pb-2 text-sm font-medium transition-colors cursor-pointer border-b-2 -mb-px ${tab === t.id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
-                    {t.label}
-                  </button>
-                ))}
-              </div>
 
               {tab === "overview" && (
                 <div className="space-y-4">
