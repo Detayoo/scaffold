@@ -20,8 +20,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
+import { StatusSelect } from "@/components/StatusSelect";
 import { CreatePaymentLinkModal } from "@/modals/CreatePaymentLinkModal";
-import { StatusUpdateModal } from "@/modals/StatusUpdateModal";
 import { getPaylinksFn } from "@/services";
 import { formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
@@ -41,8 +41,6 @@ function PaylinksContent() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
-  const [statusModalId, setStatusModalId] = useState<string | null>(null);
-  const [statusModalCurrent, setStatusModalCurrent] = useState<string>("");
 
   const handleSearch = useCallback(() => {}, []);
 
@@ -84,13 +82,7 @@ function PaylinksContent() {
       className: "pr-6",
       cell: (pl) => (
         <div onClick={(e) => e.stopPropagation()}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => { setStatusModalId(pl?.id); setStatusModalCurrent(pl?.status); }}
-          >
-            Update Status
-          </Button>
+          <StatusSelect paylinkId={pl?.id} currentStatus={pl?.status} onSuccess={() => refetch()} className="h-8 w-36" />
         </div>
       ),
     },
@@ -158,14 +150,6 @@ function PaylinksContent() {
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
-
-      <StatusUpdateModal
-        open={!!statusModalId}
-        onOpenChange={(o) => { if (!o) setStatusModalId(null); }}
-        paylinkId={statusModalId ?? ""}
-        currentStatus={statusModalCurrent}
-        onSuccess={() => refetch()}
-      />
     </div>
   );
 }

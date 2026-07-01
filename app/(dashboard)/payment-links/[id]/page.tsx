@@ -4,12 +4,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Copy, Check } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/DataTable";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StatusSelect } from "@/components/StatusSelect";
 import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
-import { StatusUpdateModal } from "@/modals/StatusUpdateModal";
 import { getPaylinkPaymentsFn } from "@/services";
 import { formatMoney, formatDate } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
@@ -23,7 +22,6 @@ function PaylinkDetailPage() {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const copy = useCopyToClipboard();
   const [detailRef, setDetailRef] = useState<string | null>(null);
-  const [statusOpen, setStatusOpen] = useState(false);
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["paylink-detail", id],
@@ -122,9 +120,7 @@ function PaylinkDetailPage() {
               )}
               <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
                 <p className="text-sm font-medium text-foreground">Update Status</p>
-                <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
-                  {paylink?.status ? paylink.status.charAt(0).toUpperCase() + paylink.status.slice(1) : "Set Status"}
-                </Button>
+                <StatusSelect paylinkId={id} currentStatus={paylink?.status ?? ""} onSuccess={() => refetch()} className="h-9 w-fit" />
               </div>
             </div>
 
@@ -144,14 +140,6 @@ function PaylinkDetailPage() {
             <TransactionDetailSheet
               reference={detailRef}
               onOpenChange={(o) => { if (!o) setDetailRef(null); }}
-            />
-
-            <StatusUpdateModal
-              open={statusOpen}
-              onOpenChange={setStatusOpen}
-              paylinkId={id}
-              currentStatus={paylink?.status ?? ""}
-              onSuccess={() => refetch()}
             />
           </>
         )}
