@@ -472,3 +472,80 @@ export const rebuildReadModelsFn = async (payload: { models: string[] }) => {
   const { data } = await v1AdminAuthenticatedApi().post("/admin/read-models/rebuild", payload);
   return data;
 };
+
+export const getAdminMerchantsFn = async ({
+  status,
+  riskTier,
+  search,
+  createdFrom,
+  createdTo,
+  limit,
+  offset,
+}: {
+  status?: string;
+  riskTier?: string;
+  search?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  limit?: number;
+  offset?: number;
+} = {}) => {
+  const params: Record<string, string> = {};
+  if (status) params.status = status;
+  if (riskTier) params.riskTier = riskTier;
+  if (search) params.search = search;
+  if (createdFrom) params.createdFrom = createdFrom;
+  if (createdTo) params.createdTo = createdTo;
+  if (limit) params.limit = String(limit);
+  if (offset) params.offset = String(offset);
+  const { data } = await v1AdminAuthenticatedApi().get("/admin/merchants", { params });
+  return data;
+};
+
+export const getAdminMerchantDetailFn = async ({ id }: { id: string }) => {
+  const { data } = await v1AdminAuthenticatedApi().get(`/admin/merchants/${id}`);
+  return data;
+};
+
+export const getAdminMerchantChargesFn = async ({
+  id,
+  environment,
+  channel,
+  currency,
+  status,
+}: {
+  id: string;
+  environment?: string;
+  channel?: string;
+  currency?: string;
+  status?: string;
+}) => {
+  const params: Record<string, string> = {};
+  if (environment) params.environment = environment;
+  if (channel) params.channel = channel;
+  if (currency) params.currency = currency;
+  if (status) params.status = status;
+  const { data } = await v1AdminAuthenticatedApi().get(`/admin/merchants/${id}/charges`, { params });
+  return data;
+};
+
+export const updateAdminMerchantChargeFn = async ({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: {
+    environment: string;
+    channel: string;
+    currency: string;
+    feeBearer: string;
+    percentageBps: number;
+    fixedAmountMinor: number;
+    floorAmountMinor?: number;
+    capAmountMinor?: number;
+    metadata?: Record<string, string>;
+  };
+}) => {
+  const { data } = await v1AdminAuthenticatedApi().put(`/admin/merchants/${id}/charges`, payload);
+  return data;
+};

@@ -625,6 +625,66 @@ export type GetMerchantProfileResponse = {
   };
 };
 
+export type AdminMerchant = {
+  id: string;
+  display_name: string;
+  legal_name: string;
+  email: string;
+  status: string;
+  risk_tier: string;
+  default_currency: string;
+  counts: {
+    active_users: number;
+    enabled_channels: number;
+    active_charge_policies: number;
+  };
+};
+
+export type AdminMerchantListResponse = {
+  status: boolean;
+  data: {
+    merchants: AdminMerchant[];
+    pagination: {
+      total: number;
+      limit: number;
+      offset: number;
+    };
+  };
+};
+
+export type ChargePolicy = {
+  id: string;
+  merchant_id: string;
+  environment: string;
+  channel: string;
+  currency: string;
+  fee_bearer: string;
+  percentage_bps: number;
+  fixed_amount_minor: number;
+  floor_amount_minor?: number;
+  cap_amount_minor?: number;
+  status: string;
+  version: number;
+};
+
+export type AdminMerchantDetailResponse = {
+  status: boolean;
+  data: {
+    merchant: { id: string; display_name: string; status: string; risk_tier: string };
+    users: Array<{ id: string; email: string; role: string; status: string }>;
+    channel_policies: Array<{ environment: string; channel: string; enabled: boolean }>;
+    charge_policies: ChargePolicy[];
+    balances: Record<string, Array<{ currency: string; available_amount_minor: number }>>;
+    recent: {
+      payments: Array<{ reference: string; status: string }>;
+      refunds: any[];
+      disputes: any[];
+      settlements: any[];
+    };
+    audit_logs: Array<{ action: string; target_type: string }>;
+  };
+};
+
 export type ApiKeyItem = {
   id: string;
   created_at: string;
