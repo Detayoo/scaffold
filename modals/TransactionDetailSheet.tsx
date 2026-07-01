@@ -175,6 +175,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                           {a?.actionRequired?.type && a?.actionRequired?.type !== "none" && (
                             <p className="text-xs text-muted-foreground">Action: {a?.actionRequired?.type}</p>
                           )}
+                          {a?.failureCode && <p className="text-xs text-destructive">Failure: {a?.failureCode}</p>}
                           {a?.providerData?.responseMessage && <p className="text-xs text-muted-foreground">{a?.providerData?.responseMessage}</p>}
                           {a?.createdAt && <p className="text-xs text-muted-foreground">{formatDate(a?.createdAt)}</p>}
                         </div>
