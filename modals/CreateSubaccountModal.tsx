@@ -7,26 +7,20 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { createSubaccountFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
-const BANKS = [
-  { id: "uba_01JX6XT6X8K7Q3Z5Y2R4M9B1A", name: "United Bank for Africa" },
-  { id: "fbn_01JX6XT6X8K7Q3Z5Y2R4M9B2B", name: "First Bank of Nigeria" },
-];
-
 const schema = z.object({
   name: z.string().nonempty("Name is required"),
-  settlementBankAccountId: z.string().nonempty("Bank account ID is required"),
+  bankCode: z.string().nonempty("Bank code is required"),
+  accountNumber: z.string().nonempty("Account number is required").length(10, "Account number must be 10 digits"),
+  percentage: z.string().nonempty("Percentage is required").refine((v) => {
+    const n = Number(v);
+    return !isNaN(n) && n > 0 && n <= 100;
+  }, "Must be between 1 and 100"),
+  market: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -40,7 +34,7 @@ interface CreateSubaccountModalProps {
 export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateSubaccountModalProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", settlementBankAccountId: "" },
+    defaultValues: { name: "", bankCode: "", accountNumber: "", percentage: "", market: "" },
   });
 
   const { mutateAsync: createSubaccount, isPending: creating } = useMutation({
@@ -54,12 +48,20 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
     onError: (err) => toastMessage("error", extractError(err)),
   });
 
-  const handleCreate = form.handleSubmit(async ({ name, settlementBankAccountId }) => {
+  const handleCreate = form.handleSubmit(async ({ name, bankCode, accountNumber, percentage, market }) => {
     try {
-      await createSubaccount({ name, settlementBankAccountId });
-    } catch {
-      // handled by onError
-    }
+      const pct = Number(percentage);
+      await createSubaccount({
+        name,
+        bankCode,
+        accountNumber,
+        split: {
+          percentageBps: Math.round(pct * 100),
+          platformPercentageBps: Math.round((100 - pct) * 100),
+        },
+        metadata: market ? { market } : undefined,
+      });
+    } catch {}
   });
 
   return (
@@ -71,24 +73,19 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
     >
       <form onSubmit={handleCreate} className="space-y-4 pt-2">
         <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
-          <Input {...form.register("name")} placeholder="Balogun Rice Seller" />
+          <Input {...form.register("name")} placeholder="e.g. Balogun Rice Seller" />
         </FormField>
-        <FormField label="Settlement Bank" error={form.formState.errors.settlementBankAccountId?.message} isRequired>
-          <Select
-            value={form.watch("settlementBankAccountId")}
-            onValueChange={(v) => form.setValue("settlementBankAccountId", v)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a bank" />
-            </SelectTrigger>
-            <SelectContent>
-              {BANKS.map((bank) => (
-                <SelectItem key={bank.id} value={bank.id}>
-                  {bank.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <FormField label="Bank Code" error={form.formState.errors.bankCode?.message} isRequired>
+          <Input {...form.register("bankCode")} placeholder="e.g. guaranty-trust-bank" />
+        </FormField>
+        <FormField label="Account Number" error={form.formState.errors.accountNumber?.message} isRequired>
+          <Input {...form.register("accountNumber")} placeholder="0123456789" maxLength={10} />
+        </FormField>
+        <FormField label="Your Share (%)" error={form.formState.errors.percentage?.message} isRequired>
+          <Input {...form.register("percentage")} type="number" placeholder="e.g. 90" />
+        </FormField>
+        <FormField label="Market (optional)">
+          <Input {...form.register("market")} placeholder="e.g. Balogun" />
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>

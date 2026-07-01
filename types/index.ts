@@ -359,7 +359,12 @@ export type Subaccount = {
 
 export type CreateSubaccountPayload = {
   name: string;
-  settlementBankAccountId: string;
+  bankCode: string;
+  accountNumber: string;
+  split: {
+    percentageBps: number;
+    platformPercentageBps: number;
+  };
   metadata?: Record<string, string>;
 };
 
