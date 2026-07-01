@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { Loader2, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,14 +107,15 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
           </div>
         )}
         {resolved && verified && (
-          <div className="flex items-center gap-2 rounded-lg border border-success/20 bg-success/5 px-3 py-2 text-sm">
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle2 className="size-4 text-success shrink-0" />
             <span className="text-foreground font-medium">{resolved.accountName}</span>
           </div>
         )}
         {resolveError && canResolve && !resolving && (
-          <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-            <XCircle className="size-4 shrink-0" />
-            Could not resolve account
+          <div className="flex items-center gap-2 text-sm">
+            <XCircle className="size-4 text-destructive shrink-0" />
+            <span className="text-destructive">Could not resolve account</span>
           </div>
         )}
 
