@@ -25,3 +25,14 @@ export const getSplitRuleFn = async ({ id }: { id: string }) => {
   const { data } = await v1AuthenticatedApi().get(`/split-rules/${id}`);
   return data;
 };
+
+export const resolveBankAccountFn = async ({
+  bankCode,
+  accountNumber,
+}: {
+  bankCode: string;
+  accountNumber: string;
+}) => {
+  const { data } = await v1AuthenticatedApi().post("/bank-accounts/resolve", { bankCode, accountNumber });
+  return data;
+};

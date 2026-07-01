@@ -2,15 +2,16 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/FormField";
 import { BankSelectField } from "@/components/BankSelectField";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { createSubaccountFn } from "@/services";
+import { createSubaccountFn, resolveBankAccountFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
 const schema = z.object({
@@ -36,6 +37,20 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
     resolver: zodResolver(schema),
     defaultValues: { name: "", bankCode: "", accountNumber: "", percentage: "" },
   });
+
+  const bankCode = form.watch("bankCode");
+  const accountNumber = form.watch("accountNumber");
+  const canResolve = !!bankCode && accountNumber?.length === 10;
+
+  const { data: resolvedData, isFetching: resolving, isError: resolveError } = useQuery({
+    queryKey: ["resolve-bank", bankCode, accountNumber],
+    queryFn: () => resolveBankAccountFn({ bankCode, accountNumber }),
+    enabled: canResolve,
+    retry: false,
+  });
+
+  const resolved = resolvedData?.data;
+  const verified = resolved?.verified === true;
 
   const { mutateAsync: createSubaccount, isPending: creating } = useMutation({
     mutationFn: createSubaccountFn,
@@ -75,7 +90,7 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
           <Input {...form.register("name")} placeholder="e.g. Balogun Rice Seller" />
         </FormField>
         <BankSelectField
-          value={form.watch("bankCode")}
+          value={bankCode}
           onValueChange={(v) => form.setValue("bankCode", v)}
           label="Bank"
           isRequired
@@ -84,12 +99,36 @@ export function CreateSubaccountModal({ open, onOpenChange, onSuccess }: CreateS
         <FormField label="Account Number" error={form.formState.errors.accountNumber?.message} isRequired>
           <Input {...form.register("accountNumber")} placeholder="0123456789" maxLength={10} />
         </FormField>
+
+        <div className="min-h-[20px]">
+          {resolving && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              Resolving account...
+            </div>
+          )}
+          {resolved && verified && (
+            <div className="flex items-center gap-2 rounded-lg border border-success/20 bg-success/5 px-3 py-2 text-sm">
+              <CheckCircle2 className="size-4 text-success shrink-0" />
+              <span className="text-foreground font-medium">{resolved.accountName}</span>
+            </div>
+          )}
+          {resolveError && canResolve && !resolving && (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              <XCircle className="size-4 shrink-0" />
+              Could not resolve account
+            </div>
+          )}
+        </div>
+
         <FormField label="Your Share (%)" error={form.formState.errors.percentage?.message} isRequired>
           <Input {...form.register("percentage")} type="number" placeholder="e.g. 90" />
         </FormField>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>Cancel</Button>
-          <Button type="submit" disabled={creating}>{creating ? "Creating..." : "Create Subaccount"}</Button>
+          <Button type="submit" disabled={creating || (canResolve && !verified)}>
+            {creating ? "Creating..." : "Create Subaccount"}
+          </Button>
         </div>
       </form>
     </ResponsiveModal>
