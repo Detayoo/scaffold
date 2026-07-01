@@ -75,11 +75,6 @@ function PaylinksContent() {
       cell: (pl) => <span className="text-sm text-foreground">{pl?.amountMinor ? formatMoney(pl?.amountMinor) : "—"}</span>,
     },
     {
-      key: "status",
-      header: "Status",
-      cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
-    },
-    {
       key: "paymentLink",
       header: "Payment Link",
       cell: (pl) => (
@@ -96,6 +91,11 @@ function PaylinksContent() {
           )}
         </div>
       ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
     },
     {
       key: "actions",
