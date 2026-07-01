@@ -95,6 +95,14 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                     </div>
                     <Button variant="outline" onClick={() => setReviewOpen(true)}>Review</Button>
                   </div>
+                  <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4">
+                    <div><p className="text-xs text-muted-foreground">Business Name</p><p className="text-sm font-medium">{merchant?.display_name}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Legal Name</p><p className="text-sm">{merchant?.legal_name}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Email</p><p className="text-sm">{merchant?.email}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Default Currency</p><p className="text-sm">{merchant?.default_currency}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Settlement Bank</p><p className="text-sm">{merchant?.settlement_bank_account_id ?? "—"}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{merchant?.created_at ? formatDate(merchant.created_at) : "—"}</p></div>
+                  </div>
                 </div>
               )}
 
@@ -127,13 +135,20 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               )}
 
               {tab === "payments" && (
-                <div className="space-y-1">
-                  {recent?.payments && recent?.payments?.length > 0 ? recent?.payments?.map((p: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
-                      <p className="text-sm text-foreground">{p.reference}</p>
-                      <StatusBadge status={p.status} size="sm" />
-                    </div>
-                  )) : <p className="text-sm text-muted-foreground">No recent payments.</p>}
+                <div className="space-y-4">
+                  <DataTable
+                    columns={[
+                      { key: "reference", header: "Reference", cell: (p: any) => <span className="text-sm text-foreground">{p?.reference}</span> },
+                      { key: "amount_minor", header: "Amount", cell: (p: any) => <span className="text-sm text-foreground">{formatMoney(p?.amount_minor)}</span> },
+                      { key: "status", header: "Status", cell: (p: any) => <StatusBadge status={p?.status} size="sm" /> },
+                      { key: "settlement_status", header: "Settlement", cell: (p: any) => <span className="text-sm capitalize">{p?.settlement_status}</span> },
+                      { key: "created_at", header: "Date", cell: (p: any) => <span className="text-xs text-foreground">{p?.created_at ? formatDate(p.created_at) : "—"}</span> },
+                    ]}
+                    data={recent?.payments}
+                    isPending={false}
+                    isError={false}
+                    emptyTitle="No recent payments"
+                  />
                 </div>
               )}
 
