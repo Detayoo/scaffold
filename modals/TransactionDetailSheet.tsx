@@ -9,7 +9,7 @@ import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Separator } from "@/components/ui/separator";
-import { getTransactionDetailFn, getAdminTransactionDetailFn } from "@/services";
+import { getTransactionDetailFn, getAdminTransactionDetailFn, getTransactionSplitSnapshotFn } from "@/services";
 import { formatMoney, formatDate } from "@/utils";
 import type { TimelineEntry } from "@/types";
 
@@ -48,6 +48,13 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
   const refunds = data?.data?.refunds;
   const timelineEntries = data?.data?.timeline?.entries;
   const splitAllocations = data?.data?.splitAllocations;
+  const [showSplit, setShowSplit] = useState(false);
+
+  const { data: splitData, isFetching: splitLoading } = useQuery({
+    queryKey: ["transaction-split", reference],
+    queryFn: () => getTransactionSplitSnapshotFn({ reference: reference! }),
+    enabled: showSplit && !!reference,
+  });
 
   const handleCopy = async (text: string) => {
     const ok = await copy(text);
@@ -62,7 +69,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
   return (
     <ResponsiveSheet
       open={!!reference}
-      onOpenChange={(o) => { if (!o) onOpenChange(false); }}
+      onOpenChange={(o) => { if (!o) { onOpenChange(false); setShowSplit(false); } }}
       title="Transaction Details"
     >
       <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load transaction details.">
@@ -249,30 +256,78 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
               </>
             )}
 
-            {splitAllocations && splitAllocations.length > 0 && (
+            {(splitAllocations && splitAllocations.length > 0) || splitData?.data?.allocations?.length > 0 ? (
               <>
                 <Separator />
                 <div>
-                  <SectionToggle sectionKey="splits" label="Split Allocations" count={splitAllocations.length} />
+                  <SectionToggle sectionKey="splits" label="Split Allocations" count={splitData?.data?.allocations?.length ?? splitAllocations?.length ?? 0} />
                   {openSections["splits"] && (
-                    <div className="space-y-2">
-                      {splitAllocations.map((s: any, i: number) => (
-                        <div key={s?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Subaccount</p>
-                            <p className="text-sm">{s?.subaccountId}</p>
-                          </div>
-                          <div className="flex justify-between">
-                            <p className="text-xs text-muted-foreground">Amount</p>
-                            <p className="text-sm font-medium">{formatMoney(s?.amountMinor)}</p>
-                          </div>
+                    <div className="space-y-3">
+                      {!showSplit ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowSplit(true)}
+                          className="w-full rounded-lg border border-dashed bg-muted/20 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors cursor-pointer text-center"
+                        >
+                          Load full split details (allocations &amp; liabilities)
+                        </button>
+                      ) : splitLoading ? (
+                        <div className="flex items-center justify-center py-6">
+                          <div className="size-5 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
                         </div>
-                      ))}
+                      ) : splitData?.data?.allocations ? (
+                        <>
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2">Allocations</p>
+                            <div className="space-y-2">
+                              {splitData.data.allocations.map((a: any, i: number) => (
+                                <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1">
+                                  <div className="flex justify-between">
+                                    <p className="text-xs text-muted-foreground">Subaccount</p>
+                                    <p className="text-sm text-foreground">{a?.subaccountId}</p>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <p className="text-xs text-muted-foreground">Amount</p>
+                                    <p className="text-sm font-medium text-foreground">{a?.currency} {formatMoney(a?.amountMinor)}</p>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <p className="text-xs text-muted-foreground">Status</p>
+                                    <StatusBadge status={a?.status} size="sm" />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          {splitData.data.liabilities?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-2">Liabilities</p>
+                              <div className="space-y-2">
+                                {splitData.data.liabilities.map((l: any, i: number) => (
+                                  <div key={l?.id ?? i} className="rounded-lg border border-warning/20 bg-warning/5 p-3 space-y-1">
+                                    <div className="flex justify-between">
+                                      <p className="text-xs text-muted-foreground">Source</p>
+                                      <p className="text-sm capitalize text-foreground">{l?.sourceType}</p>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <p className="text-xs text-muted-foreground">Amount</p>
+                                      <p className="text-sm font-medium text-foreground">{l?.currency} {formatMoney(l?.amountMinor)}</p>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <p className="text-xs text-muted-foreground">Status</p>
+                                      <StatusBadge status={l?.status} size="sm" />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : null}
                     </div>
                   )}
                 </div>
               </>
-            )}
+            ) : null}
           </div>
         ) : null}
       </AsyncContent>

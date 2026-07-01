@@ -39,6 +39,11 @@ export const getAdminTransactionDetailFn = async ({ reference }: { reference: st
   return data;
 };
 
+export const getTransactionSplitSnapshotFn = async ({ reference }: { reference: string }) => {
+  const { data } = await v1AuthenticatedApi().get(`/transactions/${reference}/split`);
+  return data;
+};
+
 export const getTransactionTimelineFn = async ({ reference }: { reference: string }) => {
   const { data } = await v1AuthenticatedApi().get(`/transactions/${reference}/timeline`);
   return data;
