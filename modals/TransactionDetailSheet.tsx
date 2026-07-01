@@ -90,6 +90,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                 <p className="text-xs text-muted-foreground">Customer</p>
                 <p className="text-sm text-foreground">{pi?.customer?.name}</p>
                 {pi?.customer?.email && <p className="text-sm text-foreground">{pi?.customer?.email}</p>}
+                {pi?.customer?.phone && <p className="text-sm text-foreground">{pi?.customer?.phone}</p>}
               </div>
             )}
             {pi?.environment && (
