@@ -59,6 +59,8 @@ const statusConfig: Record<
   completed: { variant: "success", label: "Completed" },
   revoked: { variant: "error", label: "Revoked" },
   queued: { variant: "pending", label: "Queued" },
+  paused: { variant: "warning", label: "Paused" },
+  archived: { variant: "neutral", label: "Archived" },
 };
 
 const variantStyles: Record<StatusVariant, string> = {

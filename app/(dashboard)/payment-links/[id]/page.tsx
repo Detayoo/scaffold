@@ -1,28 +1,20 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Copy, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DataTable, type Column } from "@/components/DataTable";
 import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
-import { getPaylinkPaymentsFn, updatePaylinkStatusFn } from "@/services";
-import { toastMessage, extractError, formatMoney, formatDate } from "@/utils";
+import { StatusUpdateModal } from "@/modals/StatusUpdateModal";
+import { getPaylinkPaymentsFn } from "@/services";
+import { formatMoney, formatDate } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useState } from "react";
-
-const statusOptions = ["draft", "active", "paused", "archived"];
 
 function PaylinkDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +23,7 @@ function PaylinkDetailPage() {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const copy = useCopyToClipboard();
   const [detailRef, setDetailRef] = useState<string | null>(null);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["paylink-detail", id],
@@ -40,21 +33,6 @@ function PaylinkDetailPage() {
 
   const paylink = data?.data?.paylink;
   const payments = data?.data?.payments ?? [];
-
-  const { mutateAsync: updateStatus } = useMutation({
-    mutationFn: updatePaylinkStatusFn,
-    onSuccess: () => {
-      toastMessage("success", "Status updated");
-      refetch();
-    },
-    onError: (err) => toastMessage("error", extractError(err)),
-  });
-
-  const handleStatusChange = async (status: string) => {
-    try {
-      await updateStatus({ id, status });
-    } catch {}
-  };
 
   const handleCopyRef = async (text: string) => {
     const ok = await copy(text);
@@ -90,39 +68,24 @@ function PaylinkDetailPage() {
         {paylink && (
           <>
             <div className="rounded-lg border bg-background p-5 space-y-4">
-              <div className="flex items-start justify-between">
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Name</p>
-                    <p className="text-lg font-semibold text-foreground">{paylink?.name || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Reference</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-foreground">{paylink?.reference}</p>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyRef(paylink?.reference ?? "")}
-                        className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                      >
-                        {copiedRef ? <Check className="size-4" /> : <Copy className="size-4" />}
-                      </button>
-                    </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Name</p>
+                  <p className="text-lg font-semibold text-foreground">{paylink?.name || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Reference</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-foreground">{paylink?.reference}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyRef(paylink?.reference ?? "")}
+                      className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                    >
+                      {copiedRef ? <Check className="size-4" /> : <Copy className="size-4" />}
+                    </button>
                   </div>
                 </div>
-                <Select
-                  value={paylink?.status}
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTrigger className="h-9 w-36">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((s) => (
-                      <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
@@ -157,6 +120,12 @@ function PaylinkDetailPage() {
                   </div>
                 </div>
               )}
+              <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
+                <p className="text-sm font-medium text-foreground">Update Status</p>
+                <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
+                  {paylink?.status ? paylink.status.charAt(0).toUpperCase() + paylink.status.slice(1) : "Set Status"}
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -175,6 +144,14 @@ function PaylinkDetailPage() {
             <TransactionDetailSheet
               reference={detailRef}
               onOpenChange={(o) => { if (!o) setDetailRef(null); }}
+            />
+
+            <StatusUpdateModal
+              open={statusOpen}
+              onOpenChange={setStatusOpen}
+              paylinkId={id}
+              currentStatus={paylink?.status ?? ""}
+              onSuccess={() => refetch()}
             />
           </>
         )}

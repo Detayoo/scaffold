@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
 import { useRouter } from "next/navigation";
 import { Filter, Plus } from "lucide-react";
@@ -21,11 +21,18 @@ import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
 import { CreatePaymentLinkModal } from "@/modals/CreatePaymentLinkModal";
-import { getPaylinksFn, updatePaylinkStatusFn } from "@/services";
-import { toastMessage, extractError, formatMoney } from "@/utils";
+import { StatusUpdateModal } from "@/modals/StatusUpdateModal";
+import { getPaylinksFn } from "@/services";
+import { formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 
-const statusOptions = ["draft", "active", "paused", "archived"];
+const statusLabels: Record<string, string> = {
+  draft: "Draft",
+  active: "Active",
+  paused: "Paused",
+  archived: "Archived",
+};
+const statusOptions = Object.keys(statusLabels);
 
 function PaylinksContent() {
   const router = useRouter();
@@ -34,6 +41,8 @@ function PaylinksContent() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [localStatus, setLocalStatus] = useState("");
+  const [statusModalId, setStatusModalId] = useState<string | null>(null);
+  const [statusModalCurrent, setStatusModalCurrent] = useState<string>("");
 
   const handleSearch = useCallback(() => {}, []);
 
@@ -47,21 +56,6 @@ function PaylinksContent() {
   });
 
   const paylinks = data?.data;
-
-  const { mutateAsync: updateStatus } = useMutation({
-    mutationFn: updatePaylinkStatusFn,
-    onSuccess: () => {
-      toastMessage("success", "Status updated");
-      refetch();
-    },
-    onError: (err) => toastMessage("error", extractError(err)),
-  });
-
-  const handleStatusChange = async (id: string, status: string) => {
-    try {
-      await updateStatus({ id, status });
-    } catch {}
-  };
 
   const columns: Column<any>[] = [
     {
@@ -90,19 +84,13 @@ function PaylinksContent() {
       className: "pr-6",
       cell: (pl) => (
         <div onClick={(e) => e.stopPropagation()}>
-          <Select
-            value={pl?.status}
-            onValueChange={(v) => handleStatusChange(pl?.id, v)}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { setStatusModalId(pl?.id); setStatusModalCurrent(pl?.status); }}
           >
-            <SelectTrigger className="h-8 w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {statusOptions.map((s) => (
-                <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            Update Status
+          </Button>
         </div>
       ),
     },
@@ -149,7 +137,7 @@ function PaylinksContent() {
             <SelectContent>
               <SelectItem value=" ">All statuses</SelectItem>
               {statusOptions.map((s) => (
-                <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -170,6 +158,14 @@ function PaylinksContent() {
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
+
+      <StatusUpdateModal
+        open={!!statusModalId}
+        onOpenChange={(o) => { if (!o) setStatusModalId(null); }}
+        paylinkId={statusModalId ?? ""}
+        currentStatus={statusModalCurrent}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }
