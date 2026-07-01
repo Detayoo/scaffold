@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { FormField } from "@/components/FormField";
 import { SearchableSelect } from "@/components/SearchableSelect";
-import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { getSubaccountsFn, createSplitRuleFn } from "@/services";
 import { toastMessage, extractError } from "@/utils";
 
@@ -110,13 +110,13 @@ export function CreateSplitRuleModal({ open, onOpenChange, onSuccess }: CreateSp
   });
 
   return (
-    <ResponsiveModal
+    <ResponsiveSheet
       open={open}
       onOpenChange={(o) => { if (!o && !creating) { onOpenChange(false); form.reset(); } }}
       title="Create Split Rule"
       description="Define how payments are split between recipients"
     >
-      <form onSubmit={handleCreate} className="space-y-4 pt-2">
+      <form onSubmit={handleCreate} className="space-y-4">
         <FormField label="Name" error={form.formState.errors.name?.message} isRequired>
           <Input {...form.register("name")} placeholder="Alausa marketplace 90/10" />
         </FormField>
@@ -321,6 +321,6 @@ export function CreateSplitRuleModal({ open, onOpenChange, onSuccess }: CreateSp
           <Button type="submit" disabled={creating}>{creating ? "Creating..." : "Create Split Rule"}</Button>
         </div>
       </form>
-    </ResponsiveModal>
+    </ResponsiveSheet>
   );
 }
