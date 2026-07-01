@@ -82,7 +82,7 @@ function PaylinksContent() {
     },
     {
       key: "paymentLink",
-      header: "\u00A0",
+      header: "Payment Link",
       className: "w-64 max-w-64",
       cell: (pl) => (
         <div className="flex items-center gap-1.5">
@@ -101,10 +101,9 @@ function PaylinksContent() {
     },
     {
       key: "actions",
-      header: "\u00A0",
-      className: "pr-2",
+      header: "Actions",
       cell: (pl) => (
-        <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5">
+        <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => router.push(`/payment-links/${pl?.id}`)}
