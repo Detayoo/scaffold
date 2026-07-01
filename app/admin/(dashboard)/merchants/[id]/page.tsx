@@ -37,6 +37,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [chargeOpen, setChargeOpen] = useState(false);
   const [selectedCharge, setSelectedCharge] = useState<ChargePolicy | null>(null);
+  const [selectedChannel, setSelectedChannel] = useState<any>(null);
   const [detailRef, setDetailRef] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -164,6 +165,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                   isPending={false}
                   isError={false}
                   emptyTitle="No channel policies"
+                  onRowClick={(cp: any) => setSelectedChannel(cp)}
                 />
               )}
 
@@ -219,6 +221,22 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
       <MerchantReviewModal open={reviewOpen} onOpenChange={setReviewOpen} merchantId={id} onSuccess={() => refetch()} />
       <ChargePolicyModal open={chargeOpen} onOpenChange={setChargeOpen} merchantId={id} onSuccess={() => refetchCharges()} />
       <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} admin />
+
+      <ResponsiveSheet open={!!selectedChannel} onOpenChange={(o) => { if (!o) setSelectedChannel(null); }} title="Channel Policy Details">
+        {selectedChannel && (
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div><p className="text-xs text-muted-foreground">Channel</p><p className="text-sm capitalize">{selectedChannel?.channel?.replace(/_/g, " ")}</p></div>
+              <div><p className="text-xs text-muted-foreground">Environment</p><p className="text-sm capitalize">{selectedChannel?.environment}</p></div>
+              <div><p className="text-xs text-muted-foreground">Status</p><StatusBadge status={selectedChannel?.enabled ? "active" : "inactive"} size="sm" /></div>
+              {selectedChannel?.routing_policy_id && <div><p className="text-xs text-muted-foreground">Routing Policy</p><p className="text-sm">{selectedChannel?.routing_policy_id}</p></div>}
+              {selectedChannel?.settlement_policy_id && <div><p className="text-xs text-muted-foreground">Settlement Policy</p><p className="text-sm">{selectedChannel?.settlement_policy_id}</p></div>}
+              {selectedChannel?.risk_policy_id && <div><p className="text-xs text-muted-foreground">Risk Policy</p><p className="text-sm">{selectedChannel?.risk_policy_id}</p></div>}
+            </div>
+            <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{selectedChannel?.created_at ? formatDate(selectedChannel.created_at) : "—"}</p></div>
+          </div>
+        )}
+      </ResponsiveSheet>
 
       <ResponsiveSheet open={!!selectedCharge} onOpenChange={(o) => { if (!o) setSelectedCharge(null); }} title="Charge Policy Details">
         {selectedCharge && (
