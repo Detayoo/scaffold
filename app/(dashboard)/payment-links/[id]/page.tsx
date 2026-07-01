@@ -109,7 +109,7 @@ function PaylinkDetailPage() {
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Payment Link URL</p>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 rounded-lg border bg-muted px-3 py-2 text-xs break-all">{paylink.paymentLink}</div>
+                    <div className="w-fit rounded-lg border bg-muted px-3 py-2 text-xs break-all">{paylink.paymentLink}</div>
                     <button
                       type="button"
                       onClick={() => handleCopyUrl(paylink.paymentLink)}
@@ -120,12 +120,9 @@ function PaylinkDetailPage() {
                   </div>
                 </div>
               )}
-              <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
-                <p className="text-sm font-medium text-foreground">Update Status</p>
-                <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
-                  {paylink?.status ? paylink.status.charAt(0).toUpperCase() + paylink.status.slice(1) : "Set Status"}
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
+                Update Status
+              </Button>
             </div>
 
             <div>

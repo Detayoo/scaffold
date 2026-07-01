@@ -60,7 +60,8 @@ function PaylinksContent() {
     {
       key: "name",
       header: "Name",
-      cell: (pl) => <span className="text-sm text-foreground">{pl?.name || "—"}</span>,
+      className: "w-48 max-w-48",
+      cell: (pl) => <span className="text-sm text-foreground truncate block">{pl?.name || "—"}</span>,
     },
     {
       key: "reference",
