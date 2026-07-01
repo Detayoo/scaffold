@@ -219,20 +219,20 @@ input[type="number"] {
 
 /* Visible scrollbar for command lists */
 [data-slot="command-list"] {
-    scrollbar-width: thin !important;
-    scrollbar-color: hsl(var(--border)) transparent !important;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
 }
 [data-slot="command-list"]::-webkit-scrollbar {
-    width: 6px !important;
-    display: block !important;
+    width: 6px;
+    display: block;
 }
 [data-slot="command-list"]::-webkit-scrollbar-thumb {
-    background: hsl(var(--border)) !important;
-    border-radius: 999px !important;
+    background: hsl(var(--border));
+    border-radius: 999px;
 }
 [data-slot="command-list"]::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground)) !important;
+    background: hsl(var(--muted-foreground));
 }
 [data-slot="command-list"]::-webkit-scrollbar-track {
-    background: transparent !important;
+    background: transparent;
 }
