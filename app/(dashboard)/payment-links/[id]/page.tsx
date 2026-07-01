@@ -120,7 +120,7 @@ function PaylinkDetailPage() {
                   </div>
                 </div>
               )}
-              <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
+              <Button variant="outline" onClick={() => setStatusOpen(true)}>
                 Update Status
               </Button>
             </div>

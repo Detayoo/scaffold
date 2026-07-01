@@ -79,6 +79,12 @@ function PaylinksContent() {
       cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
     },
     {
+      key: "paymentLink",
+      header: "URL",
+      className: "max-w-48",
+      cell: (pl) => <span className="text-xs text-muted-foreground truncate block">{pl?.paymentLink || pl?.payment_link || "—"}</span>,
+    },
+    {
       key: "actions",
       header: "",
       className: "pr-6",
