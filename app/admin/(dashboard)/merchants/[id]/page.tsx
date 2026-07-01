@@ -141,6 +141,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               {tab === "users" && (
                 <DataTable
                   columns={[
+                    { key: "name", header: "Name", cell: (u: any) => <span className="text-sm text-foreground">{u?.name ?? "—"}</span> },
                     { key: "email", header: "Email", cell: (u: any) => <span className="text-sm text-foreground">{u.email}</span> },
                     { key: "role", header: "Role", cell: (u: any) => <span className="text-sm capitalize">{u.role}</span> },
                     { key: "status", header: "Status", cell: (u: any) => <StatusBadge status={u.status} size="sm" /> },
