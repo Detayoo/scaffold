@@ -61,34 +61,29 @@ function PaylinksContent() {
     {
       key: "name",
       header: "Name",
-      className: "w-48 max-w-48",
-      cell: (pl) => <span className="text-sm text-foreground truncate block">{pl?.name || "—"}</span>,
+      cell: (pl) => <span className="text-sm text-foreground truncate block max-w-48">{pl?.name || "—"}</span>,
     },
     {
       key: "reference",
       header: "Reference",
-      className: "max-w-32",
-      cell: (pl) => <span className="text-sm text-foreground truncate block">{pl?.reference}</span>,
+      cell: (pl) => <span className="text-sm text-foreground truncate block max-w-32">{pl?.reference}</span>,
     },
     {
       key: "amount",
       header: "Amount",
-      className: "w-28",
       cell: (pl) => <span className="text-sm text-foreground">{pl?.amountMinor ? formatMoney(pl?.amountMinor) : "—"}</span>,
     },
     {
       key: "status",
       header: "Status",
-      className: "w-20",
       cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
     },
     {
       key: "paymentLink",
       header: "Payment Link",
-      className: "w-64 max-w-64",
       cell: (pl) => (
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm text-foreground truncate flex-1">{pl?.paymentLink || pl?.payment_link || "—"}</span>
+        <div className="flex items-center gap-1">
+          <span className="text-sm text-foreground truncate flex-1 max-w-64">{pl?.paymentLink || pl?.payment_link || "—"}</span>
           {pl?.paymentLink && (
             <button
               type="button"
@@ -104,9 +99,9 @@ function PaylinksContent() {
     {
       key: "actions",
       header: "Actions",
-      className: "w-0",
+      className: "w-px",
       cell: (pl) => (
-        <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
+        <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => router.push(`/payment-links/${pl?.id}`)}
