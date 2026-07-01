@@ -22,6 +22,7 @@ interface TransactionDetailSheetProps {
 export function TransactionDetailSheet({ reference, onOpenChange, admin }: TransactionDetailSheetProps) {
   const copy = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
+  const [copiedRef, setCopiedRef] = useState<string | null>(null);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const toggle = (key: string) => setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -158,7 +159,14 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                           {a?.feeAmountMinor != null && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Fee</p><p className="text-xs">{formatMoney(a?.feeAmountMinor)}</p></div>}
                           {a?.netAmountMinor != null && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Net</p><p className="text-xs">{formatMoney(a?.netAmountMinor)}</p></div>}
                           {a?.feeBearer && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Fee Bearer</p><p className="text-xs capitalize">{a?.feeBearer}</p></div>}
-                          {a?.providerReference && <p className="text-xs text-muted-foreground">Ref: {a?.providerReference}</p>}
+                          {a?.providerReference && (
+                            <div className="flex items-center gap-1">
+                              <p className="text-xs text-muted-foreground">Ref: {a?.providerReference}</p>
+                              <button type="button" onClick={async () => { const ok = await copy(a?.providerReference); if (ok) { setCopiedRef(a?.id); setTimeout(() => setCopiedRef(null), 2000); } }} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                {copiedRef === a?.id ? <Check className="size-3" /> : <Copy className="size-3" />}
+                              </button>
+                            </div>
+                          )}
                           {a?.providerData?.responseMessage && <p className="text-xs text-muted-foreground">{a?.providerData?.responseMessage}</p>}
                           {a?.createdAt && <p className="text-xs text-muted-foreground">{formatDate(a?.createdAt)}</p>}
                         </div>
