@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { AsyncContent } from "@/components/AsyncContent";
 import { MerchantReviewModal } from "@/modals/MerchantReviewModal";
 import { ChargePolicyModal } from "@/modals/ChargePolicyModal";
+import { TransactionDetailSheet } from "@/modals/TransactionDetailSheet";
 import { getAdminMerchantDetailFn, getAdminMerchantChargesFn } from "@/services";
 import { formatMoney, formatDate } from "@/utils";
 import type { ChargePolicy } from "@/types";
@@ -34,6 +35,8 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [tab, setTab] = useQueryState("tab", { defaultValue: "overview" });
   const [reviewOpen, setReviewOpen] = useState(false);
   const [chargeOpen, setChargeOpen] = useState(false);
+  const [detailRef, setDetailRef] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["admin-merchant-detail", id],
@@ -165,16 +168,17 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
                 <div className="space-y-4">
                   <DataTable
                     columns={[
+                      { key: "created_at", header: "Date", cell: (p: any) => <span className="text-xs text-foreground">{p?.created_at ? formatDate(p.created_at) : "—"}</span> },
                       { key: "reference", header: "Reference", cell: (p: any) => <span className="text-sm text-foreground">{p?.reference}</span> },
                       { key: "amount_minor", header: "Amount", cell: (p: any) => <span className="text-sm text-foreground">{formatMoney(p?.amount_minor)}</span> },
                       { key: "status", header: "Status", cell: (p: any) => <StatusBadge status={p?.status} size="sm" /> },
                       { key: "settlement_status", header: "Settlement", cell: (p: any) => <span className="text-sm capitalize">{p?.settlement_status}</span> },
-                      { key: "created_at", header: "Date", cell: (p: any) => <span className="text-xs text-foreground">{p?.created_at ? formatDate(p.created_at) : "—"}</span> },
                     ]}
                     data={recent?.payments}
                     isPending={false}
                     isError={false}
                     emptyTitle="No recent payments"
+                    onRowClick={(p: any) => { setDetailRef(p?.reference); setDetailOpen(true); }}
                   />
                 </div>
               )}
@@ -211,6 +215,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
       <MerchantReviewModal open={reviewOpen} onOpenChange={setReviewOpen} merchantId={id} onSuccess={() => refetch()} />
       <ChargePolicyModal open={chargeOpen} onOpenChange={setChargeOpen} merchantId={id} onSuccess={() => refetchCharges()} />
+      <TransactionDetailSheet reference={detailOpen ? detailRef : null} onOpenChange={(o) => { if (!o) setDetailOpen(false); }} />
     </div>
   );
 }
