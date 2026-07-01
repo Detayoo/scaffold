@@ -139,6 +139,7 @@ These are non-negotiable. Every single file must follow these patterns.
 
 **Copy to clipboard:** Always use `useCopyToClipboard` from `@/hooks/use-copy-to-clipboard` for copying text.
 - **Date columns in tables:** Always use the `dateColumn` helper from `@/components/ColumnHelpers`. It uses `text-foreground` for consistency — never use `text-muted-foreground` for date cells. Import the hook, call it to get the `copy` function, then use `await copy(text)` which returns a boolean. Never use `navigator.clipboard` directly.
+- **Banks:** `useBanks` hook at `@/hooks/use-banks` fetches `GET /v1/banks`. `BankSelectField` component at `@/components/BankSelectField` wraps `SearchableSelect` + `useBanks` for a searchable bank dropdown. No staleTime — always fresh fetch.
 
 **Forms (react-hook-form + zod):**
 - Every form uses `zodResolver` with `@hookform/resolvers/zod`

@@ -71,8 +71,8 @@ export function SearchableSelect({
           <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 max-h-80 overflow-y-auto" style={{ width: triggerWidth || undefined }}>
-        <Command>
+      <PopoverContent className="p-0" style={{ width: triggerWidth || undefined }}>
+        <Command className="overflow-visible">
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
