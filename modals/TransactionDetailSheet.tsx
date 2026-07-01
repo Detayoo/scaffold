@@ -79,10 +79,10 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
               <p className="text-xs text-muted-foreground">Status</p>
               <StatusBadge status={pi?.status ?? ""} size="sm" />
             </div>
-            {pi?.channel && (
+            {pi?.channels && pi?.channels?.length > 0 && (
               <div>
-                <p className="text-xs text-muted-foreground">Channel</p>
-                <p className="text-sm text-foreground capitalize">{pi?.channel}</p>
+                <p className="text-xs text-muted-foreground">Channels</p>
+                <p className="text-sm text-foreground capitalize">{pi?.channels?.join(", ")}</p>
               </div>
             )}
             {pi?.customer?.name && (
