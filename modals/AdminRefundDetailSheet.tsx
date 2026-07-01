@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { approveAdminRefundFn, rejectAdminRefundFn, processAdminRefundFn, markAdminRefundSucceededFn, markAdminRefundFailedFn } from "@/services";
-import { formatMoney, toastMessage, extractError } from "@/utils";
+import { formatMoney, formatDate, toastMessage, extractError } from "@/utils";
 import type { Refund } from "@/types";
 
 interface AdminRefundDetailSheetProps {
@@ -101,12 +101,40 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
               <p className="text-sm text-foreground">{refund?.reference}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Amount</p>
-              <p className="text-sm text-foreground">{formatMoney(refund?.amountMinor)}</p>
-            </div>
-            <div>
               <p className="text-xs text-muted-foreground">Status</p>
               <StatusBadge status={refund?.status ?? ""} size="sm" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Amount</p>
+              <p className="text-sm text-foreground">{refund?.currency ?? "NGN"} {formatMoney(refund?.amountMinor)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Currency</p>
+              <p className="text-sm text-foreground">{refund?.currency ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Environment</p>
+              <p className="text-sm text-foreground capitalize">{refund?.environment ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Execution Mode</p>
+              <p className="text-sm text-foreground capitalize">{refund?.executionMode?.replace(/_/g, " ") ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Fee Policy</p>
+              <p className="text-sm text-foreground">{refund?.feePolicy?.replace(/_/g, " ") ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Fee Refund Amount</p>
+              <p className="text-sm text-foreground">{formatMoney(refund?.feeRefundAmountMinor)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Merchant Debit Amount</p>
+              <p className="text-sm text-foreground">{formatMoney(refund?.merchantDebitAmountMinor)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Requires Manual Funding</p>
+              <p className="text-sm text-foreground">{refund?.requiresManualFunding ? "Yes" : "No"}</p>
             </div>
             {refund?.reason && (
               <div>
@@ -114,6 +142,43 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
                 <p className="text-sm text-foreground">{refund?.reason}</p>
               </div>
             )}
+            {refund?.rejectionReason && (
+              <div>
+                <p className="text-xs text-muted-foreground">Rejection Reason</p>
+                <p className="text-sm text-foreground">{refund?.rejectionReason}</p>
+              </div>
+            )}
+
+            <Separator />
+            <p className="text-xs font-medium text-muted-foreground">Timeline</p>
+            <div>
+              <p className="text-xs text-muted-foreground">Created</p>
+              <p className="text-sm text-foreground">{refund?.createdAt ? formatDate(refund.createdAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Updated</p>
+              <p className="text-sm text-foreground">{refund?.updatedAt ? formatDate(refund.updatedAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Approved</p>
+              <p className="text-sm text-foreground">{refund?.approvedAt ? formatDate(refund.approvedAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Rejected</p>
+              <p className="text-sm text-foreground">{refund?.rejectedAt ? formatDate(refund.rejectedAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Processed</p>
+              <p className="text-sm text-foreground">{refund?.processedAt ? formatDate(refund.processedAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Succeeded</p>
+              <p className="text-sm text-foreground">{refund?.succeededAt ? formatDate(refund.succeededAt) : "—"}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Failed</p>
+              <p className="text-sm text-foreground">{refund?.failedAt ? formatDate(refund.failedAt) : "—"}</p>
+            </div>
 
             {status && ["requested", "approved", "processing"].includes(status) && (
               <>
