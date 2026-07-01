@@ -32,8 +32,8 @@ export function SubaccountsTab() {
       header: "Bank Account",
       cell: (s) => (
         <div className="flex flex-col">
-          <span className="text-sm text-foreground">{s?.metadata?.bank_name ?? "—"}</span>
-          <span className="text-xs text-muted-foreground">{s?.settlementBankAccountId}</span>
+          <span className="text-sm text-foreground">{s?.metadata?.bank_name ?? s?.settlementBankAccountId} · {s?.metadata?.account_number ?? "—"}</span>
+          <span className="text-xs text-muted-foreground">{s?.metadata?.account_name ?? ""}</span>
         </div>
       ),
     },
