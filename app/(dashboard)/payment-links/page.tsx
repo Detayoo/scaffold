@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useQueryState, parseAsString } from "nuqs";
+import { useRouter } from "next/navigation";
 import { Filter, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,26 +20,23 @@ import { PageHeader } from "@/components/PageHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { FilterModal } from "@/components/FilterModal";
-import { PaymentLinkDetailSheet } from "@/modals/PaymentLinkDetailSheet";
 import { CreatePaymentLinkModal } from "@/modals/CreatePaymentLinkModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { getPaylinksFn, updatePaylinkStatusFn } from "@/services";
-import { toastMessage, extractError, formatMoney, formatDate } from "@/utils";
+import { toastMessage, extractError, formatMoney } from "@/utils";
 import { withSuspense } from "@/components/withSuspense";
 
 function PaylinksContent() {
+  const router = useRouter();
   const [searchInput, setSearchInput] = useQueryState("q", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<"active" | "inactive">("active");
-  const [detailRef, setDetailRef] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState("");
 
-  const handleSearch = useCallback(() => {
-    // search triggers refetch via query key change
-  }, []);
+  const handleSearch = useCallback(() => {}, []);
 
   const handleClearSearch = useCallback(() => {
     setSearchInput("");
@@ -56,7 +54,6 @@ function PaylinksContent() {
     onSuccess: () => {
       toastMessage("success", confirmAction === "inactive" ? "Link deactivated" : "Link activated");
       setConfirmId(null);
-      setDetailRef(null);
       refetch();
     },
     onError: (err) => toastMessage("error", extractError(err)),
@@ -64,14 +61,9 @@ function PaylinksContent() {
 
   const columns: Column<any>[] = [
     {
-      key: "createdAt",
-      header: "Created",
-      cell: (pl) => <span className="text-xs text-foreground">{pl?.createdAt ? formatDate(pl.createdAt) : "—"}</span>,
-    },
-    {
-      key: "channels",
-      header: "Channels",
-      cell: (pl) => <span className="text-sm capitalize text-foreground">{pl?.channels?.join(", ").replace(/_/g, " ") ?? "—"}</span>,
+      key: "reference",
+      header: "Reference",
+      cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,
     },
     {
       key: "amount",
@@ -82,11 +74,6 @@ function PaylinksContent() {
       key: "status",
       header: "Status",
       cell: (pl) => <StatusBadge status={pl?.status} size="sm" />,
-    },
-    {
-      key: "reference",
-      header: "Reference",
-      cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,
     },
     {
       key: "actions",
@@ -171,15 +158,10 @@ function PaylinksContent() {
         emptyTitle="No payment links yet"
         emptyDescription="Create one to start collecting payments."
         emptyAction={{ label: "Create Link", onClick: () => setCreateOpen(true) }}
-        onRowClick={(pl) => setDetailRef(pl?.reference)}
+        onRowClick={(pl) => router.push(`/payment-links/${pl?.id}`)}
       />
 
       <CreatePaymentLinkModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => refetch()} />
-      <PaymentLinkDetailSheet
-        reference={detailRef}
-        onOpenChange={(o) => { if (!o) setDetailRef(null); }}
-        onToggleStatus={(id, action) => { setConfirmId(id); setConfirmAction(action); }}
-      />
 
       <ConfirmDialog
         open={!!confirmId}
@@ -188,7 +170,7 @@ function PaylinksContent() {
         description={`Are you sure you want to ${confirmAction === "inactive" ? "deactivate" : "activate"} this payment link?`}
         confirmLabel={confirmAction === "inactive" ? "Deactivate" : "Activate"}
         variant={confirmAction === "inactive" ? "destructive" : "default"}
-        onConfirm={async () => { try { if (confirmId) await updateStatus({ id: confirmId, status: confirmAction }); } catch { /* handled by onError */ } }}
+        onConfirm={async () => { try { if (confirmId) await updateStatus({ id: confirmId, status: confirmAction }); } catch {} }}
         loading={updating}
       />
     </div>
