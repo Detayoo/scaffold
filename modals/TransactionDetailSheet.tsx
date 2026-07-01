@@ -154,6 +154,10 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                             <p className="text-xs text-muted-foreground">{a?.provider}</p>
                             <p className="text-sm font-medium">{formatMoney(a?.amountMinor)}</p>
                           </div>
+                          {a?.grossAmountMinor != null && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Gross</p><p className="text-xs">{formatMoney(a?.grossAmountMinor)}</p></div>}
+                          {a?.feeAmountMinor != null && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Fee</p><p className="text-xs">{formatMoney(a?.feeAmountMinor)}</p></div>}
+                          {a?.netAmountMinor != null && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Net</p><p className="text-xs">{formatMoney(a?.netAmountMinor)}</p></div>}
+                          {a?.feeBearer && <div className="flex justify-between"><p className="text-xs text-muted-foreground">Fee Bearer</p><p className="text-xs capitalize">{a?.feeBearer}</p></div>}
                           {a?.providerReference && <p className="text-xs text-muted-foreground">Ref: {a?.providerReference}</p>}
                           {a?.providerData?.responseMessage && <p className="text-xs text-muted-foreground">{a?.providerData?.responseMessage}</p>}
                           {a?.createdAt && <p className="text-xs text-muted-foreground">{formatDate(a?.createdAt)}</p>}
