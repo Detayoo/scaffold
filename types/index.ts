@@ -242,6 +242,20 @@ export type Refund = {
   currency: string;
   status: string;
   reason?: string;
+  environment?: string;
+  executionMode?: string;
+  feePolicy?: string;
+  feeRefundAmountMinor?: number;
+  merchantDebitAmountMinor?: number;
+  requiresManualFunding?: boolean;
+  rejectionReason?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  approvedAt?: string | null;
+  rejectedAt?: string | null;
+  processedAt?: string | null;
+  succeededAt?: string | null;
+  failedAt?: string | null;
 };
 
 export type RefundAttempt = {
