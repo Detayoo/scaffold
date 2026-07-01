@@ -61,6 +61,11 @@ function PaylinksContent() {
 
   const columns: Column<any>[] = [
     {
+      key: "name",
+      header: "Name",
+      cell: (pl) => <span className="text-sm text-foreground">{pl?.name || "—"}</span>,
+    },
+    {
       key: "reference",
       header: "Reference",
       cell: (pl) => <span className="text-sm text-foreground">{pl?.reference}</span>,

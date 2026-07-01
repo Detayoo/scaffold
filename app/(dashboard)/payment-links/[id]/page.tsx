@@ -95,17 +95,23 @@ function PaylinkDetailPage() {
           <>
             <div className="rounded-lg border bg-background p-5 space-y-4">
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-muted-foreground">Reference</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-lg font-semibold text-foreground">{paylink?.reference}</p>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyRef(paylink?.reference ?? "")}
-                      className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                    >
-                      {copiedRef ? <Check className="size-4" /> : <Copy className="size-4" />}
-                    </button>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Name</p>
+                    <p className="text-lg font-semibold text-foreground">{paylink?.name || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Reference</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-foreground">{paylink?.reference}</p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyRef(paylink?.reference ?? "")}
+                        className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                      >
+                        {copiedRef ? <Check className="size-4" /> : <Copy className="size-4" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <StatusBadge status={paylink?.status} size="md" />
