@@ -95,7 +95,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
             {pi?.channels && pi?.channels?.length > 0 && (
               <div>
                 <p className="text-xs text-muted-foreground">Channels</p>
-                <p className="text-sm text-foreground capitalize">{pi?.channels?.join(", ")}</p>
+                <p className="text-sm text-foreground capitalize">{pi?.channels?.join(", ").replace(/_/g, " ")}</p>
               </div>
             )}
             {pi?.customer?.name && (
@@ -160,7 +160,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                       {attempts.map((a: any, i: number) => (
                         <div key={a?.id ?? i} className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs text-muted-foreground capitalize">{a?.channel}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{a?.channel?.replace(/_/g, " ")}</p>
                             <StatusBadge status={a?.status} size="sm" />
                           </div>
                           <div className="flex items-center justify-between">
