@@ -10,7 +10,7 @@ import { AsyncContent } from "@/components/AsyncContent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Separator } from "@/components/ui/separator";
 import { getTransactionDetailFn, getAdminTransactionDetailFn, getTransactionSplitSnapshotFn } from "@/services";
-import { formatMoney, formatDate } from "@/utils";
+import { formatMoney, formatDate, formatShortDate } from "@/utils";
 import type { TimelineEntry } from "@/types";
 
 interface TransactionDetailSheetProps {
@@ -235,7 +235,7 @@ export function TransactionDetailSheet({ reference, onOpenChange, admin }: Trans
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-xs text-muted-foreground">
                                   {t?.occurred_at
-                                    ? new Date(t.occurred_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) +
+                                    ? formatShortDate(t.occurred_at) +
                                       " " + new Date(t.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
                                     : "—"}
                                 </p>

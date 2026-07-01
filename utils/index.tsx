@@ -39,15 +39,22 @@ export const formatDate = (date: string) => {
   const d = new Date(date);
   const day = d.getDate();
   const suffix = ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10] || "th";
-  const dateStr = format(d, `d'${suffix}' MMM yyyy`);
+  const dateStr = format(d, `d'${suffix}' MMMM yyyy`);
   const timeStr = format(d, "p");
   return (
     <>
       {dateStr}
-      <br />
-      <span className="text-xs">{timeStr}</span>
+      <span className="text-muted-foreground"> at {timeStr}</span>
     </>
   );
+};
+
+export const formatShortDate = (date: string) => {
+  if (!date) return "N/A";
+  const d = new Date(date);
+  const day = d.getDate();
+  const suffix = ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10] || "th";
+  return format(d, `d'${suffix}' MMM`);
 };
 
 export const toastMessage = (
