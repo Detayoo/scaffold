@@ -30,12 +30,12 @@ export function SubaccountsTab() {
     {
       key: "settlementBankAccountId",
       header: "Bank Account",
-      cell: (s) => <span className="text-sm text-foreground">{s?.settlementBankAccountId}</span>,
-    },
-    {
-      key: "environment",
-      header: "Environment",
-      cell: (s) => <span className="text-sm text-foreground capitalize">{s?.environment}</span>,
+      cell: (s) => (
+        <div className="flex flex-col">
+          <span className="text-sm text-foreground">{s?.metadata?.bank_name ?? "—"}</span>
+          <span className="text-xs text-muted-foreground">{s?.settlementBankAccountId}</span>
+        </div>
+      ),
     },
     {
       key: "status",
