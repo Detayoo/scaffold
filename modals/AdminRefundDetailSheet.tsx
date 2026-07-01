@@ -30,7 +30,7 @@ export function AdminRefundDetailSheet({ refund, onOpenChange, onSuccess }: Admi
 
   const { mutateAsync: approve, isPending: approving } = useMutation({
     mutationFn: approveAdminRefundFn,
-    onSuccess: () => { toastMessage("success", "Refund approved"); setConfirmAction(null); refetchParent(); },
+    onSuccess: () => { toastMessage("success", "Refund approved"); setConfirmAction(null); onOpenChange(false); onSuccess?.(); },
     onError: (err) => toastMessage("error", extractError(err)),
   });
 

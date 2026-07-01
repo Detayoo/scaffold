@@ -49,32 +49,28 @@ export function RefundDetailSheet({ refundId, onOpenChange }: RefundDetailSheetP
       <AsyncContent isPending={isPending} isError={isError} onRetry={refetch} errorMessage="Failed to load refund details.">
         {refund ? (
           <div className="space-y-4 pt-2">
-            <div className="grid grid-cols-2 gap-3">
-              {field("Reference", refund?.reference)}
-              {badgeField("Status", refund?.status)}
-              {field("Amount", refund?.amountMinor, (v) => `${refund?.currency ?? "NGN"} ${formatMoney(v)}`)}
-              {field("Currency", refund?.currency)}
-              {field("Environment", refund?.environment)}
-              {field("Execution Mode", refund?.executionMode, (v) => v?.replace(/_/g, " "))}
-              {field("Fee Policy", refund?.feePolicy, (v) => v?.replace(/_/g, " "))}
-              {field("Fee Refund Amount", refund?.feeRefundAmountMinor, (v) => formatMoney(v))}
-              {field("Merchant Debit Amount", refund?.merchantDebitAmountMinor, (v) => formatMoney(v))}
-              {field("Requires Manual Funding", refund?.requiresManualFunding, (v) => v ? "Yes" : "No")}
-              {field("Reason", refund?.reason)}
-              {field("Rejection Reason", refund?.rejectionReason)}
-            </div>
+            {field("Reference", refund?.reference)}
+            {badgeField("Status", refund?.status)}
+            {field("Amount", refund?.amountMinor, (v) => `${refund?.currency ?? "NGN"} ${formatMoney(v)}`)}
+            {field("Currency", refund?.currency)}
+            {field("Environment", refund?.environment)}
+            {field("Execution Mode", refund?.executionMode, (v) => v?.replace(/_/g, " "))}
+            {field("Fee Policy", refund?.feePolicy, (v) => v?.replace(/_/g, " "))}
+            {field("Fee Refund Amount", refund?.feeRefundAmountMinor, (v) => formatMoney(v))}
+            {field("Merchant Debit Amount", refund?.merchantDebitAmountMinor, (v) => formatMoney(v))}
+            {field("Requires Manual Funding", refund?.requiresManualFunding, (v) => v ? "Yes" : "No")}
+            {field("Reason", refund?.reason)}
+            {field("Rejection Reason", refund?.rejectionReason)}
 
             <Separator />
             <p className="text-xs font-medium text-muted-foreground">Timeline</p>
-            <div className="grid grid-cols-2 gap-3">
-              {field("Created", refund?.createdAt, formatDate)}
-              {field("Updated", refund?.updatedAt, formatDate)}
-              {field("Approved", refund?.approvedAt, formatDate)}
-              {field("Rejected", refund?.rejectedAt, formatDate)}
-              {field("Processed", refund?.processedAt, formatDate)}
-              {field("Succeeded", refund?.succeededAt, formatDate)}
-              {field("Failed", refund?.failedAt, formatDate)}
-            </div>
+            {field("Created", refund?.createdAt, formatDate)}
+            {field("Updated", refund?.updatedAt, formatDate)}
+            {field("Approved", refund?.approvedAt, formatDate)}
+            {field("Rejected", refund?.rejectedAt, formatDate)}
+            {field("Processed", refund?.processedAt, formatDate)}
+            {field("Succeeded", refund?.succeededAt, formatDate)}
+            {field("Failed", refund?.failedAt, formatDate)}
 
             {refund?.metadata && Object.keys(refund.metadata).length > 0 && (
               <>
