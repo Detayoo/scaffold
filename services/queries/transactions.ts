@@ -35,7 +35,7 @@ export const getTransactionDetailFn = async ({ reference }: { reference: string 
 };
 
 export const getAdminTransactionDetailFn = async ({ reference }: { reference: string }) => {
-  const { data } = await v1AdminAuthenticatedApi().get(`/admin/transactions/${reference}/detail`);
+  const { data } = await v1AdminAuthenticatedApi().get(`/admin/payments/${reference}/detail`);
   return data;
 };
 

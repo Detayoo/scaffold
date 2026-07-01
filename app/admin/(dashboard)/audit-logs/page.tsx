@@ -47,6 +47,7 @@ function AuditLogsContent() {
     {
       key: "createdAt",
       header: "Date",
+      className: "w-24",
       cell: (l) => (
         <span className="text-xs text-foreground">{l?.createdAt ? formatDate(l.createdAt) : "—"}</span>
       ),
@@ -54,16 +55,19 @@ function AuditLogsContent() {
     {
       key: "actionName",
       header: "Action",
+      className: "w-48",
       cell: (l) => <span className="text-sm text-foreground">{l?.actionName ?? l?.action}</span>,
     },
     {
       key: "actorLabel",
       header: "Actor",
+      className: "w-36",
       cell: (l) => <span className="text-sm text-foreground">{l?.actorLabel ?? l?.actorId}</span>,
     },
     {
       key: "targetType",
       header: "Target",
+      className: "w-24",
       cell: (l) => <span className="text-sm text-foreground capitalize">{l?.targetType}</span>,
     },
     {
