@@ -252,6 +252,7 @@ function MerchantDetailPage({ params }: { params: Promise<{ id: string }> }) {
               <div><p className="text-xs text-muted-foreground">Version</p><p className="text-sm">{selectedCharge?.version}</p></div>
             </div>
             <div><p className="text-xs text-muted-foreground">Created</p><p className="text-sm">{selectedCharge?.created_at ? formatDate(selectedCharge.created_at) : "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Updated</p><p className="text-sm">{selectedCharge?.updated_at ? formatDate(selectedCharge.updated_at) : "—"}</p></div>
           </div>
         )}
       </ResponsiveSheet>
